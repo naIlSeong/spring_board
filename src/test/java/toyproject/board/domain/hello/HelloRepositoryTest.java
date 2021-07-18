@@ -48,6 +48,8 @@ class HelloRepositoryTest {
         helloRepository.save(testHello);
         helloRepository.save(testHello2);
 
+        System.out.println("testHello2 = " + testHello2.getCreatedDate());
+
         // when
         List<Hello> result = helloRepository.findAllByUsername("test");
 
