@@ -6,6 +6,6 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<toyproject.board.domain.member.Member, Long> {
 
-    public Optional<Member> findByUsername(String username);
+    Optional<Member> findByUsername(String username);
 
 }

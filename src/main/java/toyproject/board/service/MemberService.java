@@ -1,6 +1,7 @@
 package toyproject.board.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.member.Member;
@@ -17,6 +18,7 @@ import static org.springframework.util.StringUtils.hasText;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
     @Transactional
     public Long join(JoinRequestDto dto) throws IllegalArgumentException {
@@ -46,6 +48,8 @@ public class MemberService {
         if (dto.getPassword().length() < 8) {
             throw new IllegalArgumentException("비밀번호의 길이는 8자 이상입니다.");
         }
+
+        dto.setPassword(encoder.encode(dto.getPassword()));
 
         Member member = dto.toEntity();
         memberRepository.save(member);

@@ -245,4 +245,22 @@ class MemberServiceTest {
                 .withMessage("비밀번호의 길이는 8자 이상입니다.");
     }
 
+    @Test
+    void 회원가입_암호화() throws Exception {
+        // give
+        JoinRequestDto dto = JoinRequestDto.builder()
+                .username("test")
+                .password("12345678")
+                .build();
+
+        // when
+        Long memberId = memberService.join(dto);
+
+        // then
+        Optional<Member> findMember = memberRepository.findById(memberId);
+        Member result = findMember.get();
+
+        assertThat(result.getPassword()).isNotEqualTo("12345678");
+    }
+
 }
