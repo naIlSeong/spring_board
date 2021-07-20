@@ -15,14 +15,14 @@ created on 2021. 7. 18
 
 
 - **Repository**
-    - [ ] Member
-    - [ ] Board
-    - [ ] Comment
+    - [x] Member
+    - [x] Board
+    - [x] Comment
 
 ### Service
 
 - **Member**
-    - [ ] join
+    - [x] join
     - [ ] withdrawal
     - [ ] login
     - [ ] searchMember
