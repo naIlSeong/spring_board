@@ -8,7 +8,6 @@ import toyproject.board.domain.member.Member;
 import toyproject.board.domain.member.MemberRepository;
 import toyproject.board.dto.JoinRequestDto;
 
-import java.util.Locale;
 import java.util.Optional;
 
 import static org.springframework.util.StringUtils.hasText;
@@ -28,13 +27,14 @@ public class MemberService {
             throw new IllegalArgumentException("이름과 비밀번호는 필수 값입니다.");
         }
 
+        // 문자열 다듬기
         dto.setUsername(dto.getUsername()
-                .toLowerCase(Locale.ROOT)
+                .toLowerCase()
                 .trim()
                 .replaceAll(" ", "_"));
-        Optional<Member> existUser = memberRepository.findByUsername(dto.getUsername());
 
         // 동일한 username 존재하는지 체크
+        Optional<Member> existUser = memberRepository.findByUsername(dto.getUsername());
         if (existUser.isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이름입니다.");
         }
@@ -49,6 +49,7 @@ public class MemberService {
             throw new IllegalArgumentException("비밀번호의 길이는 8자 이상입니다.");
         }
 
+        // 비밀번호 암호화
         dto.setPassword(encoder.encode(dto.getPassword()));
 
         Member member = dto.toEntity();
