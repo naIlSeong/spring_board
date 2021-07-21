@@ -3,10 +3,14 @@ package toyproject.board.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.member.Member;
 import toyproject.board.domain.member.MemberRepository;
-import toyproject.board.dto.JoinRequestDto;
+import toyproject.board.dto.MemberDto;
 
 import java.util.Optional;
 
@@ -15,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 
 @SpringBootTest
 @Transactional
-//@Rollback(value = false)
+@Rollback(value = false)
 class MemberServiceTest {
 
     @Autowired
@@ -30,7 +34,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_성공() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("test")
                 .password("12341234")
                 .build();
@@ -48,7 +52,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_값이_빠짐_1() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("test")
                 .password("  ")
                 .build();
@@ -65,7 +69,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_값이_빠짐_2() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("test")
                 .build();
 
@@ -81,7 +85,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_값이_빠짐_3() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .password("1234")
                 .build();
 
@@ -97,7 +101,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_값이_빠짐_4() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("")
                 .password("1234")
                 .build();
@@ -114,12 +118,12 @@ class MemberServiceTest {
     @Test
     void 회원가입_같은_이름의_회원이_존재_1() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("test")
                 .password("12341234")
                 .build();
 
-        JoinRequestDto sameUsernameDto = JoinRequestDto.builder()
+        MemberDto sameUsernameDto = MemberDto.builder()
                 .username("TEST")
                 .password("43214321")
                 .build();
@@ -136,12 +140,12 @@ class MemberServiceTest {
     @Test
     void 회원가입_같은_이름의_회원이_존재_2() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("test")
                 .password("12341234")
                 .build();
 
-        JoinRequestDto sameUsernameDto = JoinRequestDto.builder()
+        MemberDto sameUsernameDto = MemberDto.builder()
                 .username("  TEST  ")
                 .password("43214321")
                 .build();
@@ -158,12 +162,12 @@ class MemberServiceTest {
     @Test
     void 회원가입_같은_이름의_회원이_존재_3() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("te st")
                 .password("12341234")
                 .build();
 
-        JoinRequestDto sameUsernameDto = JoinRequestDto.builder()
+        MemberDto sameUsernameDto = MemberDto.builder()
                 .username("  TE_ST  ")
                 .password("43214321")
                 .build();
@@ -180,7 +184,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_이름_길이_1() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("testtesttesttesttesttest1")
                 .password("12341234")
                 .build();
@@ -197,7 +201,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_이름_길이_2() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("가나다라가나다라가나다라가나다라가나다라가나다라1")
                 .password("12341234")
                 .build();
@@ -214,7 +218,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_이름_길이_3() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("  가나다  ")
                 .password("12341234")
                 .build();
@@ -231,7 +235,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_비밀번호_길이() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("test")
                 .password("1234567")
                 .build();
@@ -248,7 +252,7 @@ class MemberServiceTest {
     @Test
     void 회원가입_암호화() throws Exception {
         // give
-        JoinRequestDto dto = JoinRequestDto.builder()
+        MemberDto dto = MemberDto.builder()
                 .username("test")
                 .password("12345678")
                 .build();
@@ -261,6 +265,31 @@ class MemberServiceTest {
         Member result = findMember.get();
 
         assertThat(result.getPassword()).isNotEqualTo("12345678");
+    }
+
+    @Test
+    void 로그인() throws Exception {
+        // give
+        MemberDto dto = MemberDto.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+        memberService.join(dto);
+
+        // when
+        MemberDto loginDto = MemberDto.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+
+
+        memberService.login(loginDto);
+
+        // then
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        System.out.println("authentication = " + authentication);
+
     }
 
 }

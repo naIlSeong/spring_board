@@ -1,12 +1,12 @@
 package toyproject.board.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.member.Member;
 import toyproject.board.domain.member.MemberRepository;
-import toyproject.board.dto.JoinRequestDto;
+import toyproject.board.dto.MemberDto;
 
 import java.util.Optional;
 
@@ -17,10 +17,9 @@ import static org.springframework.util.StringUtils.hasText;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
     @Transactional
-    public Long join(JoinRequestDto dto) throws IllegalArgumentException {
+    public Long join(MemberDto dto) throws IllegalArgumentException {
 
         // 입력 받은 값이 유효한지 체크
         if (!isValid(dto)) {
@@ -50,7 +49,8 @@ public class MemberService {
         }
 
         // 비밀번호 암호화
-        dto.setPassword(encoder.encode(dto.getPassword()));
+        dto.setPassword(
+                BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt()));
 
         Member member = dto.toEntity();
         memberRepository.save(member);
@@ -58,8 +58,27 @@ public class MemberService {
         return member.getId();
     }
 
-    private boolean isValid(JoinRequestDto dto) {
+    private boolean isValid(MemberDto dto) {
         return hasText(dto.getUsername()) && hasText(dto.getPassword());
+    }
+
+    @Transactional
+    public Member login(MemberDto dto) {
+
+        // 입력 받은 값이 유효한지 체크
+        if (!isValid(dto)) {
+            throw new IllegalArgumentException("이름과 비밀번호는 필수 값입니다.");
+        }
+
+        Member member = memberRepository.findByUsername(dto.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("이름을 다시 확인해주세요."));
+
+        boolean isMatch = BCrypt.checkpw(dto.getPassword(), member.getPassword());
+        if (!isMatch) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해주세요.");
+        }
+
+        return member;
     }
 
 }
