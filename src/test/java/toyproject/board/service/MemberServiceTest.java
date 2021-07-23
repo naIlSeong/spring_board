@@ -12,10 +12,10 @@ import toyproject.board.domain.member.Member;
 import toyproject.board.domain.member.MemberRepository;
 import toyproject.board.dto.MemberDto;
 
+import javax.persistence.EntityManager;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -26,6 +26,8 @@ class MemberServiceTest {
     MemberService memberService;
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    EntityManager em;
 
     /**
      * 회원가입 테스트
@@ -267,6 +269,10 @@ class MemberServiceTest {
         assertThat(result.getPassword()).isNotEqualTo("12345678");
     }
 
+    /**
+     * 로그인 테스트
+     * memberService.login()
+     */
     @Test
     void 로그인() throws Exception {
         // give
@@ -290,6 +296,48 @@ class MemberServiceTest {
         Authentication authentication = context.getAuthentication();
         System.out.println("authentication = " + authentication);
 
+    }
+
+    /**
+     * 회원 탈퇴 테스트
+     * memberService.withdrawal()
+     */
+    @Test
+    void 탈퇴_성공() throws Exception {
+        // give
+        MemberDto dto = MemberDto.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+        Long memberId = memberService.join(dto);
+
+        em.flush();
+        em.clear();
+
+        // when
+        boolean result = memberService.withdrawal(memberId);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 탈퇴_예외() throws Exception {
+        // give
+        MemberDto dto = MemberDto.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+        memberService.join(dto);
+
+        em.flush();
+        em.clear();
+
+        // when
+        boolean result = memberService.withdrawal(12121L);
+
+        // then
+        assertThat(result).isFalse();
     }
 
 }

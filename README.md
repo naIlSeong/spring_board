@@ -24,7 +24,7 @@ created on 2021. 7. 18
 - **Member**
     - [x] join
     - [ ] withdrawal
-    - [ ] login
+    - [x] login
     - [ ] searchMember
     - [ ] getMember
 
