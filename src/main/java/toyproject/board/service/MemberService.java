@@ -50,7 +50,7 @@ public class MemberService {
 
         // 비밀번호 암호화
         dto.setPassword(
-                BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt()));
+                BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(10)));
 
         Member member = dto.toEntity();
         memberRepository.save(member);
@@ -62,7 +62,7 @@ public class MemberService {
         return hasText(dto.getUsername()) && hasText(dto.getPassword());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Member login(MemberDto dto) {
 
         // 입력 받은 값이 유효한지 체크

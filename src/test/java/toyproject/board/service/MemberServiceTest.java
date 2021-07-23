@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
+//@Rollback(value = false)
 class MemberServiceTest {
 
     @Autowired
