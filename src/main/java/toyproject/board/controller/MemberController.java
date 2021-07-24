@@ -13,8 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.*;
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
@@ -24,8 +23,25 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/member/new")
-    public Long join(@RequestBody MemberDto dto) {
-        return memberService.join(dto);
+    public BasicResponseDto join(@RequestBody MemberDto dto,
+                                 HttpServletResponse response) {
+
+        BasicResponseDto responseDto = BasicResponseDto.builder()
+                .httpStatus(OK)
+                .build();
+        response.setStatus(SC_CREATED);
+
+        try {
+
+            memberService.join(dto);
+
+        } catch (IllegalArgumentException e) {
+            responseDto.setHttpStatus(BAD_REQUEST);
+            responseDto.setMessage(e.getMessage());
+            response.setStatus(SC_BAD_REQUEST);
+        }
+
+        return responseDto;
     }
 
     @PostMapping("/member/login")
@@ -61,9 +77,8 @@ public class MemberController {
     }
 
     @PostMapping("/member/withdrawal")
-    public BasicResponseDto withdrawal(
-            HttpSession session,
-            HttpServletResponse response) {
+    public BasicResponseDto withdrawal(HttpSession session,
+                                       HttpServletResponse response) {
 
         BasicResponseDto responseDto = BasicResponseDto.builder()
                 .httpStatus(OK)
