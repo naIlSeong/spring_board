@@ -2,6 +2,7 @@ package toyproject.board.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,8 +11,12 @@ import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.MemberDto;
 import toyproject.board.service.MemberService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,11 +30,35 @@ public class MemberController {
     }
 
     @PostMapping("/member/login")
-    public Member login(@RequestBody MemberDto dto, HttpSession session) {
-        Member member = memberService.login(dto);
+    public BasicResponseDto login(@RequestBody MemberDto dto,
+                                  HttpSession session,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response) {
 
-        session.setAttribute("member", member);
-        return member;
+        BasicResponseDto responseDto = BasicResponseDto.builder()
+                .httpStatus(HttpStatus.OK)
+                .build();
+
+        try {
+            Member member = memberService.login(dto);
+            session.setAttribute("member", member);
+
+            String userAgent = request.getHeader("User-Agent");
+            session.setAttribute("userAgent", userAgent);
+
+            String ip = request.getHeader("X-FORWARDED-FOR");
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
+            session.setAttribute("ip", ip);
+
+        } catch (IllegalArgumentException e) {
+            responseDto.setHttpStatus(BAD_REQUEST);
+            responseDto.setMessage(e.getMessage());
+            response.setStatus(SC_BAD_REQUEST);
+        }
+
+        return responseDto;
     }
 
     @PostMapping("/member/withdrawal")
@@ -44,7 +73,7 @@ public class MemberController {
                 .build();
 
         if (!result) {
-            dto.setHttpStatus(HttpStatus.BAD_REQUEST);
+            dto.setHttpStatus(BAD_REQUEST);
             dto.setMessage("유저를 찾을 수 없습니다.");
             response.setStatus(400);
         }
