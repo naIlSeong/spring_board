@@ -16,8 +16,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         HttpSession session = request.getSession();
         Object member = session.getAttribute("member");
-        if (member != null) {
-            Member member1 = (Member) member;
+        if (member == null) {
+
+            return false;
         }
 
         String userAgent = request.getHeader("User-Agent");

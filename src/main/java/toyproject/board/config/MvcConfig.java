@@ -11,7 +11,7 @@ public class MvcConfig extends WebMvcConfigurationSupport {
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthInterceptor())
-                .addPathPatterns("/**");
+                .addPathPatterns("/member/withdrawal");
     }
 
 }
