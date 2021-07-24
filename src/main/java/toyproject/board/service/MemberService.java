@@ -83,17 +83,13 @@ public class MemberService {
 
     @Transactional
     public boolean withdrawal(Long memberId) {
-        try {
-            Member member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new NullPointerException("유저를 찾을 수 없습니다."));
 
-            memberRepository.delete(member);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NullPointerException("유저를 찾을 수 없습니다."));
 
-            return true;
+        memberRepository.delete(member);
 
-        } catch (NullPointerException e) {
-            return false;
-        }
+        return true;
     }
 
 }

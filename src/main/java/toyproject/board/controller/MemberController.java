@@ -1,8 +1,6 @@
 package toyproject.board.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,7 +35,7 @@ public class MemberController {
                                   HttpServletResponse response) {
 
         BasicResponseDto responseDto = BasicResponseDto.builder()
-                .httpStatus(HttpStatus.OK)
+                .httpStatus(OK)
                 .build();
 
         try {
@@ -62,23 +61,32 @@ public class MemberController {
     }
 
     @PostMapping("/member/withdrawal")
-    public BasicResponseDto withdrawal(HttpSession session, HttpServletResponse response) {
-        Object attribute = session.getAttribute("member");
-        Member member = (Member) attribute;
+    public BasicResponseDto withdrawal(
+            HttpSession session,
+            HttpServletResponse response) {
 
-        boolean result = memberService.withdrawal(member.getId());
-
-        BasicResponseDto dto = BasicResponseDto.builder()
-                .httpStatus(HttpStatus.OK)
+        BasicResponseDto responseDto = BasicResponseDto.builder()
+                .httpStatus(OK)
                 .build();
 
-        if (!result) {
-            dto.setHttpStatus(BAD_REQUEST);
-            dto.setMessage("유저를 찾을 수 없습니다.");
-            response.setStatus(400);
+        try {
+            Object attribute = session.getAttribute("member");
+            Member member = (Member) attribute;
+
+            memberService.withdrawal(member.getId());
+            session.invalidate();
+
+        } catch (NullPointerException e) {
+            responseDto.setHttpStatus(BAD_REQUEST);
+            responseDto.setMessage(e.getMessage());
+            response.setStatus(SC_BAD_REQUEST);
+        } catch (Exception e) {
+            responseDto.setHttpStatus(INTERNAL_SERVER_ERROR);
+            responseDto.setMessage("알 수 없는 문제가 발생했습니다.");
+            response.setStatus(SC_INTERNAL_SERVER_ERROR);
         }
 
-        return dto;
+        return responseDto;
     }
 
 }
