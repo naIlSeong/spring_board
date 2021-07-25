@@ -3,14 +3,13 @@ package toyproject.board.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.http.HttpStatus;
+import toyproject.board.domain.member.Member;
 
 @Getter
 @Setter
 @SuperBuilder
-public class BasicResponseDto {
+public class MemberResponseDto extends BasicResponseDto {
 
-    private HttpStatus httpStatus;
-    private String message;
+    private Member member;
 
 }

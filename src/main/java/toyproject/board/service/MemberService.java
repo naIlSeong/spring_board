@@ -92,4 +92,10 @@ public class MemberService {
         return true;
     }
 
+    @Transactional(readOnly = true)
+    public Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NullPointerException("유저를 찾을 수 없습니다."));
+    }
+
 }

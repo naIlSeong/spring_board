@@ -26,7 +26,7 @@ created on 2021. 7. 18
     - [x] withdrawal
     - [x] login
     - [ ] searchMember
-    - [ ] getMember
+    - [x] getMember
 
 
 - **Board**
@@ -50,7 +50,7 @@ created on 2021. 7. 18
     - [x] 회원탈퇴
     - [x] 로그인
     - [ ] 회원 조회
-    - [ ] 회원 검색
+    - [x] 회원 검색
 
 
 - **Board**

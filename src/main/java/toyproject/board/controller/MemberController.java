@@ -1,12 +1,11 @@
 package toyproject.board.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.MemberDto;
+import toyproject.board.dto.MemberResponseDto;
 import toyproject.board.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -102,6 +101,32 @@ public class MemberController {
         }
 
         return responseDto;
+    }
+
+    @GetMapping("/member/{memberId}")
+    public BasicResponseDto getMember(
+            @PathVariable(name = "memberId") Long memberId,
+            HttpServletResponse response) {
+
+        try {
+            Member member = memberService.getMember(memberId);
+
+            return MemberResponseDto.builder()
+                    .httpStatus(OK)
+                    .member(member)
+                    .build();
+
+        } catch (NullPointerException e) {
+            BasicResponseDto responseDto = BasicResponseDto.builder()
+                    .httpStatus(NOT_FOUND)
+                    .message(e.getMessage())
+                    .build();
+
+            response.setStatus(SC_NOT_FOUND);
+
+            return responseDto;
+        }
+
     }
 
 }
