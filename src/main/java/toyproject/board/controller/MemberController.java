@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.MemberDto;
+import toyproject.board.dto.MemberNoPw;
 import toyproject.board.dto.MemberResponseDto;
 import toyproject.board.service.MemberService;
 
@@ -109,7 +110,7 @@ public class MemberController {
             HttpServletResponse response) {
 
         try {
-            Member member = memberService.getMember(memberId);
+            MemberNoPw member = memberService.getMember(memberId);
 
             return MemberResponseDto.builder()
                     .httpStatus(OK)

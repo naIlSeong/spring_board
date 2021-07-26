@@ -5,8 +5,10 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.member.Member;
+import toyproject.board.domain.member.MemberQueryRepository;
 import toyproject.board.domain.member.MemberRepository;
 import toyproject.board.dto.MemberDto;
+import toyproject.board.dto.MemberNoPw;
 
 import java.util.Optional;
 
@@ -17,6 +19,7 @@ import static org.springframework.util.StringUtils.hasText;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
 
     @Transactional
     public Long join(MemberDto dto) throws IllegalArgumentException {
@@ -93,9 +96,14 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NullPointerException("유저를 찾을 수 없습니다."));
+    public MemberNoPw getMember(Long memberId) {
+
+        MemberNoPw member = memberQueryRepository.findById(memberId);
+        if (member == null) {
+            throw new NullPointerException("유저를 찾을 수 없습니다.");
+        }
+
+        return member;
     }
 
 }
