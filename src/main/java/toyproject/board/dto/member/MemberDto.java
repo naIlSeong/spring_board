@@ -1,4 +1,4 @@
-package toyproject.board.dto;
+package toyproject.board.dto.member;
 
 import lombok.Builder;
 import lombok.Getter;

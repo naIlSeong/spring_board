@@ -1,4 +1,4 @@
-package toyproject.board.dto;
+package toyproject.board.dto.member;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;

@@ -1,6 +1,5 @@
 package toyproject.board.service;
 
-import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.member.Member;
 import toyproject.board.domain.member.MemberRepository;
-import toyproject.board.dto.MemberDto;
-import toyproject.board.dto.MemberNoPw;
+import toyproject.board.dto.member.MemberDto;
+import toyproject.board.dto.member.MemberNoPw;
 
 import javax.persistence.EntityManager;
 import java.util.Optional;

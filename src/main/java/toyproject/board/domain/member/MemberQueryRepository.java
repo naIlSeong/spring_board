@@ -1,12 +1,17 @@
 package toyproject.board.domain.member;
 
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import toyproject.board.dto.MemberNoPw;
-import toyproject.board.dto.QMemberNoPw;
+import toyproject.board.dto.member.MemberNoPw;
+import toyproject.board.dto.member.MemberSearchCondition;
+import toyproject.board.dto.member.QMemberNoPw;
 
-import static toyproject.board.domain.member.QMember.*;
+import java.util.List;
+
+import static toyproject.board.domain.member.QMember.member;
+
 
 @RequiredArgsConstructor
 @Repository
@@ -28,6 +33,26 @@ public class MemberQueryRepository {
                 .from(member)
                 .where(member.id.eq(memberId))
                 .fetchOne();
+    }
+
+    public List<MemberNoPw> searchMember(MemberSearchCondition condition) {
+        return queryFactory
+                .select(new QMemberNoPw(
+                        member.id,
+                        member.username,
+                        member.createdDate,
+                        member.lastModifiedDate
+                ))
+                .from(member)
+                .where(usernameLike(condition))
+                .orderBy(member.id.asc())
+                .fetch();
+    }
+
+    private Predicate usernameLike(MemberSearchCondition condition) {
+        return condition.getUsername() != null
+                ? member.username.like("%" + condition.getUsername() + "%")
+                : null;
     }
 
 }

@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
-import toyproject.board.dto.MemberDto;
-import toyproject.board.dto.MemberNoPw;
-import toyproject.board.dto.MemberResponseDto;
+import toyproject.board.dto.member.MemberDto;
+import toyproject.board.dto.member.MemberNoPw;
+import toyproject.board.dto.member.MemberResponseDto;
+import toyproject.board.dto.member.MemberSearchCondition;
 import toyproject.board.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 import static javax.servlet.http.HttpServletResponse.*;
 import static org.springframework.http.HttpStatus.*;
@@ -128,6 +130,11 @@ public class MemberController {
             return responseDto;
         }
 
+    }
+
+    @GetMapping("/member/search")
+    public List<MemberNoPw> search(MemberSearchCondition condition) {
+        return memberService.searchMember(condition);
     }
 
 }
