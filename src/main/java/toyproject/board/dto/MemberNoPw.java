@@ -2,12 +2,10 @@ package toyproject.board.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 public class MemberNoPw {
 
     private Long memberId;

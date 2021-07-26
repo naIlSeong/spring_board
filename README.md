@@ -25,8 +25,8 @@ created on 2021. 7. 18
     - [x] join
     - [x] withdrawal
     - [x] login
-    - [ ] searchMember
     - [x] getMember
+    - [ ] searchMember
 
 
 - **Board**
@@ -49,8 +49,8 @@ created on 2021. 7. 18
     - [x] 회원가입
     - [x] 회원탈퇴
     - [x] 로그인
-    - [ ] 회원 조회
-    - [x] 회원 검색
+    - [x] 회원 조회
+    - [ ] 회원 검색
 
 
 - **Board**

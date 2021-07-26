@@ -1,5 +1,6 @@
 package toyproject.board.service;
 
+import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.member.Member;
 import toyproject.board.domain.member.MemberRepository;
 import toyproject.board.dto.MemberDto;
+import toyproject.board.dto.MemberNoPw;
 
 import javax.persistence.EntityManager;
 import java.util.Optional;
@@ -402,4 +404,68 @@ class MemberServiceTest {
                 .hasMessage("유저를 찾을 수 없습니다.");
     }
 
+    /**
+     * 회원 상세 조회 테스트
+     * memberService.getMember()
+     */
+    @Tag("getMember")
+    @Test
+    void 상세_조회_성공() throws Exception {
+        // give
+        MemberDto dto = MemberDto.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+
+        Long memberId = memberService.join(dto);
+
+        // when
+        MemberNoPw result = memberService.getMember(memberId);
+
+        // then
+        assertThat(result.getUsername()).isEqualTo("test");
+        assertThat(result.getMemberId()).isEqualTo(memberId);
+
+    }
+
+    @Tag("getMember")
+    @Test
+    void 상세_조회_성공2() throws Exception {
+        // give
+        MemberDto dto1 = MemberDto.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+        MemberDto dto2 = MemberDto.builder()
+                .username("test2")
+                .password("12341234")
+                .build();
+
+        Long id1 = memberService.join(dto1);
+        Long id2 = memberService.join(dto2);
+
+        // when
+        MemberNoPw result1 = memberService.getMember(id1);
+        MemberNoPw result2 = memberService.getMember(id2);
+
+        // then
+        assertThat(result1.getUsername()).isEqualTo("test");
+        assertThat(result2.getUsername()).isEqualTo("test2");
+
+
+    }
+
+    @Tag("getMember")
+    @Test
+    void 상세_조회_예외() throws Exception {
+        // give
+
+        // when
+        // memberService.getMember(12L);
+
+        // then
+        assertThatThrownBy(() -> memberService.getMember(12L))
+                .hasMessage("유저를 찾을 수 없습니다.");
+
+    }
 }
