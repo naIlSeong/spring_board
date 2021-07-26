@@ -1,5 +1,6 @@
 package toyproject.board.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
@@ -10,7 +11,11 @@ public class MemberNoPw {
 
     private Long memberId;
     private String username;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastModifiedDate;
 
     @QueryProjection
