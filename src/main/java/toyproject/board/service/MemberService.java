@@ -2,6 +2,8 @@ package toyproject.board.service;
 
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.member.Member;
@@ -100,7 +102,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberNoPw getMember(Long memberId) {
 
-        MemberNoPw member = memberQueryRepository.findById(memberId);
+        MemberNoPw member = memberQueryRepository.findNoPasswordById(memberId);
         if (member == null) {
             throw new NullPointerException("유저를 찾을 수 없습니다.");
         }
@@ -111,6 +113,11 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<MemberNoPw> searchMember(MemberSearchCondition condition) {
         return memberQueryRepository.searchMember(condition);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MemberNoPw> searchMemberPage(MemberSearchCondition condition, Pageable pageable) {
+        return memberQueryRepository.searchPage(condition, pageable);
     }
 
 }

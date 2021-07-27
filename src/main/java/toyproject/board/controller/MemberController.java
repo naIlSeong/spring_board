@@ -1,6 +1,8 @@
 package toyproject.board.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
@@ -135,6 +137,11 @@ public class MemberController {
     @GetMapping("/member/search")
     public List<MemberNoPw> search(MemberSearchCondition condition) {
         return memberService.searchMember(condition);
+    }
+
+    @GetMapping("/member/search-page")
+    public Page<MemberNoPw> searchV2(MemberSearchCondition condition, Pageable pageable) {
+        return memberService.searchMemberPage(condition, pageable);
     }
 
 }
