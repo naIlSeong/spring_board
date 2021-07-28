@@ -26,6 +26,10 @@ class BoardServiceTest {
     @Autowired
     EntityManager em;
 
+    /**
+     * 게시물 작성 (생성) 테스트
+     * boardService.createBoard();
+     */
     @Tag("createBoard")
     @Test
     void 게시물_작성_성공_로그인O() throws Exception {
@@ -84,5 +88,141 @@ class BoardServiceTest {
         assertThat(result.getNickname()).isEqualTo(dto.getNickname());
         assertThat(BCrypt.checkpw("1234", result.getPassword())).isTrue();
     }
-    
+
+    @Tag("createBoard")
+    @Test
+    void 게시물_작성_실퍠_제목() throws Exception {
+        // give
+        BoardDto dto = BoardDto.builder()
+                .content("test content.")
+                .nickname("test")
+                .password("1234")
+                .build();
+
+        // when
+        // boardService.createBoard(dto);
+
+        // then
+        assertThatThrownBy(() -> boardService.createBoard(dto))
+                .hasMessage("제목과 내용은 필수입니다.");
+
+    }
+
+    @Tag("createBoard")
+    @Test
+    void 게시물_작성_실퍠_내용() throws Exception {
+        // give
+        BoardDto dto = BoardDto.builder()
+                .title("test title.")
+                .nickname("test")
+                .password("1234")
+                .build();
+
+        // when
+        // boardService.createBoard(dto);
+
+        // then
+        assertThatThrownBy(() -> boardService.createBoard(dto))
+                .hasMessage("제목과 내용은 필수입니다.");
+
+    }
+
+    @Tag("createBoard")
+    @Test
+    void 게시물_작성_실퍠_닉네임() throws Exception {
+        // give
+        BoardDto dto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .password("1234")
+                .build();
+
+        // when
+        // boardService.createBoard(dto);
+
+        // then
+        assertThatThrownBy(() -> boardService.createBoard(dto))
+                .hasMessage("닉네임과 비밀번호는 필수입니다.");
+
+    }
+
+    @Tag("createBoard")
+    @Test
+    void 게시물_작성_실퍠_비밀번호() throws Exception {
+        // give
+        BoardDto dto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .build();
+
+        // when
+        // boardService.createBoard(dto);
+
+        // then
+        assertThatThrownBy(() -> boardService.createBoard(dto))
+                .hasMessage("닉네임과 비밀번호는 필수입니다.");
+
+    }
+
+    @Tag("createBoard")
+    @Test
+    void 게시물_작성_실퍠_닉네임길이1() throws Exception {
+        // give
+        BoardDto dto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("t")
+                .password("1234")
+                .build();
+
+        // when
+        // boardService.createBoard(dto);
+
+        // then
+        assertThatThrownBy(() -> boardService.createBoard(dto))
+                .hasMessage("닉네임의 길이는 2자 이상, 24자 이하입니다.");
+
+    }
+
+    @Tag("createBoard")
+    @Test
+    void 게시물_작성_실퍠_닉네임길이2() throws Exception {
+        // give
+        BoardDto dto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test1234test1234test123499")
+                .password("1234")
+                .build();
+
+        // when
+        // boardService.createBoard(dto);
+
+        // then
+        assertThatThrownBy(() -> boardService.createBoard(dto))
+                .hasMessage("닉네임의 길이는 2자 이상, 24자 이하입니다.");
+
+    }
+
+    @Tag("createBoard")
+    @Test
+    void 게시물_작성_실퍠_비밀번호길이() throws Exception {
+        // give
+        BoardDto dto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .password("123")
+                .build();
+
+        // when
+        // boardService.createBoard(dto);
+
+        // then
+        assertThatThrownBy(() -> boardService.createBoard(dto))
+                .hasMessage("비밀번호의 길이는 4자 이상입니다.");
+
+    }
+
 }
