@@ -26,12 +26,11 @@ created on 2021. 7. 18
     - [x] withdrawal
     - [x] login
     - [x] getMember
-    - [ ] searchMember
-    - [ ] getMemberList
+    - [ ] searchMember (세모)
 
 
 - **Board**
-    - [ ] createBoard
+    - [ ] createBoard (세모)
     - [ ] deleteBoard
     - [ ] updateBoard
     - [ ] getBoard
@@ -51,8 +50,7 @@ created on 2021. 7. 18
     - [x] 회원탈퇴
     - [x] 로그인
     - [x] 회원 상세 조회
-    - [ ] 회원 검색
-    - [ ] 회원 목록 조회
+    - [ ] 회원 검색 (게시물과 함께) (세모)
 
 
 - **Board**

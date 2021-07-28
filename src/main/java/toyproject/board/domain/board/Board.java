@@ -31,10 +31,18 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    /**
+     * 비로그인 일 때
+     */
+    private String nickname;
+    private String password;
+
     @Builder
-    public Board(String title, String content, Member member) {
+    public Board(String title, String content, Member member, String nickname, String password) {
         this.title = title;
         this.content = content;
         this.member = member;
+        this.nickname = nickname;
+        this.password = password;
     }
 }
