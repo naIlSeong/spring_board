@@ -41,6 +41,11 @@ public class BoardService {
             dto.setPassword(
                     BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(10))
             );
+        } else {
+            // 로그인 일 때, 닉네임 패스워드가 넘와 올 경우
+            // 닉네임은 회원의 username
+            dto.setNickname(dto.getMember().getUsername());
+            dto.setPassword(null);
         }
 
         Board board = dto.toEntity();

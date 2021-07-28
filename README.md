@@ -30,7 +30,7 @@ created on 2021. 7. 18
 
 
 - **Board**
-    - [ ] createBoard (세모)
+    - [x] createBoard
     - [ ] deleteBoard
     - [ ] updateBoard
     - [ ] getBoard
@@ -54,7 +54,7 @@ created on 2021. 7. 18
 
 
 - **Board**
-    - [ ] 글 쓰기
+    - [x] 글 쓰기
     - [ ] 글 삭제
     - [ ] 글 수정
     - [ ] 글 조회
