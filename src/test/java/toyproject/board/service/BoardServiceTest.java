@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
+//@Rollback(value = false)
 class BoardServiceTest {
 
     @Autowired
@@ -288,6 +288,95 @@ class BoardServiceTest {
 
         Board board = em.find(Board.class, boardId);
         assertThat(board).isNull();
+    }
+
+    @Tag("deleteBoard")
+    @Test
+    void 게시물_삭제_실패_게시물_존재X() throws Exception {
+        // give
+
+
+        // when
+        DeleteBoardDto dto = DeleteBoardDto.builder()
+                .id(123L)
+                .password("1234")
+                .build();
+        // boardService.deleteBoard(dto);
+
+        // then
+        assertThatThrownBy(() -> boardService.deleteBoard(dto))
+                .hasMessage("게시물을 찾을 수 없습니다.");
+    }
+
+    @Tag("deleteBoard")
+    @Test
+    void 게시물_삭제_실패_다른사람의_게시물() throws Exception {
+        // give
+        Member member = Member.builder()
+                .username("test")
+                .password("1234")
+                .build();
+        Member otherMember = Member.builder()
+                .username("other")
+                .password("1234")
+                .build();
+
+        em.persist(member);
+        em.persist(otherMember);
+
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .member(member)
+                .build();
+        Long boardId = boardService.createBoard(boardDto);
+
+        em.flush();
+        em.clear();
+
+        // when
+        DeleteBoardDto dto = DeleteBoardDto.builder()
+                .id(boardId)
+                .member(otherMember)
+                .build();
+        // boardService.deleteBoard(dto);
+
+        // then
+        Board board = em.find(Board.class, boardId);
+
+        assertThatThrownBy(() -> boardService.deleteBoard(dto))
+                .hasMessage("게시물을 삭제할 수 없습니다.");
+        assertThat(board.getMember().getId()).isNotEqualTo(boardId);
+    }
+
+    @Tag("deleteBoard")
+    @Test
+    void 게시물_삭제_실패_비밀번호_틀림() throws Exception {
+        // give
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .password("1234")
+                .build();
+        Long boardId = boardService.createBoard(boardDto);
+
+        em.flush();
+        em.clear();
+
+        // when
+        DeleteBoardDto dto = DeleteBoardDto.builder()
+                .id(boardId)
+                .password("6789")
+                .build();
+        // boardService.deleteBoard(dto);
+
+        // then
+        Board board = em.find(Board.class, boardId);
+
+        assertThatThrownBy(() -> boardService.deleteBoard(dto))
+                .hasMessage("비밀번호를 다시 확인해 주세요.");
+        assertThat(BCrypt.checkpw("6789", board.getPassword())).isFalse();
     }
 
 }
