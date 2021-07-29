@@ -12,6 +12,7 @@ import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.BoardDto;
 import toyproject.board.dto.board.DeleteBoardDto;
+import toyproject.board.dto.member.MemberDto;
 
 import javax.persistence.EntityManager;
 
@@ -377,6 +378,41 @@ class BoardServiceTest {
         assertThatThrownBy(() -> boardService.deleteBoard(dto))
                 .hasMessage("비밀번호를 다시 확인해 주세요.");
         assertThat(BCrypt.checkpw("6789", board.getPassword())).isFalse();
+    }
+
+    @Tag("deleteBoard")
+    @Test
+    void 게시물_삭제_실패_로그인필요() throws Exception {
+        // give
+        Member member = MemberDto.builder()
+                .username("test")
+                .password("12341234")
+                .build()
+                .toEntity();
+        em.persist(member);
+
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .member(member)
+                .build();
+        Long boardId = boardService.createBoard(boardDto);
+
+        em.flush();
+        em.clear();
+
+        // when
+        DeleteBoardDto dto = DeleteBoardDto.builder()
+                .id(boardId)
+                .build();
+        // boardService.deleteBoard(dto);
+
+        // then
+        Board board = em.find(Board.class, boardId);
+
+        assertThatThrownBy(() -> boardService.deleteBoard(dto))
+                .hasMessage("게시물을 삭제할 수 없습니다.");
+        assertThat(board.getMember().getId()).isEqualTo(member.getId());
     }
 
 }
