@@ -31,7 +31,7 @@ created on 2021. 7. 18
 
 - **Board**
     - [x] createBoard
-    - [ ] deleteBoard
+    - [x] deleteBoard
     - [ ] updateBoard
     - [ ] getBoard
     - [ ] searchBoard

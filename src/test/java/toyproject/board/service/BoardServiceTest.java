@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.BoardDto;
+import toyproject.board.dto.board.DeleteBoardDto;
 
 import javax.persistence.EntityManager;
 
@@ -223,6 +224,70 @@ class BoardServiceTest {
         assertThatThrownBy(() -> boardService.createBoard(dto))
                 .hasMessage("비밀번호의 길이는 4자 이상입니다.");
 
+    }
+
+    /**
+     * 게시물 삭제 테스트
+     * boardService.deleteBoard();
+     */
+    @Tag("deleteBoard")
+    @Test
+    void 게시물_삭제_로그인() throws Exception {
+        // give
+        Member member = Member.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+        em.persist(member);
+
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .member(member)
+                .build();
+        Long boardId = boardService.createBoard(boardDto);
+
+        em.flush();
+        em.clear();
+
+        // when
+        DeleteBoardDto dto = DeleteBoardDto.builder()
+                .id(boardId)
+                .member(member)
+                .build();
+        boolean result = boardService.deleteBoard(dto);
+
+        // then
+        assertThat(result).isTrue();
+
+        Board board = em.find(Board.class, boardId);
+        assertThat(board).isNull();
+    }
+
+    @Tag("deleteBoard")
+    @Test
+    void 게시물_삭제_비로그인() throws Exception {
+        // give
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .password("1234")
+                .build();
+        Long boardId = boardService.createBoard(boardDto);
+
+        // when
+        DeleteBoardDto dto = DeleteBoardDto.builder()
+                .id(boardId)
+                .password("1234")
+                .build();
+        boolean result = boardService.deleteBoard(dto);
+
+        // then
+        assertThat(result).isTrue();
+
+        Board board = em.find(Board.class, boardId);
+        assertThat(board).isNull();
     }
 
 }

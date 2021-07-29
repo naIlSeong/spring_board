@@ -3,10 +3,11 @@ package toyproject.board.service;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardRepository;
-import toyproject.board.domain.member.MemberRepository;
 import toyproject.board.dto.board.BoardDto;
+import toyproject.board.dto.board.DeleteBoardDto;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -15,8 +16,8 @@ import static org.springframework.util.StringUtils.hasText;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final MemberRepository memberRepository;
 
+    @Transactional
     public Long createBoard(BoardDto dto) {
 
         if (!isValid(dto)) {
@@ -60,6 +61,28 @@ public class BoardService {
 
     private boolean isValid(BoardDto dto) {
         return hasText(dto.getTitle()) && hasText(dto.getContent());
+    }
+
+    @Transactional
+    public boolean deleteBoard(DeleteBoardDto dto) {
+
+        Board board = boardRepository.findById(dto.getId())
+                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+
+        if (dto.getMember() != null) { // 로그인 했을 때
+            if (board.getMember().getId() != dto.getMember().getId()) {
+                throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
+            }
+        } else { // 비로그인 일 때
+            boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
+            if (!isMatch) {
+                throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
+            }
+        }
+
+        boardRepository.delete(board);
+
+        return true;
     }
 
 }
