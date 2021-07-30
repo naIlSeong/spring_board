@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.BoardDto;
-import toyproject.board.dto.board.CreateBoardResponseDto;
+import toyproject.board.dto.board.BoardResponseDto;
 import toyproject.board.dto.board.DeleteBoardDto;
+import toyproject.board.dto.board.UpdateBoardDto;
 import toyproject.board.service.BoardService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,12 +25,12 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/board/new")
-    public CreateBoardResponseDto createBoard(
+    public BoardResponseDto createBoard(
             @RequestBody BoardDto dto,
             HttpSession session,
             HttpServletResponse response) {
 
-        CreateBoardResponseDto responseDto = CreateBoardResponseDto.builder()
+        BoardResponseDto responseDto = BoardResponseDto.builder()
                 .httpStatus(CREATED)
                 .build();
 
@@ -80,4 +81,31 @@ public class BoardController {
 
         return responseDto;
     }
+
+    @PostMapping("/board/update")
+    public BoardResponseDto updateBoard(@RequestBody UpdateBoardDto dto,
+                                        HttpSession session,
+                                        HttpServletResponse response) {
+
+        BoardResponseDto responseDto = BoardResponseDto.builder()
+                .httpStatus(OK)
+                .build();
+        try {
+            Object attribute = session.getAttribute("member");
+            if (attribute != null) {
+                Member member = (Member) attribute;
+                dto.setMember(member);
+            }
+
+            boardService.updateBoard(dto);
+
+        } catch (Exception e) {
+            responseDto.setHttpStatus(BAD_REQUEST);
+            responseDto.setMessage(e.getMessage());
+            response.setStatus(SC_BAD_REQUEST);
+        }
+
+        return responseDto;
+    }
+
 }

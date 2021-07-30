@@ -488,5 +488,5 @@ class BoardServiceTest {
         assertThat(board.getContent()).isEqualTo("updated content.");
         assertThat(board.getMember()).isNull();
     }
-
+    
 }

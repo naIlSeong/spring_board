@@ -8,8 +8,8 @@ import toyproject.board.dto.BasicResponseDto;
 @Getter
 @Setter
 @SuperBuilder
-public class CreateBoardResponseDto extends BasicResponseDto {
+public class BoardResponseDto extends BasicResponseDto {
 
-    private Long BoardId;
+    private Long boardId;
 
 }

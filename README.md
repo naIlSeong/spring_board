@@ -32,7 +32,7 @@ created on 2021. 7. 18
 - **Board**
     - [x] createBoard
     - [x] deleteBoard
-    - [ ] updateBoard
+    - [x] updateBoard
     - [ ] getBoard
     - [ ] searchBoard
     - [ ] getBoardList
@@ -56,7 +56,7 @@ created on 2021. 7. 18
 - **Board**
     - [x] 글 쓰기
     - [x] 글 삭제
-    - [ ] 글 수정
+    - [x] 글 수정
     - [ ] 글 조회
     - [ ] 글 검색
     - [ ] 글 목록
