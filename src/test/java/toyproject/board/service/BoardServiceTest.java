@@ -1,17 +1,16 @@
 package toyproject.board.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.BoardDto;
 import toyproject.board.dto.board.DeleteBoardDto;
+import toyproject.board.dto.board.UpdateBoardDto;
 import toyproject.board.dto.member.MemberDto;
 
 import javax.persistence.EntityManager;
@@ -413,6 +412,81 @@ class BoardServiceTest {
         assertThatThrownBy(() -> boardService.deleteBoard(dto))
                 .hasMessage("게시물을 삭제할 수 없습니다.");
         assertThat(board.getMember().getId()).isEqualTo(member.getId());
+    }
+
+    /**
+     * 게시물 수정 테스트
+     * boardService.updateBoard();
+     */
+    @Tag("updateBoard")
+    @Test
+    void 게시물_수정_로그인() throws Exception {
+        // give
+        Member member = Member.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+        em.persist(member);
+
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .member(member)
+                .build();
+        Long boardId = boardService.createBoard(boardDto);
+
+        // when
+        UpdateBoardDto dto = UpdateBoardDto.builder()
+                .id(boardId)
+                .member(member)
+                .title("updated title.")
+                .content("updated content.")
+                .build();
+        Long result = boardService.updateBoard(dto);
+
+        em.flush();
+        em.clear();
+
+        // then
+        Board board = em.find(Board.class, boardId);
+
+        assertThat(result).isEqualTo(boardId);
+        assertThat(board.getTitle()).isEqualTo("updated title.");
+        assertThat(board.getContent()).isEqualTo("updated content.");
+        assertThat(board.getPassword()).isNull();
+    }
+
+    @Tag("updateBoard")
+    @Test
+    void 게시물_수정_비로그인() throws Exception {
+        // give
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .password("1234")
+                .build();
+        Long boardId = boardService.createBoard(boardDto);
+
+        // when
+        UpdateBoardDto dto = UpdateBoardDto.builder()
+                .id(boardId)
+                .password("1234")
+                .title("updated title.")
+                .content("updated content.")
+                .build();
+        Long result = boardService.updateBoard(dto);
+
+        em.flush();
+        em.clear();
+
+        // then
+        Board board = em.find(Board.class, boardId);
+
+        assertThat(result).isEqualTo(boardId);
+        assertThat(board.getTitle()).isEqualTo("updated title.");
+        assertThat(board.getContent()).isEqualTo("updated content.");
+        assertThat(board.getMember()).isNull();
     }
 
 }

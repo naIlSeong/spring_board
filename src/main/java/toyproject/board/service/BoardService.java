@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardRepository;
+import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.BoardDto;
 import toyproject.board.dto.board.DeleteBoardDto;
+import toyproject.board.dto.board.UpdateBoardDto;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -68,21 +70,44 @@ public class BoardService {
 
         Board board = boardRepository.findById(dto.getId())
                 .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+        isDeletable(board, dto.getMember(), dto.getPassword());
+
+        boardRepository.delete(board);
+
+        return true;
+    }
+
+    @Transactional
+    public Long updateBoard(UpdateBoardDto dto) {
+
+        Board board = boardRepository.findById(dto.getId())
+                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+        isDeletable(board, dto.getMember(), dto.getPassword());
+
+        if (hasText(dto.getTitle())) {
+            board.updateTitle(dto.getTitle());
+        }
+        if (hasText(dto.getContent())) {
+            board.updateContent(dto.getContent());
+        }
+
+        return board.getId();
+    }
+
+    private void isDeletable(Board board, Member member, String password) {
 
         if (board.getMember() != null) { // 로그인 필요
-            if (dto.getMember() == null || board.getMember().getId() != dto.getMember().getId()) {
+            if (member == null || board.getMember().getId() != member.getId()) {
                 throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
             }
+
         } else { // 비로그인
-            boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
+            boolean isMatch = BCrypt.checkpw(password, board.getPassword());
             if (!isMatch) {
                 throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
             }
         }
 
-        boardRepository.delete(board);
-
-        return true;
     }
 
 }

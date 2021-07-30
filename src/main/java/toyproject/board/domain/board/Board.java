@@ -45,4 +45,14 @@ public class Board extends BaseEntity {
         this.nickname = nickname;
         this.password = password;
     }
+
+    //=====수정 메서드=====//
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
 }
