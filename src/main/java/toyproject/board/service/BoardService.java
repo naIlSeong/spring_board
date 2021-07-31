@@ -2,6 +2,8 @@ package toyproject.board.service;
 
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
@@ -122,6 +124,11 @@ public class BoardService {
         }
 
         return board;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardNoPw> getBoardList(Pageable pageable) {
+        return boardQueryRepository.findAllNoPassword(pageable);
     }
 
 }

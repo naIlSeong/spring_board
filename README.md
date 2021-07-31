@@ -35,7 +35,7 @@ created on 2021. 7. 18
     - [x] updateBoard
     - [x] getBoard
     - [ ] searchBoard
-    - [ ] getBoardList
+    - [x] getBoardList
 
 
 - **Comment**
@@ -59,7 +59,7 @@ created on 2021. 7. 18
     - [x] 글 수정
     - [x] 글 조회
     - [ ] 글 검색
-    - [ ] 글 목록
+    - [x] 글 목록
 
 
 - **Comment**

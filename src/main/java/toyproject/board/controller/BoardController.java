@@ -1,6 +1,8 @@
 package toyproject.board.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
@@ -125,4 +127,8 @@ public class BoardController {
         return responseDto;
     }
 
+    @GetMapping("/board/list")
+    public Page<BoardNoPw> getList(Pageable pageable) {
+        return boardService.getBoardList(pageable);
+    }
 }
