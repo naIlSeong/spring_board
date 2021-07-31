@@ -3,6 +3,7 @@ package toyproject.board.service;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,7 +129,15 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Page<BoardNoPw> getBoardList(Pageable pageable) {
-        return boardQueryRepository.findAllNoPassword(pageable);
+
+        Page<BoardNoPw> result = boardQueryRepository.findAllNoPassword(pageable);
+
+        if (pageable.getPageNumber() >= result.getTotalPages()) {
+            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, result.getSize());
+            return boardQueryRepository.findAllNoPassword(newPageable);
+        }
+
+        return result;
     }
 
 }

@@ -50,6 +50,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 .from(board)
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
+                .orderBy(board.id.asc())
                 .fetchResults();
 
         List<BoardNoPw> content = results.getResults();

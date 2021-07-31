@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
@@ -525,6 +529,62 @@ class BoardServiceTest {
         // then
         assertThatThrownBy(() -> boardService.getBoard(1212L))
                 .hasMessage("게시물을 찾을 수 없습니다.");
+    }
+
+    @Tag("getBoardList")
+    @Test
+    void 게시물_조회() throws Exception {
+        // give
+        for (int i = 0; i < 100; i++) {
+            BoardDto boardDto = BoardDto.builder()
+                    .title("title" + i)
+                    .content("content" + i)
+                    .nickname("nickname" + i)
+                    .password("1234")
+                    .build();
+
+            Board board = boardDto.toEntity();
+            em.persist(board);
+        }
+
+        // when
+        Pageable pageable = PageRequest.of(0, 20);
+        Page<BoardNoPw> result = boardService.getBoardList(pageable);
+
+        // then
+        assertThat(result.getTotalElements()).isEqualTo(100);
+        assertThat(result.getTotalPages()).isEqualTo(5);
+        assertThat(result.isFirst()).isTrue();
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("title0");
+    }
+    
+    @Tag("getBoardList")
+    @Test
+    void 게시물_조회_마지막_페이지_반환() throws Exception {
+        // give
+        for (int i = 0; i < 100; i++) {
+            BoardDto boardDto = BoardDto.builder()
+                    .title("title" + i)
+                    .content("content" + i)
+                    .nickname("nickname" + i)
+                    .password("1234")
+                    .build();
+
+            Board board = boardDto.toEntity();
+            em.persist(board);
+        }
+
+        // when
+        Pageable pageable = PageRequest.of(10, 20);
+        Page<BoardNoPw> result = boardService.getBoardList(pageable);
+
+        // then
+        assertThat(result.getTotalElements()).isEqualTo(100);
+        assertThat(result.getTotalPages()).isEqualTo(5);
+        assertThat(result.getNumber()).isEqualTo(4);
+        assertThat(result.isLast()).isTrue();
+        assertThat(result.getContent().size()).isEqualTo(20);
+        assertThat(result.getContent().get(19).getTitle()).isEqualTo("title99");
     }
 
 }
