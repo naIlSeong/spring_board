@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.BoardDto;
+import toyproject.board.dto.board.BoardNoPw;
 import toyproject.board.dto.board.DeleteBoardDto;
 import toyproject.board.dto.board.UpdateBoardDto;
 import toyproject.board.dto.member.MemberDto;
@@ -488,5 +489,42 @@ class BoardServiceTest {
         assertThat(board.getContent()).isEqualTo("updated content.");
         assertThat(board.getMember()).isNull();
     }
-    
+
+    @Tag("getBoard")
+    @Test
+    void 게시물_조회_성공() throws Exception {
+        // give
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .password("1234")
+                .build();
+        Long boardId = boardService.createBoard(boardDto);
+
+        em.flush();
+        em.clear();
+
+        // when
+        BoardNoPw result = boardService.getBoard(boardId);
+
+        // then
+        assertThat(result.getTitle()).isEqualTo("test title.");
+        assertThat(result.getContent()).isEqualTo("test content.");
+        assertThat(result.getNickname()).isEqualTo("test");
+    }
+
+    @Tag("getBoard")
+    @Test
+    void 게시물_조회_실패() throws Exception {
+        // give
+
+        // when
+        // boardService.getBoard(1212L);
+
+        // then
+        assertThatThrownBy(() -> boardService.getBoard(1212L))
+                .hasMessage("게시물을 찾을 수 없습니다.");
+    }
+
 }

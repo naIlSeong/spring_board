@@ -5,9 +5,11 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
+import toyproject.board.domain.board.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.BoardDto;
+import toyproject.board.dto.board.BoardNoPw;
 import toyproject.board.dto.board.DeleteBoardDto;
 import toyproject.board.dto.board.UpdateBoardDto;
 
@@ -18,6 +20,7 @@ import static org.springframework.util.StringUtils.hasText;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardQueryRepository boardQueryRepository;
 
     @Transactional
     public Long createBoard(BoardDto dto) {
@@ -108,6 +111,17 @@ public class BoardService {
             }
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public BoardNoPw getBoard(Long boardId) {
+
+        BoardNoPw board = boardQueryRepository.findNoPasswordById(boardId);
+        if (board == null) {
+            throw new NullPointerException("게시물을 찾을 수 없습니다.");
+        }
+
+        return board;
     }
 
 }

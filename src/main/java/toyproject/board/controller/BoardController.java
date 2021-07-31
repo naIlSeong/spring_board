@@ -1,15 +1,11 @@
 package toyproject.board.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
-import toyproject.board.dto.board.BoardDto;
-import toyproject.board.dto.board.BoardResponseDto;
-import toyproject.board.dto.board.DeleteBoardDto;
-import toyproject.board.dto.board.UpdateBoardDto;
+import toyproject.board.dto.board.*;
 import toyproject.board.service.BoardService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -103,6 +99,27 @@ public class BoardController {
             responseDto.setHttpStatus(BAD_REQUEST);
             responseDto.setMessage(e.getMessage());
             response.setStatus(SC_BAD_REQUEST);
+        }
+
+        return responseDto;
+    }
+
+    @GetMapping("/board/{id}")
+    public BoardQueryResponseDto getBoard(@PathVariable("id") Long id,
+                                          HttpServletResponse response) {
+
+        BoardQueryResponseDto responseDto = BoardQueryResponseDto.builder()
+                .httpStatus(OK)
+                .build();
+
+        try {
+            BoardNoPw board = boardService.getBoard(id);
+            responseDto.setBoardNoPw(board);
+
+        } catch (NullPointerException e) {
+            responseDto.setHttpStatus(NOT_FOUND);
+            responseDto.setMessage(e.getMessage());
+            response.setStatus(SC_NOT_FOUND);
         }
 
         return responseDto;
