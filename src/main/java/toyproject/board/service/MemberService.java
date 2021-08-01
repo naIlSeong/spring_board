@@ -109,16 +109,6 @@ public class MemberService {
         return member;
     }
 
-/*
-    @Transactional(readOnly = true)
-    public List<MemberNoPw> searchMember(MemberSearchCondition condition) {
-        return memberQueryRepository.searchMember(condition);
-    }
-*/
-
-    /**
-     * TODO : 게시물 조인해서 쿼리날리기
-     */
     @Transactional(readOnly = true)
     public Page<MemberNoPw> searchMemberPage(MemberSearchCondition condition, Pageable pageable) {
         return memberQueryRepository.searchPage(condition, pageable);

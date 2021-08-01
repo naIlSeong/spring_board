@@ -128,13 +128,17 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardNoPw> getBoardList(Pageable pageable) {
+    public Page<BoardNoPw> getBoardList(Pageable pageable, Long memberId) {
 
-        Page<BoardNoPw> result = boardQueryRepository.findAllNoPassword(pageable);
+        Page<BoardNoPw> result = boardQueryRepository.findAllNoPassword(memberId, pageable);
+
+        if (result.getTotalElements() == 0) {
+            throw new NullPointerException("게시물이 없습니다.");
+        }
 
         if (pageable.getPageNumber() >= result.getTotalPages()) {
             Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, result.getSize());
-            return boardQueryRepository.findAllNoPassword(newPageable);
+            return boardQueryRepository.findAllNoPassword(memberId, newPageable);
         }
 
         return result;

@@ -1,6 +1,7 @@
 package toyproject.board.domain.board;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     }
 
     @Override
-    public Page<BoardNoPw> findAllNoPassword(Pageable pageable) {
+    public Page<BoardNoPw> findAllNoPassword(Long memberId, Pageable pageable) {
         QueryResults<BoardNoPw> results = queryFactory
                 .select(new QBoardNoPw(
                         board.id,
@@ -48,6 +49,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                         board.lastModifiedDate
                 ))
                 .from(board)
+                .where(memberIdEq(memberId))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .orderBy(board.id.asc())
@@ -57,6 +59,12 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    private Predicate memberIdEq(Long memberId) {
+        return memberId != null
+                ? board.member.id.eq(memberId)
+                : null;
     }
 
 }

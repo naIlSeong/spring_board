@@ -549,7 +549,7 @@ class BoardServiceTest {
 
         // when
         Pageable pageable = PageRequest.of(0, 20);
-        Page<BoardNoPw> result = boardService.getBoardList(pageable);
+        Page<BoardNoPw> result = boardService.getBoardList(pageable, null);
 
         // then
         assertThat(result.getTotalElements()).isEqualTo(100);
@@ -576,7 +576,7 @@ class BoardServiceTest {
 
         // when
         Pageable pageable = PageRequest.of(10, 20);
-        Page<BoardNoPw> result = boardService.getBoardList(pageable);
+        Page<BoardNoPw> result = boardService.getBoardList(pageable, null);
 
         // then
         assertThat(result.getTotalElements()).isEqualTo(100);

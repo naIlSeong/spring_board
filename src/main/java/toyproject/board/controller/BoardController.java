@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.*;
@@ -128,7 +127,25 @@ public class BoardController {
     }
 
     @GetMapping("/board/list")
-    public Page<BoardNoPw> getList(Pageable pageable) {
-        return boardService.getBoardList(pageable);
+    public BoardListResponseDto getList(Pageable pageable,
+                                        @RequestParam(name = "memberId", required = false) Long memberId,
+                                        HttpServletResponse response) {
+
+        BoardListResponseDto responseDto = BoardListResponseDto.builder()
+                .httpStatus(OK)
+                .build();
+
+        try {
+            Page<BoardNoPw> list = boardService.getBoardList(pageable, memberId);
+            responseDto.setBoardList(list);
+
+        } catch (NullPointerException e) {
+            responseDto.setHttpStatus(NOT_FOUND);
+            responseDto.setMessage(e.getMessage());
+            response.setStatus(SC_NOT_FOUND);
+        }
+
+        return responseDto;
     }
+
 }
