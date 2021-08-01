@@ -11,10 +11,7 @@ import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.member.Member;
-import toyproject.board.dto.board.BoardDto;
-import toyproject.board.dto.board.BoardNoPw;
-import toyproject.board.dto.board.DeleteBoardDto;
-import toyproject.board.dto.board.UpdateBoardDto;
+import toyproject.board.dto.board.*;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -139,6 +136,23 @@ public class BoardService {
         if (pageable.getPageNumber() >= result.getTotalPages()) {
             Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, result.getSize());
             return boardQueryRepository.findAllNoPassword(memberId, newPageable);
+        }
+
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BoardNoPw> searchBoard(BoardSearchCondition condition, Pageable pageable) {
+
+        Page<BoardNoPw> result = boardQueryRepository.searchBoard(condition, pageable);
+
+        if (result.getTotalElements() == 0) {
+            throw new NullPointerException("게시물이 없습니다.");
+        }
+
+        if (pageable.getPageNumber() >= result.getTotalPages()) {
+            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, result.getSize());
+            return boardQueryRepository.searchBoard(condition, newPageable);
         }
 
         return result;
