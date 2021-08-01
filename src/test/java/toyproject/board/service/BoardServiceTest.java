@@ -587,4 +587,49 @@ class BoardServiceTest {
         assertThat(result.getContent().get(19).getTitle()).isEqualTo("title99");
     }
 
+    @Tag("getBoardList")
+    @Test
+    void 게시물_조회_게시물X() throws Exception {
+        // give
+
+        // when
+        Pageable pageable = PageRequest.of(10, 20);
+        // boardService.getBoardList(pageable, null);
+
+        // then
+        assertThatThrownBy(() -> boardService.getBoardList(pageable, null))
+                .hasMessage("게시물이 없습니다.");
+    }
+
+    @Tag("getBoardList")
+    @Test
+    void 게시물_조회_with_member_id_게시물X() throws Exception {
+        // give
+        BoardDto boardDto = BoardDto.builder()
+                .title("title")
+                .content("content")
+                .nickname("nickname")
+                .password("1234")
+                .build();
+
+        Board board = boardDto.toEntity();
+        em.persist(board);
+
+        MemberDto memberDto = MemberDto.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+        Member member = memberDto.toEntity();
+        em.persist(member);
+
+        // when
+        Pageable pageable = PageRequest.of(10, 20);
+        // boardService.getBoardList(pageable, null);
+
+        // then
+        assertThatThrownBy(() -> boardService.getBoardList(pageable, member.getId()))
+                .hasMessage("게시물이 없습니다.");
+
+    }
+
 }
