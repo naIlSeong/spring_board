@@ -100,7 +100,7 @@ public class BoardService {
     private void isDeletable(Board board, Member member, String password) {
 
         if (board.getMember() != null) { // 로그인 필요
-            if (member == null || board.getMember().getId() != member.getId()) {
+            if (member == null || !board.getMember().getId().equals(member.getId())) {
                 throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
             }
 

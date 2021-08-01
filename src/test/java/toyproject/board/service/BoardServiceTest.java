@@ -12,15 +12,14 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
-import toyproject.board.dto.board.BoardDto;
-import toyproject.board.dto.board.BoardNoPw;
-import toyproject.board.dto.board.DeleteBoardDto;
-import toyproject.board.dto.board.UpdateBoardDto;
+import toyproject.board.dto.board.*;
 import toyproject.board.dto.member.MemberDto;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -557,7 +556,7 @@ class BoardServiceTest {
         assertThat(result.isFirst()).isTrue();
         assertThat(result.getContent().get(0).getTitle()).isEqualTo("title0");
     }
-    
+
     @Tag("getBoardList")
     @Test
     void 게시물_조회_마지막_페이지_반환() throws Exception {
@@ -630,6 +629,163 @@ class BoardServiceTest {
         assertThatThrownBy(() -> boardService.getBoardList(pageable, member.getId()))
                 .hasMessage("게시물이 없습니다.");
 
+    }
+
+    @Tag("searchBoard")
+    @Test
+    void 게시물_검색_제목() throws Exception {
+        // give
+        Member testMember = MemberDto.builder()
+                .username("test member")
+                .password("12341234")
+                .build()
+                .toEntity();
+        em.persist(testMember);
+
+        Member bestMember = MemberDto.builder()
+                .username("best member")
+                .password("12341234")
+                .build()
+                .toEntity();
+        em.persist(bestMember);
+
+        for (int i = 1; i <= 20; i++) {
+
+            BoardDto.BoardDtoBuilder builder = BoardDto.builder();
+
+            if (i % 2 == 0) {
+                builder = builder
+                        .title("best title - " + i)
+                        .content("best content - " + i)
+                        .nickname(bestMember.getUsername())
+                        .member(bestMember);
+            } else {
+                builder = builder
+                        .title("test title - " + i)
+                        .content("test content - " + i)
+                        .nickname(testMember.getUsername())
+                        .member(testMember);
+            }
+
+            em.persist(builder.build().toEntity());
+        }
+
+        em.flush();
+        em.clear();
+
+        // when
+        BoardSearchCondition condition = BoardSearchCondition.builder()
+                .title("test")
+                .build();
+        Pageable pageable = PageRequest.of(0, 2);
+
+        Page<BoardNoPw> result = boardService.searchBoard(condition, pageable);
+
+        // then
+        long total = result.getTotalElements();
+        List<BoardNoPw> content = result.getContent();
+
+        assertThat(total).isEqualTo(10L);
+        assertThat(content.size()).isEqualTo(2);
+        assertThat(content)
+                .extracting("title")
+                .containsExactly("test title - 1", "test title - 3");
+    }
+
+    @Tag("searchBoard")
+    @Test
+    void 게시물_검색() throws Exception {
+        // give
+        Member testMember = MemberDto.builder()
+                .username("test member")
+                .password("12341234")
+                .build()
+                .toEntity();
+        em.persist(testMember);
+
+        Member bestMember = MemberDto.builder()
+                .username("best member")
+                .password("12341234")
+                .build()
+                .toEntity();
+        em.persist(bestMember);
+
+        for (int i = 1; i <= 20; i++) {
+
+            BoardDto.BoardDtoBuilder builder = BoardDto.builder();
+
+            if (i % 2 == 0) {
+                builder = builder
+                        .title("best title - " + i)
+                        .content("best content - " + i)
+                        .nickname(bestMember.getUsername())
+                        .member(bestMember);
+            } else {
+                builder = builder
+                        .title("test title - " + i)
+                        .content("test content - " + i)
+                        .nickname(testMember.getUsername())
+                        .member(testMember);
+            }
+
+            em.persist(builder.build().toEntity());
+        }
+
+        em.flush();
+        em.clear();
+
+        // when
+        BoardSearchCondition condition = BoardSearchCondition.builder()
+                .title("test")
+                .nickname("test member")
+                .content("1")
+                .isAsc(false)
+                .build();
+        Pageable pageable = PageRequest.of(1, 3);
+
+        Page<BoardNoPw> result = boardService.searchBoard(condition, pageable);
+
+        // then
+        long total = result.getTotalElements();
+        List<BoardNoPw> content = result.getContent();
+
+        for (BoardNoPw boardNoPw : content) {
+            System.out.println("boardNoPw = " + boardNoPw);
+        }
+
+        assertThat(total).isEqualTo(6L);
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(content)
+                .extracting("content")
+                .containsExactly("test content - 13", "test content - 11", "test content - 1");
+    }
+
+    @Tag("searchBoard")
+    @Test
+    void 게시물_검색_실패() throws Exception {
+        // give
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .password("1234")
+                .build();
+        Board board = boardDto.toEntity();
+        em.persist(board);
+
+        em.flush();
+        em.clear();
+
+        // when
+        BoardSearchCondition condition = BoardSearchCondition.builder()
+                .title("best")
+                .build();
+        Pageable pageable = PageRequest.of(0, 20);
+        // boardService.searchBoard(condition, pageable);
+
+        // then
+        assertThatThrownBy(() -> boardService.searchBoard(condition, pageable))
+                .hasMessage("게시물이 없습니다.");
     }
 
 }
