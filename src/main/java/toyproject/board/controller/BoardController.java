@@ -148,4 +148,26 @@ public class BoardController {
         return responseDto;
     }
 
+    @GetMapping("/board/search")
+    public BoardListResponseDto searchBoard(Pageable pageable,
+                                            BoardSearchCondition condition,
+                                            HttpServletResponse response) {
+
+        BoardListResponseDto responseDto = BoardListResponseDto.builder()
+                .httpStatus(OK)
+                .build();
+
+        try {
+            Page<BoardNoPw> boardList = boardService.searchBoard(condition, pageable);
+            responseDto.setBoardList(boardList);
+
+        } catch (NullPointerException e) {
+            responseDto.setHttpStatus(NOT_FOUND);
+            responseDto.setMessage(e.getMessage());
+            response.setStatus(SC_NOT_FOUND);
+        }
+
+        return responseDto;
+    }
+
 }
