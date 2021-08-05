@@ -9,11 +9,10 @@ import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.*;
 import toyproject.board.service.BoardService;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import static javax.servlet.http.HttpServletResponse.*;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,152 +21,90 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/board/new")
-    public BoardResponseDto createBoard(
-            @RequestBody BoardDto dto,
-            HttpSession session,
-            HttpServletResponse response) {
+    public BoardResponseDto createBoard(@RequestBody BoardDto dto,
+                                        HttpSession session) {
 
-        BoardResponseDto responseDto = BoardResponseDto.builder()
-                .httpStatus(CREATED)
-                .build();
-
-        try {
-            Object attribute = session.getAttribute("member");
-            if (attribute != null) {
-                Member member = (Member) attribute;
-                dto.setMember(member);
-            }
-
-            Long boardId = boardService.createBoard(dto);
-
-            responseDto.setBoardId(boardId);
-            response.setStatus(SC_CREATED);
-
-        } catch (IllegalArgumentException e) {
-            responseDto.setHttpStatus(BAD_REQUEST);
-            responseDto.setMessage(e.getMessage());
-            response.setStatus(SC_BAD_REQUEST);
+        Object attribute = session.getAttribute("member");
+        if (attribute != null) {
+            Member member = (Member) attribute;
+            dto.setMember(member);
         }
 
-        return responseDto;
+        Long boardId = boardService.createBoard(dto);
+
+        return BoardResponseDto.builder()
+                .httpStatus(CREATED)
+                .boardId(boardId)
+                .build();
     }
 
     @PostMapping("/board/delete")
     public BasicResponseDto deleteBoard(@RequestBody DeleteBoardDto dto,
-                                        HttpSession session,
-                                        HttpServletResponse response) {
+                                        HttpSession session) {
 
-        BasicResponseDto responseDto = BasicResponseDto.builder()
-                .httpStatus(OK)
-                .build();
-
-        try {
-            Object attribute = session.getAttribute("member");
-            if (attribute != null) {
-                Member member = (Member) attribute;
-                dto.setMember(member);
-            }
-
-            boardService.deleteBoard(dto);
-
-        } catch (Exception e) {
-            responseDto.setHttpStatus(BAD_REQUEST);
-            responseDto.setMessage(e.getMessage());
-            response.setStatus(SC_BAD_REQUEST);
+        Object attribute = session.getAttribute("member");
+        if (attribute != null) {
+            Member member = (Member) attribute;
+            dto.setMember(member);
         }
 
-        return responseDto;
+        boardService.deleteBoard(dto);
+
+        return BasicResponseDto.builder()
+                .httpStatus(OK)
+                .build();
     }
 
     @PostMapping("/board/update")
     public BoardResponseDto updateBoard(@RequestBody UpdateBoardDto dto,
-                                        HttpSession session,
-                                        HttpServletResponse response) {
+                                        HttpSession session) {
 
-        BoardResponseDto responseDto = BoardResponseDto.builder()
-                .httpStatus(OK)
-                .build();
-        try {
-            Object attribute = session.getAttribute("member");
-            if (attribute != null) {
-                Member member = (Member) attribute;
-                dto.setMember(member);
-            }
-
-            boardService.updateBoard(dto);
-
-        } catch (Exception e) {
-            responseDto.setHttpStatus(BAD_REQUEST);
-            responseDto.setMessage(e.getMessage());
-            response.setStatus(SC_BAD_REQUEST);
+        Object attribute = session.getAttribute("member");
+        if (attribute != null) {
+            Member member = (Member) attribute;
+            dto.setMember(member);
         }
 
-        return responseDto;
+        boardService.updateBoard(dto);
+
+        return BoardResponseDto.builder()
+                .httpStatus(OK)
+                .build();
     }
 
     @GetMapping("/board/{id}")
-    public BoardQueryResponseDto getBoard(@PathVariable("id") Long id,
-                                          HttpServletResponse response) {
+    public BoardQueryResponseDto getBoard(@PathVariable("id") Long id) {
 
-        BoardQueryResponseDto responseDto = BoardQueryResponseDto.builder()
+        BoardNoPw board = boardService.getBoard(id);
+
+        return BoardQueryResponseDto.builder()
                 .httpStatus(OK)
+                .boardNoPw(board)
                 .build();
-
-        try {
-            BoardNoPw board = boardService.getBoard(id);
-            responseDto.setBoardNoPw(board);
-
-        } catch (NullPointerException e) {
-            responseDto.setHttpStatus(NOT_FOUND);
-            responseDto.setMessage(e.getMessage());
-            response.setStatus(SC_NOT_FOUND);
-        }
-
-        return responseDto;
     }
 
     @GetMapping("/board/list")
     public BoardListResponseDto getList(Pageable pageable,
-                                        @RequestParam(name = "memberId", required = false) Long memberId,
-                                        HttpServletResponse response) {
+                                        @RequestParam(name = "memberId", required = false) Long memberId) {
 
-        BoardListResponseDto responseDto = BoardListResponseDto.builder()
+        Page<BoardNoPw> boardList = boardService.getBoardList(pageable, memberId);
+
+        return BoardListResponseDto.builder()
                 .httpStatus(OK)
+                .boardList(boardList)
                 .build();
-
-        try {
-            Page<BoardNoPw> list = boardService.getBoardList(pageable, memberId);
-            responseDto.setBoardList(list);
-
-        } catch (NullPointerException e) {
-            responseDto.setHttpStatus(NOT_FOUND);
-            responseDto.setMessage(e.getMessage());
-            response.setStatus(SC_NOT_FOUND);
-        }
-
-        return responseDto;
     }
 
     @GetMapping("/board/search")
     public BoardListResponseDto searchBoard(Pageable pageable,
-                                            BoardSearchCondition condition,
-                                            HttpServletResponse response) {
+                                            BoardSearchCondition condition) {
 
-        BoardListResponseDto responseDto = BoardListResponseDto.builder()
+        Page<BoardNoPw> boardList = boardService.searchBoard(condition, pageable);
+
+        return BoardListResponseDto.builder()
                 .httpStatus(OK)
+                .boardList(boardList)
                 .build();
-
-        try {
-            Page<BoardNoPw> boardList = boardService.searchBoard(condition, pageable);
-            responseDto.setBoardList(boardList);
-
-        } catch (NullPointerException e) {
-            responseDto.setHttpStatus(NOT_FOUND);
-            responseDto.setMessage(e.getMessage());
-            response.setStatus(SC_NOT_FOUND);
-        }
-
-        return responseDto;
     }
 
 }
