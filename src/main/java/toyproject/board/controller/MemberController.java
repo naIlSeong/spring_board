@@ -14,6 +14,7 @@ import toyproject.board.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -24,7 +25,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/member/new")
-    public BasicResponseDto join(@RequestBody MemberDto dto) {
+    public BasicResponseDto join(@Valid @RequestBody MemberDto dto) {
 
         memberService.join(dto);
 
@@ -34,7 +35,7 @@ public class MemberController {
     }
 
     @PostMapping("/member/login")
-    public BasicResponseDto login(@RequestBody MemberDto dto,
+    public BasicResponseDto login(@Valid @RequestBody MemberDto dto,
                                   HttpSession session,
                                   HttpServletRequest request) {
 
@@ -79,13 +80,6 @@ public class MemberController {
                 .member(member)
                 .build();
     }
-
-/*
-    @GetMapping("/member/search")
-    public List<MemberNoPw> search(MemberSearchCondition condition) {
-        return memberService.searchMember(condition);
-    }
-*/
 
     @GetMapping("/member/search-page")
     public Page<MemberNoPw> searchV2(MemberSearchCondition condition, Pageable pageable) {

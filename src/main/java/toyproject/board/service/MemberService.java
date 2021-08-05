@@ -15,9 +15,8 @@ import toyproject.board.dto.member.MemberSearchCondition;
 
 import java.util.Optional;
 
-import static org.springframework.util.StringUtils.hasText;
-
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class MemberService {
 
@@ -25,12 +24,7 @@ public class MemberService {
     private final MemberQueryRepository memberQueryRepository;
 
     @Transactional
-    public Long join(MemberDto dto) throws IllegalArgumentException {
-
-        // 입력 받은 값이 유효한지 체크
-        if (!isValid(dto)) {
-            throw new IllegalArgumentException("이름과 비밀번호는 필수 값입니다.");
-        }
+    public Long join(MemberDto dto) {
 
         // 문자열 다듬기
         dto.setUsername(dto.getUsername()
@@ -44,16 +38,6 @@ public class MemberService {
             throw new IllegalArgumentException("이미 존재하는 이름입니다.");
         }
 
-        // username 길이 체크
-        if (dto.getUsername().length() < 4 || dto.getUsername().length() > 24) {
-            throw new IllegalArgumentException("이름의 길이는 4자 이상, 24자 이하입니다.");
-        }
-
-        // password 길이 체크
-        if (dto.getPassword().length() < 8) {
-            throw new IllegalArgumentException("비밀번호의 길이는 8자 이상입니다.");
-        }
-
         // 비밀번호 암호화
         dto.setPassword(
                 BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(10)));
@@ -64,17 +48,7 @@ public class MemberService {
         return member.getId();
     }
 
-    private boolean isValid(MemberDto dto) {
-        return hasText(dto.getUsername()) && hasText(dto.getPassword());
-    }
-
-    @Transactional(readOnly = true)
     public Member login(MemberDto dto) {
-
-        // 입력 받은 값이 유효한지 체크
-        if (!isValid(dto)) {
-            throw new IllegalArgumentException("이름과 비밀번호는 필수 값입니다.");
-        }
 
         Member member = memberRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("이름을 다시 확인해주세요."));
@@ -98,7 +72,6 @@ public class MemberService {
         return true;
     }
 
-    @Transactional(readOnly = true)
     public MemberNoPw getMember(Long memberId) {
 
         MemberNoPw member = memberQueryRepository.findNoPasswordById(memberId);
@@ -109,7 +82,6 @@ public class MemberService {
         return member;
     }
 
-    @Transactional(readOnly = true)
     public Page<MemberNoPw> searchMemberPage(MemberSearchCondition condition, Pageable pageable) {
         return memberQueryRepository.searchPage(condition, pageable);
     }
