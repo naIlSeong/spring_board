@@ -18,23 +18,19 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class BoardDto {
 
-    @NotNull
     @NotBlank
     private String title;
 
-    @NotNull
     @NotBlank
     private String content;
 
     @NotNull(groups = Login.class)
     private Member member;
 
-    @NotNull(groups = NotLogin.class)
     @NotBlank(groups = NotLogin.class)
     @Length(min = 2, max = 24, groups = NotLogin.class)
     private String nickname;
 
-    @NotNull(groups = NotLogin.class)
     @NotBlank(groups = NotLogin.class)
     @Length(min = 4, groups = NotLogin.class)
     private String password;

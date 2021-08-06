@@ -11,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
-import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.*;
 import toyproject.board.marker.Login;
 import toyproject.board.marker.NotLogin;
@@ -58,23 +57,50 @@ public class BoardService {
     }
 
     @Transactional
-    public boolean deleteBoard(DeleteBoardDto dto) {
+    @Validated({NotLogin.class, Default.class})
+    public void deleteBoardNotLogin(@Valid DeleteBoardDto dto) {
 
         Board board = boardRepository.findById(dto.getId())
                 .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
-        isDeletable(board, dto.getMember(), dto.getPassword());
+
+        boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
+        if (!isMatch) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
+        }
 
         boardRepository.delete(board);
 
-        return true;
     }
 
     @Transactional
-    public Long updateBoard(UpdateBoardDto dto) {
+    @Validated(Login.class)
+    public void deleteBoardLogin(@Valid DeleteBoardDto dto) {
 
         Board board = boardRepository.findById(dto.getId())
                 .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
-        isDeletable(board, dto.getMember(), dto.getPassword());
+
+        Long memberId = board.getMember().getId();
+        Long requestMemberId = dto.getMember().getId();
+
+        if (!memberId.equals(requestMemberId)) {
+            throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
+        }
+
+        boardRepository.delete(board);
+
+    }
+
+    @Transactional
+    @Validated({NotLogin.class, Default.class})
+    public void updateBoardNotLogin(@Valid UpdateBoardDto dto) {
+
+        Board board = boardRepository.findById(dto.getId())
+                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+
+        boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
+        if (!isMatch) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
+        }
 
         if (hasText(dto.getTitle())) {
             board.updateTitle(dto.getTitle());
@@ -83,21 +109,24 @@ public class BoardService {
             board.updateContent(dto.getContent());
         }
 
-        return board.getId();
     }
 
-    private void isDeletable(Board board, Member member, String password) {
+    @Transactional
+    @Validated({Login.class, Default.class})
+    public void updateBoardLogin(@Valid UpdateBoardDto dto) {
 
-        if (board.getMember() != null) { // 로그인 필요
-            if (member == null || !board.getMember().getId().equals(member.getId())) {
-                throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
-            }
+        Board board = boardRepository.findById(dto.getId())
+                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
 
-        } else { // 비로그인
-            boolean isMatch = BCrypt.checkpw(password, board.getPassword());
-            if (!isMatch) {
-                throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
-            }
+        if (!board.getMember().getId().equals(dto.getMember().getId())) {
+            throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
+        }
+
+        if (hasText(dto.getTitle())) {
+            board.updateTitle(dto.getTitle());
+        }
+        if (hasText(dto.getContent())) {
+            board.updateContent(dto.getContent());
         }
 
     }

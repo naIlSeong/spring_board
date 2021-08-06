@@ -10,6 +10,8 @@ import toyproject.board.dto.board.*;
 import toyproject.board.service.BoardService;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -52,9 +54,12 @@ public class BoardController {
         if (attribute != null) {
             Member member = (Member) attribute;
             dto.setMember(member);
-        }
 
-        boardService.deleteBoard(dto);
+            boardService.deleteBoardLogin(dto);
+
+        } else {
+            boardService.deleteBoardNotLogin(dto);
+        }
 
         return BasicResponseDto.builder()
                 .httpStatus(OK)
@@ -69,9 +74,12 @@ public class BoardController {
         if (attribute != null) {
             Member member = (Member) attribute;
             dto.setMember(member);
-        }
 
-        boardService.updateBoard(dto);
+            boardService.updateBoardLogin(dto);
+
+        } else {
+            boardService.updateBoardNotLogin(dto);
+        }
 
         return BoardResponseDto.builder()
                 .httpStatus(OK)

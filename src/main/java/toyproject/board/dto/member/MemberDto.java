@@ -7,21 +7,17 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import toyproject.board.domain.member.Member;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class MemberDto {
 
-    @NotNull
     @NotBlank
     @Length(min = 4, max = 24)
     private String username;
 
-    @NotNull
     @NotBlank
     @Length(min = 8)
     private String password;
