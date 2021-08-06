@@ -52,7 +52,7 @@ class BoardServiceTest {
                 .build();
 
         // when
-        Long boardId = boardService.createBoard(dto);
+        Long boardId = boardService.createBoardLogin(dto);
 
         em.flush();
         em.clear();
@@ -79,7 +79,7 @@ class BoardServiceTest {
                 .build();
 
         // when
-        Long boardId = boardService.createBoard(dto);
+        Long boardId = boardService.createBoardNotLogin(dto);
 
         em.flush();
         em.clear();
@@ -92,142 +92,6 @@ class BoardServiceTest {
 
         assertThat(result.getNickname()).isEqualTo(dto.getNickname());
         assertThat(BCrypt.checkpw("1234", result.getPassword())).isTrue();
-    }
-
-    @Tag("createBoard")
-    @Test
-    void 게시물_작성_실퍠_제목() throws Exception {
-        // give
-        BoardDto dto = BoardDto.builder()
-                .content("test content.")
-                .nickname("test")
-                .password("1234")
-                .build();
-
-        // when
-        // boardService.createBoard(dto);
-
-        // then
-        assertThatThrownBy(() -> boardService.createBoard(dto))
-                .hasMessage("제목과 내용은 필수입니다.");
-
-    }
-
-    @Tag("createBoard")
-    @Test
-    void 게시물_작성_실퍠_내용() throws Exception {
-        // give
-        BoardDto dto = BoardDto.builder()
-                .title("test title.")
-                .nickname("test")
-                .password("1234")
-                .build();
-
-        // when
-        // boardService.createBoard(dto);
-
-        // then
-        assertThatThrownBy(() -> boardService.createBoard(dto))
-                .hasMessage("제목과 내용은 필수입니다.");
-
-    }
-
-    @Tag("createBoard")
-    @Test
-    void 게시물_작성_실퍠_닉네임() throws Exception {
-        // give
-        BoardDto dto = BoardDto.builder()
-                .title("test title.")
-                .content("test content.")
-                .password("1234")
-                .build();
-
-        // when
-        // boardService.createBoard(dto);
-
-        // then
-        assertThatThrownBy(() -> boardService.createBoard(dto))
-                .hasMessage("닉네임과 비밀번호는 필수입니다.");
-
-    }
-
-    @Tag("createBoard")
-    @Test
-    void 게시물_작성_실퍠_비밀번호() throws Exception {
-        // give
-        BoardDto dto = BoardDto.builder()
-                .title("test title.")
-                .content("test content.")
-                .nickname("test")
-                .build();
-
-        // when
-        // boardService.createBoard(dto);
-
-        // then
-        assertThatThrownBy(() -> boardService.createBoard(dto))
-                .hasMessage("닉네임과 비밀번호는 필수입니다.");
-
-    }
-
-    @Tag("createBoard")
-    @Test
-    void 게시물_작성_실퍠_닉네임길이1() throws Exception {
-        // give
-        BoardDto dto = BoardDto.builder()
-                .title("test title.")
-                .content("test content.")
-                .nickname("t")
-                .password("1234")
-                .build();
-
-        // when
-        // boardService.createBoard(dto);
-
-        // then
-        assertThatThrownBy(() -> boardService.createBoard(dto))
-                .hasMessage("닉네임의 길이는 2자 이상, 24자 이하입니다.");
-
-    }
-
-    @Tag("createBoard")
-    @Test
-    void 게시물_작성_실퍠_닉네임길이2() throws Exception {
-        // give
-        BoardDto dto = BoardDto.builder()
-                .title("test title.")
-                .content("test content.")
-                .nickname("test1234test1234test123499")
-                .password("1234")
-                .build();
-
-        // when
-        // boardService.createBoard(dto);
-
-        // then
-        assertThatThrownBy(() -> boardService.createBoard(dto))
-                .hasMessage("닉네임의 길이는 2자 이상, 24자 이하입니다.");
-
-    }
-
-    @Tag("createBoard")
-    @Test
-    void 게시물_작성_실퍠_비밀번호길이() throws Exception {
-        // give
-        BoardDto dto = BoardDto.builder()
-                .title("test title.")
-                .content("test content.")
-                .nickname("test")
-                .password("123")
-                .build();
-
-        // when
-        // boardService.createBoard(dto);
-
-        // then
-        assertThatThrownBy(() -> boardService.createBoard(dto))
-                .hasMessage("비밀번호의 길이는 4자 이상입니다.");
-
     }
 
     /**
@@ -249,7 +113,7 @@ class BoardServiceTest {
                 .content("test content.")
                 .member(member)
                 .build();
-        Long boardId = boardService.createBoard(boardDto);
+        Long boardId = boardService.createBoardLogin(boardDto);
 
         em.flush();
         em.clear();
@@ -259,11 +123,9 @@ class BoardServiceTest {
                 .id(boardId)
                 .member(member)
                 .build();
-        boolean result = boardService.deleteBoard(dto);
+        boardService.deleteBoardLogin(dto);
 
         // then
-        assertThat(result).isTrue();
-
         Board board = em.find(Board.class, boardId);
         assertThat(board).isNull();
     }
@@ -278,18 +140,16 @@ class BoardServiceTest {
                 .nickname("test")
                 .password("1234")
                 .build();
-        Long boardId = boardService.createBoard(boardDto);
+        Long boardId = boardService.createBoardNotLogin(boardDto);
 
         // when
         DeleteBoardDto dto = DeleteBoardDto.builder()
                 .id(boardId)
                 .password("1234")
                 .build();
-        boolean result = boardService.deleteBoard(dto);
+        boardService.deleteBoardNotLogin(dto);
 
         // then
-        assertThat(result).isTrue();
-
         Board board = em.find(Board.class, boardId);
         assertThat(board).isNull();
     }
@@ -308,7 +168,7 @@ class BoardServiceTest {
         // boardService.deleteBoard(dto);
 
         // then
-        assertThatThrownBy(() -> boardService.deleteBoard(dto))
+        assertThatThrownBy(() -> boardService.deleteBoardNotLogin(dto))
                 .hasMessage("게시물을 찾을 수 없습니다.");
     }
 
@@ -333,7 +193,7 @@ class BoardServiceTest {
                 .content("test content.")
                 .member(member)
                 .build();
-        Long boardId = boardService.createBoard(boardDto);
+        Long boardId = boardService.createBoardLogin(boardDto);
 
         em.flush();
         em.clear();
@@ -348,7 +208,7 @@ class BoardServiceTest {
         // then
         Board board = em.find(Board.class, boardId);
 
-        assertThatThrownBy(() -> boardService.deleteBoard(dto))
+        assertThatThrownBy(() -> boardService.deleteBoardLogin(dto))
                 .hasMessage("게시물을 삭제할 수 없습니다.");
         assertThat(board.getMember().getId()).isNotEqualTo(boardId);
     }
@@ -363,7 +223,7 @@ class BoardServiceTest {
                 .nickname("test")
                 .password("1234")
                 .build();
-        Long boardId = boardService.createBoard(boardDto);
+        Long boardId = boardService.createBoardNotLogin(boardDto);
 
         em.flush();
         em.clear();
@@ -378,44 +238,9 @@ class BoardServiceTest {
         // then
         Board board = em.find(Board.class, boardId);
 
-        assertThatThrownBy(() -> boardService.deleteBoard(dto))
+        assertThatThrownBy(() -> boardService.deleteBoardNotLogin(dto))
                 .hasMessage("비밀번호를 다시 확인해 주세요.");
         assertThat(BCrypt.checkpw("6789", board.getPassword())).isFalse();
-    }
-
-    @Tag("deleteBoard")
-    @Test
-    void 게시물_삭제_실패_로그인필요() throws Exception {
-        // give
-        Member member = MemberDto.builder()
-                .username("test")
-                .password("12341234")
-                .build()
-                .toEntity();
-        em.persist(member);
-
-        BoardDto boardDto = BoardDto.builder()
-                .title("test title.")
-                .content("test content.")
-                .member(member)
-                .build();
-        Long boardId = boardService.createBoard(boardDto);
-
-        em.flush();
-        em.clear();
-
-        // when
-        DeleteBoardDto dto = DeleteBoardDto.builder()
-                .id(boardId)
-                .build();
-        // boardService.deleteBoard(dto);
-
-        // then
-        Board board = em.find(Board.class, boardId);
-
-        assertThatThrownBy(() -> boardService.deleteBoard(dto))
-                .hasMessage("게시물을 삭제할 수 없습니다.");
-        assertThat(board.getMember().getId()).isEqualTo(member.getId());
     }
 
     /**
@@ -437,7 +262,7 @@ class BoardServiceTest {
                 .content("test content.")
                 .member(member)
                 .build();
-        Long boardId = boardService.createBoard(boardDto);
+        Long boardId = boardService.createBoardLogin(boardDto);
 
         // when
         UpdateBoardDto dto = UpdateBoardDto.builder()
@@ -446,7 +271,7 @@ class BoardServiceTest {
                 .title("updated title.")
                 .content("updated content.")
                 .build();
-        Long result = boardService.updateBoard(dto);
+        boardService.updateBoardLogin(dto);
 
         em.flush();
         em.clear();
@@ -454,7 +279,6 @@ class BoardServiceTest {
         // then
         Board board = em.find(Board.class, boardId);
 
-        assertThat(result).isEqualTo(boardId);
         assertThat(board.getTitle()).isEqualTo("updated title.");
         assertThat(board.getContent()).isEqualTo("updated content.");
         assertThat(board.getPassword()).isNull();
@@ -470,7 +294,7 @@ class BoardServiceTest {
                 .nickname("test")
                 .password("1234")
                 .build();
-        Long boardId = boardService.createBoard(boardDto);
+        Long boardId = boardService.createBoardNotLogin(boardDto);
 
         // when
         UpdateBoardDto dto = UpdateBoardDto.builder()
@@ -479,7 +303,7 @@ class BoardServiceTest {
                 .title("updated title.")
                 .content("updated content.")
                 .build();
-        Long result = boardService.updateBoard(dto);
+        boardService.updateBoardNotLogin(dto);
 
         em.flush();
         em.clear();
@@ -487,10 +311,78 @@ class BoardServiceTest {
         // then
         Board board = em.find(Board.class, boardId);
 
-        assertThat(result).isEqualTo(boardId);
         assertThat(board.getTitle()).isEqualTo("updated title.");
         assertThat(board.getContent()).isEqualTo("updated content.");
         assertThat(board.getMember()).isNull();
+    }
+
+    @Tag("updateBoard")
+    @Test
+    void 게시물_수정_비로그인_비밀번호_틀림() throws Exception {
+        // give
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .password("1234")
+                .build();
+        Long boardId = boardService.createBoardNotLogin(boardDto);
+
+        // when
+        UpdateBoardDto dto = UpdateBoardDto.builder()
+                .id(boardId)
+                .password("5432")
+                .title("updated title.")
+                .content("updated content.")
+                .build();
+        // boardService.updateBoardNotLogin(dto);
+
+        em.flush();
+        em.clear();
+
+        // then
+        assertThatThrownBy(() -> boardService.updateBoardNotLogin(dto))
+                .hasMessage("비밀번호를 다시 확인해 주세요.");
+    }
+
+    @Tag("updateBoard")
+    @Test
+    void 게시물_수정_로그인_다른_멤버의_게시물_삭제_시도() throws Exception {
+        // give
+        Member member = Member.builder()
+                .username("test")
+                .password("12341234")
+                .build();
+        Member otherMember = Member.builder()
+                .username("otherMember")
+                .password("12341234")
+                .build();
+
+        em.persist(member);
+        em.persist(otherMember);
+
+        BoardDto boardDto = BoardDto.builder()
+                .title("test title.")
+                .content("test content.")
+                .member(member)
+                .build();
+        Long boardId = boardService.createBoardLogin(boardDto);
+
+        // when
+        UpdateBoardDto dto = UpdateBoardDto.builder()
+                .id(boardId)
+                .member(otherMember)
+                .title("updated title.")
+                .content("updated content.")
+                .build();
+        // boardService.updateBoardLogin(dto);
+
+        em.flush();
+        em.clear();
+
+        // then
+        assertThatThrownBy(() -> boardService.updateBoardLogin(dto))
+                .hasMessage("게시물을 삭제할 수 없습니다.");
     }
 
     @Tag("getBoard")
@@ -503,7 +395,7 @@ class BoardServiceTest {
                 .nickname("test")
                 .password("1234")
                 .build();
-        Long boardId = boardService.createBoard(boardDto);
+        Long boardId = boardService.createBoardNotLogin(boardDto);
 
         em.flush();
         em.clear();

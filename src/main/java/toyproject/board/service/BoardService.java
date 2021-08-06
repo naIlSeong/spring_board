@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
+import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.*;
 import toyproject.board.marker.Login;
 import toyproject.board.marker.NotLogin;
@@ -60,13 +61,7 @@ public class BoardService {
     @Validated({NotLogin.class, Default.class})
     public void deleteBoardNotLogin(@Valid DeleteBoardDto dto) {
 
-        Board board = boardRepository.findById(dto.getId())
-                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
-
-        boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
-        if (!isMatch) {
-            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
-        }
+        Board board = isWriteableNotLogin(dto.getId(), dto.getPassword());
 
         boardRepository.delete(board);
 
@@ -76,15 +71,7 @@ public class BoardService {
     @Validated(Login.class)
     public void deleteBoardLogin(@Valid DeleteBoardDto dto) {
 
-        Board board = boardRepository.findById(dto.getId())
-                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
-
-        Long memberId = board.getMember().getId();
-        Long requestMemberId = dto.getMember().getId();
-
-        if (!memberId.equals(requestMemberId)) {
-            throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
-        }
+        Board board = isWriteableLogin(dto.getId(), dto.getMember());
 
         boardRepository.delete(board);
 
@@ -94,20 +81,9 @@ public class BoardService {
     @Validated({NotLogin.class, Default.class})
     public void updateBoardNotLogin(@Valid UpdateBoardDto dto) {
 
-        Board board = boardRepository.findById(dto.getId())
-                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+        Board board = isWriteableNotLogin(dto.getId(), dto.getPassword());
 
-        boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
-        if (!isMatch) {
-            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
-        }
-
-        if (hasText(dto.getTitle())) {
-            board.updateTitle(dto.getTitle());
-        }
-        if (hasText(dto.getContent())) {
-            board.updateContent(dto.getContent());
-        }
+        updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
 
     }
 
@@ -115,20 +91,50 @@ public class BoardService {
     @Validated({Login.class, Default.class})
     public void updateBoardLogin(@Valid UpdateBoardDto dto) {
 
-        Board board = boardRepository.findById(dto.getId())
+        Board board = isWriteableLogin(dto.getId(), dto.getMember());
+
+        updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
+
+    }
+
+    private void updateTitleAndContent(String title, String content, Board board) {
+
+        if (hasText(title)) {
+            board.updateTitle(title);
+        }
+
+        if (hasText(content)) {
+            board.updateContent(content);
+        }
+
+    }
+
+    private Board isWriteableNotLogin(Long boardId, String password) {
+
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
 
-        if (!board.getMember().getId().equals(dto.getMember().getId())) {
+        boolean isMatch = BCrypt.checkpw(password, board.getPassword());
+        if (!isMatch) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
+        }
+
+        return board;
+    }
+
+    private Board isWriteableLogin(Long boardId, Member member) {
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+
+        Long memberId = board.getMember().getId();
+        Long requestMemberId = member.getId();
+
+        if (!memberId.equals(requestMemberId)) {
             throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
         }
 
-        if (hasText(dto.getTitle())) {
-            board.updateTitle(dto.getTitle());
-        }
-        if (hasText(dto.getContent())) {
-            board.updateContent(dto.getContent());
-        }
-
+        return board;
     }
 
     public BoardNoPw getBoard(Long boardId) {
