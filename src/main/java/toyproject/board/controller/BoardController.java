@@ -16,21 +16,27 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/board")
 public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/board/new")
+    @PostMapping("/new")
     public BoardResponseDto createBoard(@RequestBody BoardDto dto,
                                         HttpSession session) {
+
+        Long boardId;
 
         Object attribute = session.getAttribute("member");
         if (attribute != null) {
             Member member = (Member) attribute;
             dto.setMember(member);
-        }
 
-        Long boardId = boardService.createBoard(dto);
+            boardId = boardService.createBoardLogin(dto);
+
+        } else {
+            boardId = boardService.createBoardNotLogin(dto);
+        }
 
         return BoardResponseDto.builder()
                 .httpStatus(CREATED)
@@ -38,7 +44,7 @@ public class BoardController {
                 .build();
     }
 
-    @PostMapping("/board/delete")
+    @PostMapping("/delete")
     public BasicResponseDto deleteBoard(@RequestBody DeleteBoardDto dto,
                                         HttpSession session) {
 
@@ -55,7 +61,7 @@ public class BoardController {
                 .build();
     }
 
-    @PostMapping("/board/update")
+    @PostMapping("/update")
     public BoardResponseDto updateBoard(@RequestBody UpdateBoardDto dto,
                                         HttpSession session) {
 
@@ -72,7 +78,7 @@ public class BoardController {
                 .build();
     }
 
-    @GetMapping("/board/{id}")
+    @GetMapping("/{id}")
     public BoardQueryResponseDto getBoard(@PathVariable("id") Long id) {
 
         BoardNoPw board = boardService.getBoard(id);
@@ -83,7 +89,7 @@ public class BoardController {
                 .build();
     }
 
-    @GetMapping("/board/list")
+    @GetMapping("/list")
     public BoardListResponseDto getList(Pageable pageable,
                                         @RequestParam(name = "memberId", required = false) Long memberId) {
 
@@ -95,7 +101,7 @@ public class BoardController {
                 .build();
     }
 
-    @GetMapping("/board/search")
+    @GetMapping("/search")
     public BoardListResponseDto searchBoard(Pageable pageable,
                                             BoardSearchCondition condition) {
 

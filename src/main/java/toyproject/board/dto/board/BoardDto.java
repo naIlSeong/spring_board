@@ -4,18 +4,39 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
+import toyproject.board.marker.Login;
+import toyproject.board.marker.NotLogin;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class BoardDto {
 
+    @NotNull
+    @NotBlank
     private String title;
+
+    @NotNull
+    @NotBlank
     private String content;
+
+    @NotNull(groups = Login.class)
     private Member member;
+
+    @NotNull(groups = NotLogin.class)
+    @NotBlank(groups = NotLogin.class)
+    @Length(min = 2, max = 24, groups = NotLogin.class)
     private String nickname;
+
+    @NotNull(groups = NotLogin.class)
+    @NotBlank(groups = NotLogin.class)
+    @Length(min = 4, groups = NotLogin.class)
     private String password;
 
     @Builder

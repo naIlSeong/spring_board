@@ -23,7 +23,7 @@ public class MemberDto {
 
     @NotNull
     @NotBlank
-    @Min(8)
+    @Length(min = 8)
     private String password;
 
     @Builder

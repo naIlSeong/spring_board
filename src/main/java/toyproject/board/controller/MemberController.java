@@ -20,11 +20,12 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/member")
 public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/member/new")
+    @PostMapping("/new")
     public BasicResponseDto join(@Valid @RequestBody MemberDto dto) {
 
         memberService.join(dto);
@@ -34,7 +35,7 @@ public class MemberController {
                 .build();
     }
 
-    @PostMapping("/member/login")
+    @PostMapping("/login")
     public BasicResponseDto login(@Valid @RequestBody MemberDto dto,
                                   HttpSession session,
                                   HttpServletRequest request) {
@@ -56,7 +57,7 @@ public class MemberController {
                 .build();
     }
 
-    @PostMapping("/member/withdrawal")
+    @PostMapping("/withdrawal")
     public BasicResponseDto withdrawal(HttpSession session) {
 
         Object attribute = session.getAttribute("member");
@@ -70,7 +71,7 @@ public class MemberController {
                 .build();
     }
 
-    @GetMapping("/member/{memberId}")
+    @GetMapping("/{memberId}")
     public BasicResponseDto getMember(@PathVariable(name = "memberId") Long memberId) {
 
         MemberNoPw member = memberService.getMember(memberId);
@@ -81,7 +82,7 @@ public class MemberController {
                 .build();
     }
 
-    @GetMapping("/member/search-page")
+    @GetMapping("/search-page")
     public Page<MemberNoPw> searchV2(MemberSearchCondition condition, Pageable pageable) {
         return memberService.searchMemberPage(condition, pageable);
     }
