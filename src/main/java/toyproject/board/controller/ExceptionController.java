@@ -1,12 +1,15 @@
 package toyproject.board.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import toyproject.board.dto.BasicResponseDto;
+import toyproject.board.dto.ExceptionDto;
+import toyproject.board.dto.ExceptionResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -52,18 +55,28 @@ public class ExceptionController {
      * Validation 예외
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BasicResponseDto> validationException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ExceptionResponseDto> validationException(MethodArgumentNotValidException e) {
 
-        List<ObjectError> errors = e.getBindingResult().getAllErrors();
-
-        BasicResponseDto dto = BasicResponseDto.builder()
+        ExceptionResponseDto responseDto = ExceptionResponseDto.builder()
                 .httpStatus(BAD_REQUEST)
-                .message(errors.get(0).getDefaultMessage())
+                .exceptions(new ArrayList<>())
                 .build();
+
+        List<FieldError> errors = e.getBindingResult().getFieldErrors();
+        for (FieldError error : errors) {
+
+            ExceptionDto exceptionDto = ExceptionDto.builder()
+                    .field(error.getField())
+                    .message(error.getDefaultMessage())
+                    .build();
+
+            responseDto.addException(exceptionDto);
+
+        }
 
         return ResponseEntity
                 .badRequest()
-                .body(dto);
+                .body(responseDto);
     }
 
 }
