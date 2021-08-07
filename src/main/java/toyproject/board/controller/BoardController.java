@@ -10,8 +10,6 @@ import toyproject.board.dto.board.*;
 import toyproject.board.service.BoardService;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
