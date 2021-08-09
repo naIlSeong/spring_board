@@ -29,15 +29,21 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(nullable = false)
+    private String nickname;
+
+    private String password;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
     @Builder
-    public Comment(String content, Member member, Board board) {
+    public Comment(String content, Member member, String nickname, String password, Board board) {
         this.content = content;
         this.member = member;
+        this.nickname = nickname;
+        this.password = password;
         this.board = board;
     }
-
 }
