@@ -4,34 +4,24 @@ import lombok.*;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
-import toyproject.board.marker.Login;
-import toyproject.board.marker.NotLogin;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-public class CreateCommentDto {
+public class CreateCommentRequestDto {
 
-    @NotNull
     private Long boardId;
 
-    @NotBlank
     private String content;
 
-    @NotBlank(groups = NotLogin.class)
     private String nickname;
 
-    @NotBlank(groups = NotLogin.class)
     private String password;
 
-    @NotNull(groups = Login.class)
     private Member member;
 
     @Builder
-    public CreateCommentDto(Long boardId, String content, String nickname, String password, Member member) {
+    public CreateCommentRequestDto(Long boardId, String content, String nickname, String password, Member member) {
         this.boardId = boardId;
         this.content = content;
         this.nickname = nickname;
@@ -46,6 +36,24 @@ public class CreateCommentDto {
                 .nickname(nickname)
                 .password(password)
                 .member(member)
+                .build();
+    }
+
+     //===createComment 메서드의 파라미터로 전달하기 위한 DTO 변환 메서드===//
+    public CreateCommentLoginDto toDto(Member member) {
+        return CreateCommentLoginDto.builder()
+                .boardId(boardId)
+                .content(content)
+                .member(member)
+                .build();
+    }
+
+    public CreateCommentNotLoginDto toDto() {
+        return CreateCommentNotLoginDto.builder()
+                .boardId(boardId)
+                .content(content)
+                .nickname(nickname)
+                .password(password)
                 .build();
     }
 
