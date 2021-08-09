@@ -1,8 +1,6 @@
-package toyproject.board.dto;
+package toyproject.board.dto.comment;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
@@ -12,6 +10,7 @@ import toyproject.board.marker.NotLogin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class CreateCommentDto {

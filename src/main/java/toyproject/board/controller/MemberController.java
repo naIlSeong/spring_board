@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
@@ -25,13 +26,14 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @ResponseStatus(CREATED)
     @PostMapping("/new")
     public BasicResponseDto join(@Valid @RequestBody MemberDto dto) {
 
         memberService.join(dto);
 
         return BasicResponseDto.builder()
-                .httpStatus(OK)
+                .httpStatus(CREATED)
                 .build();
     }
 

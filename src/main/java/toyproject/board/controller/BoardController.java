@@ -21,6 +21,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    @ResponseStatus(CREATED)
     @PostMapping("/new")
     public BoardResponseDto createBoard(@RequestBody BoardDto dto,
                                         HttpSession session) {
