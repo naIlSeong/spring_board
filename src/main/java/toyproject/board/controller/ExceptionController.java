@@ -9,8 +9,13 @@ import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.ExceptionDto;
 import toyproject.board.dto.ExceptionResponseDto;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -52,7 +57,7 @@ public class ExceptionController {
 
     /**
      * 상태 코드 : 400
-     * Validation 예외
+     * Validation 예외 - 컨트롤러
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponseDto> validationException(MethodArgumentNotValidException e) {
@@ -79,4 +84,38 @@ public class ExceptionController {
                 .body(responseDto);
     }
 
+    /**
+     * 상태 코드 : 400
+     * Validation 예외 - 서비스
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ExceptionResponseDto> validationException(ConstraintViolationException e) {
+
+        ExceptionResponseDto responseDto = ExceptionResponseDto.builder()
+                .httpStatus(BAD_REQUEST)
+                .exceptions(new ArrayList<>())
+                .build();
+
+        Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+        for (ConstraintViolation<?> violation : violations) {
+
+            Iterator<Path.Node> iterator = violation.getPropertyPath().iterator();
+            String field = null;
+            while (iterator.hasNext()) {
+                field = iterator.next().getName();
+            }
+
+            ExceptionDto exceptionDto = ExceptionDto.builder()
+                    .field(field)
+                    .message(violation.getMessage())
+                    .build();
+
+            responseDto.addException(exceptionDto);
+
+        }
+
+        return ResponseEntity
+                .badRequest()
+                .body(responseDto);
+    }
 }
