@@ -1,6 +1,7 @@
 package toyproject.board.dto.comment;
 
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.Comment;
 
@@ -19,9 +20,11 @@ public class CreateCommentNotLoginDto {
     private String content;
 
     @NotBlank
+    @Length(min = 2, max = 24)
     private String nickname;
 
     @NotBlank
+    @Length(min = 4)
     private String password;
 
     @Builder
