@@ -39,7 +39,7 @@ created on 2021. 7. 18
 
 
 - **Comment**
-    - [ ] createComment
+    - [x] createComment
     - [ ] deleteComment
     - [ ] updateComment
 

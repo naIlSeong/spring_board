@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
-import toyproject.board.dto.comment.CreateCommentDto;
+import toyproject.board.dto.comment.CreateCommentLoginDto;
+import toyproject.board.dto.comment.CreateCommentNotLoginDto;
+import toyproject.board.dto.comment.CreateCommentRequestDto;
 
 import javax.persistence.EntityManager;
 
@@ -57,14 +59,16 @@ class CommentServiceTest {
         // give
         Member member = em.find(Member.class, memberId);
 
-        CreateCommentDto dto = CreateCommentDto.builder()
+        CreateCommentRequestDto requestDto = CreateCommentRequestDto.builder()
                 .boardId(boardId)
                 .member(member)
                 .content("test comment")
                 .build();
 
+        CreateCommentLoginDto dto = requestDto.toDto(member);
+
         // when
-        Long commentId = commentService.createCommentLogin(dto);
+        Long commentId = commentService.createComment(dto);
 
         // then
         Comment comment = em.find(Comment.class, commentId);
@@ -79,15 +83,17 @@ class CommentServiceTest {
     @Test
     void 댓글_생성_비로그인() throws Exception {
         // give
-        CreateCommentDto dto = CreateCommentDto.builder()
+        CreateCommentRequestDto requestDto = CreateCommentRequestDto.builder()
                 .boardId(boardId)
                 .nickname("comment nickname")
                 .password("1234")
                 .content("test comment")
                 .build();
 
+        CreateCommentNotLoginDto dto = requestDto.toDto();
+
         // when
-        Long commentId = commentService.createCommentNotLogin(dto);
+        Long commentId = commentService.createComment(dto);
 
         // then
         Comment comment = em.find(Comment.class, commentId);
