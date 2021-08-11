@@ -46,4 +46,10 @@ public class Comment extends BaseEntity {
         this.password = password;
         this.board = board;
     }
+
+    //====수정 메서드====//
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
 }
