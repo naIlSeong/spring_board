@@ -18,7 +18,7 @@ public class UpdateCommentLoginDto {
     @NotBlank
     private String content;
 
-    @NotBlank
+    @NotNull
     private Member member;
 
     @Builder

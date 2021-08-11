@@ -41,7 +41,7 @@ created on 2021. 7. 18
 - **Comment**
     - [x] createComment
     - [ ] deleteComment
-    - [ ] updateComment
+    - [x] updateComment
 
 ### Controller
 
