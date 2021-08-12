@@ -91,22 +91,45 @@ public class BoardService {
     }
 
     @Transactional
-    @Validated({NotLogin.class, Default.class})
-    public void updateBoardNotLogin(@Valid UpdateBoardDto dto) {
+    @Validated
+    public void updateBoard(@Valid UpdateBoardLoginDto dto) {
 
-        Board board = isWriteableNotLogin(dto.getId(), dto.getPassword());
+        Board board = boardRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
 
-        updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
+        Long boardMemberId = board.getMember().getId();
+        Long requestMemberId = dto.getMember().getId();
+        if (!boardMemberId.equals(requestMemberId)) {
+            throw new IllegalArgumentException("게시물을 수정할 수 없습니다.");
+        }
+
+        if (hasText(dto.getTitle())) {
+            board.updateTitle(dto.getTitle());
+        }
+        if (hasText(dto.getContent())) {
+            board.updateContent(dto.getContent());
+        }
 
     }
 
     @Transactional
-    @Validated({Login.class, Default.class})
-    public void updateBoardLogin(@Valid UpdateBoardDto dto) {
+    @Validated
+    public void updateBoard(@Valid UpdateBoardNotLoginDto dto) {
 
-        Board board = isWriteableLogin(dto.getId(), dto.getMember());
+        Board board = boardRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
 
-        updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
+        boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
+        if (!isMatch) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
+        }
+
+        if (hasText(dto.getTitle())) {
+            board.updateTitle(dto.getTitle());
+        }
+        if (hasText(dto.getContent())) {
+            board.updateContent(dto.getContent());
+        }
 
     }
 

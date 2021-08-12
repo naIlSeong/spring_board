@@ -274,13 +274,13 @@ class BoardServiceTest {
         Long boardId = board.getId();
 
         // when
-        UpdateBoardDto dto = UpdateBoardDto.builder()
+        UpdateBoardLoginDto dto = UpdateBoardLoginDto.builder()
                 .id(boardId)
                 .member(member)
                 .title("updated title.")
                 .content("updated content.")
                 .build();
-        boardService.updateBoardLogin(dto);
+        boardService.updateBoard(dto);
 
         em.flush();
         em.clear();
@@ -308,13 +308,13 @@ class BoardServiceTest {
         Long boardId = board.getId();
 
         // when
-        UpdateBoardDto dto = UpdateBoardDto.builder()
+        UpdateBoardNotLoginDto dto = UpdateBoardNotLoginDto.builder()
                 .id(boardId)
                 .password("1234")
                 .title("updated title.")
                 .content("updated content.")
                 .build();
-        boardService.updateBoardNotLogin(dto);
+        boardService.updateBoard(dto);
 
         em.flush();
         em.clear();
@@ -342,7 +342,7 @@ class BoardServiceTest {
         Long boardId = board.getId();
 
         // when
-        UpdateBoardDto dto = UpdateBoardDto.builder()
+        UpdateBoardNotLoginDto dto = UpdateBoardNotLoginDto.builder()
                 .id(boardId)
                 .password("5432")
                 .title("updated title.")
@@ -354,7 +354,7 @@ class BoardServiceTest {
         em.clear();
 
         // then
-        assertThatThrownBy(() -> boardService.updateBoardNotLogin(dto))
+        assertThatThrownBy(() -> boardService.updateBoard(dto))
                 .hasMessage("비밀번호를 다시 확인해 주세요.");
     }
 
@@ -384,7 +384,7 @@ class BoardServiceTest {
         Long boardId = board.getId();
 
         // when
-        UpdateBoardDto dto = UpdateBoardDto.builder()
+        UpdateBoardLoginDto dto = UpdateBoardLoginDto.builder()
                 .id(boardId)
                 .member(otherMember)
                 .title("updated title.")
@@ -396,8 +396,8 @@ class BoardServiceTest {
         em.clear();
 
         // then
-        assertThatThrownBy(() -> boardService.updateBoardLogin(dto))
-                .hasMessage("게시물을 삭제할 수 없습니다.");
+        assertThatThrownBy(() -> boardService.updateBoard(dto))
+                .hasMessage("게시물을 수정할 수 없습니다.");
     }
 
     @Tag("getBoard")

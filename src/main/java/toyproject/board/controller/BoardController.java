@@ -54,18 +54,14 @@ public class BoardController {
     }
 
     @PostMapping("/update")
-    public BoardResponseDto updateBoard(@RequestBody UpdateBoardDto dto,
+    public BoardResponseDto updateBoard(@RequestBody UpdateBoardRequestDto dto,
                                         HttpSession session) {
 
-        Object attribute = session.getAttribute("member");
-        if (attribute != null) {
-            Member member = (Member) attribute;
-            dto.setMember(member);
-
-            boardService.updateBoardLogin(dto);
-
+        Member member = (Member) session.getAttribute("member");
+        if (member != null) {
+            boardService.updateBoard(dto.toDto(member));
         } else {
-            boardService.updateBoardNotLogin(dto);
+            boardService.updateBoard(dto.toDto());
         }
 
         return BoardResponseDto.builder()
