@@ -25,18 +25,11 @@ public class CommentController {
     public CommentResponseDto createComment(@RequestBody CreateCommentRequestDto dto,
                                             HttpSession session) {
 
-        Long commentId;
         Member member = (Member) session.getAttribute("member");
 
-        if (member != null) {
-
-            dto.setMember(member);
-            commentId = commentService.createComment(dto.toDto(member));
-
-        } else {
-            commentId = commentService.createComment(dto.toDto());
-        }
-
+        Long commentId = member != null
+                ? commentService.createComment(dto.toDto(member))
+                : commentService.createComment(dto.toDto());
 
         return CommentResponseDto.builder()
                 .httpStatus(CREATED)
@@ -48,21 +41,15 @@ public class CommentController {
     public CommentResponseDto updateComment(@RequestBody UpdateCommentRequestDto dto,
                                             HttpSession session) {
 
-        Long commentId;
         Member member = (Member) session.getAttribute("member");
 
-        if (member != null) {
-
-            dto.setMember(member);
-            commentId = commentService.updateComment(dto.toDto(member));
-
-        } else {
-            commentId = commentService.updateComment(dto.toDto());
-        }
+        Long commentId = member != null
+                ? commentService.updateComment(dto.toDto(member))
+                : commentService.updateComment(dto.toDto());
 
         return CommentResponseDto.builder()
                 .httpStatus(OK)
-                .commentId(dto.getCommentId())
+                .commentId(commentId)
                 .build();
     }
 
