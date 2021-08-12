@@ -38,18 +38,14 @@ public class BoardController {
     }
 
     @PostMapping("/delete")
-    public BasicResponseDto deleteBoard(@RequestBody DeleteBoardDto dto,
+    public BasicResponseDto deleteBoard(@RequestBody DeleteBoardRequestDto dto,
                                         HttpSession session) {
 
-        Object attribute = session.getAttribute("member");
-        if (attribute != null) {
-            Member member = (Member) attribute;
-            dto.setMember(member);
-
-            boardService.deleteBoardLogin(dto);
-
+        Member member = (Member) session.getAttribute("member");
+        if (member != null) {
+            boardService.deleteBoard(dto.toDto(member));
         } else {
-            boardService.deleteBoardNotLogin(dto);
+            boardService.deleteBoard(dto.toDto());
         }
 
         return BasicResponseDto.builder()

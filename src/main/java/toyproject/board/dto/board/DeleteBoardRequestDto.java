@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Getter
 @Setter
-public class DeleteBoardDto {
+public class DeleteBoardRequestDto {
 
     @NotNull
     private Long id;
@@ -28,9 +28,24 @@ public class DeleteBoardDto {
     private String password;
 
     @Builder
-    public DeleteBoardDto(Long id, Member member, String password) {
+    public DeleteBoardRequestDto(Long id, Member member, String password) {
         this.id = id;
         this.member = member;
         this.password = password;
     }
+
+    public DeleteBoardLoginDto toDto(Member member) {
+        return DeleteBoardLoginDto.builder()
+                .id(id)
+                .member(member)
+                .build();
+    }
+
+    public DeleteBoardNotLoginDto toDto() {
+        return DeleteBoardNotLoginDto.builder()
+                .id(id)
+                .password(password)
+                .build();
+    }
+
 }

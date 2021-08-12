@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
@@ -45,14 +44,14 @@ class BoardServiceTest {
                 .build();
         em.persist(member);
 
-        BoardDto dto = BoardDto.builder()
+        CreateBoardLoginDto dto = CreateBoardLoginDto.builder()
                 .title("test title.")
                 .content("test content.")
                 .member(member)
                 .build();
 
         // when
-        Long boardId = boardService.createBoardLogin(dto);
+        Long boardId = boardService.createBoard(dto);
 
         em.flush();
         em.clear();
@@ -71,7 +70,7 @@ class BoardServiceTest {
     @Test
     void 게시물_작성_성공_로그인X() throws Exception {
         // give
-        BoardDto dto = BoardDto.builder()
+        CreateBoardNotLoginDto dto = CreateBoardNotLoginDto.builder()
                 .title("test title.")
                 .content("test content.")
                 .nickname("test nickname")
@@ -79,7 +78,7 @@ class BoardServiceTest {
                 .build();
 
         // when
-        Long boardId = boardService.createBoardNotLogin(dto);
+        Long boardId = boardService.createBoard(dto);
 
         em.flush();
         em.clear();
@@ -108,50 +107,54 @@ class BoardServiceTest {
                 .build();
         em.persist(member);
 
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .member(member)
                 .build();
-        Long boardId = boardService.createBoardLogin(boardDto);
+        em.persist(board);
 
         em.flush();
         em.clear();
 
+        Long boardId = board.getId();
+
         // when
-        DeleteBoardDto dto = DeleteBoardDto.builder()
+        DeleteBoardLoginDto dto = DeleteBoardLoginDto.builder()
                 .id(boardId)
                 .member(member)
                 .build();
-        boardService.deleteBoardLogin(dto);
+        boardService.deleteBoard(dto);
 
         // then
-        Board board = em.find(Board.class, boardId);
-        assertThat(board).isNull();
+        Board result = em.find(Board.class, boardId);
+        assertThat(result).isNull();
     }
 
     @Tag("deleteBoard")
     @Test
     void 게시물_삭제_비로그인() throws Exception {
         // give
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .nickname("test")
-                .password("1234")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
                 .build();
-        Long boardId = boardService.createBoardNotLogin(boardDto);
+        em.persist(board);
+
+        Long boardId = board.getId();
 
         // when
-        DeleteBoardDto dto = DeleteBoardDto.builder()
+        DeleteBoardNotLoginDto dto = DeleteBoardNotLoginDto.builder()
                 .id(boardId)
                 .password("1234")
                 .build();
-        boardService.deleteBoardNotLogin(dto);
+        boardService.deleteBoard(dto);
 
         // then
-        Board board = em.find(Board.class, boardId);
-        assertThat(board).isNull();
+        Board result = em.find(Board.class, boardId);
+        assertThat(result).isNull();
     }
 
     @Tag("deleteBoard")
@@ -161,14 +164,14 @@ class BoardServiceTest {
 
 
         // when
-        DeleteBoardDto dto = DeleteBoardDto.builder()
+        DeleteBoardNotLoginDto dto = DeleteBoardNotLoginDto.builder()
                 .id(123L)
                 .password("1234")
                 .build();
         // boardService.deleteBoard(dto);
 
         // then
-        assertThatThrownBy(() -> boardService.deleteBoardNotLogin(dto))
+        assertThatThrownBy(() -> boardService.deleteBoard(dto))
                 .hasMessage("게시물을 찾을 수 없습니다.");
     }
 
@@ -188,59 +191,63 @@ class BoardServiceTest {
         em.persist(member);
         em.persist(otherMember);
 
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .member(member)
                 .build();
-        Long boardId = boardService.createBoardLogin(boardDto);
+        em.persist(board);
 
         em.flush();
         em.clear();
 
+        Long boardId = board.getId();
+
         // when
-        DeleteBoardDto dto = DeleteBoardDto.builder()
+        DeleteBoardLoginDto dto = DeleteBoardLoginDto.builder()
                 .id(boardId)
                 .member(otherMember)
                 .build();
         // boardService.deleteBoard(dto);
 
         // then
-        Board board = em.find(Board.class, boardId);
+        Board result = em.find(Board.class, boardId);
 
-        assertThatThrownBy(() -> boardService.deleteBoardLogin(dto))
+        assertThatThrownBy(() -> boardService.deleteBoard(dto))
                 .hasMessage("게시물을 삭제할 수 없습니다.");
-        assertThat(board.getMember().getId()).isNotEqualTo(boardId);
+        assertThat(result.getMember().getId()).isNotEqualTo(boardId);
     }
 
     @Tag("deleteBoard")
     @Test
     void 게시물_삭제_실패_비밀번호_틀림() throws Exception {
         // give
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .nickname("test")
-                .password("1234")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
                 .build();
-        Long boardId = boardService.createBoardNotLogin(boardDto);
+        em.persist(board);
 
         em.flush();
         em.clear();
 
+        Long boardId = board.getId();
+
         // when
-        DeleteBoardDto dto = DeleteBoardDto.builder()
+        DeleteBoardNotLoginDto dto = DeleteBoardNotLoginDto.builder()
                 .id(boardId)
                 .password("6789")
                 .build();
         // boardService.deleteBoard(dto);
 
         // then
-        Board board = em.find(Board.class, boardId);
+        Board result = em.find(Board.class, boardId);
 
-        assertThatThrownBy(() -> boardService.deleteBoardNotLogin(dto))
+        assertThatThrownBy(() -> boardService.deleteBoard(dto))
                 .hasMessage("비밀번호를 다시 확인해 주세요.");
-        assertThat(BCrypt.checkpw("6789", board.getPassword())).isFalse();
+        assertThat(BCrypt.checkpw("6789", result.getPassword())).isFalse();
     }
 
     /**
@@ -257,12 +264,14 @@ class BoardServiceTest {
                 .build();
         em.persist(member);
 
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .member(member)
                 .build();
-        Long boardId = boardService.createBoardLogin(boardDto);
+        em.persist(board);
+
+        Long boardId = board.getId();
 
         // when
         UpdateBoardDto dto = UpdateBoardDto.builder()
@@ -277,24 +286,26 @@ class BoardServiceTest {
         em.clear();
 
         // then
-        Board board = em.find(Board.class, boardId);
+        Board result = em.find(Board.class, boardId);
 
-        assertThat(board.getTitle()).isEqualTo("updated title.");
-        assertThat(board.getContent()).isEqualTo("updated content.");
-        assertThat(board.getPassword()).isNull();
+        assertThat(result.getTitle()).isEqualTo("updated title.");
+        assertThat(result.getContent()).isEqualTo("updated content.");
+        assertThat(result.getPassword()).isNull();
     }
 
     @Tag("updateBoard")
     @Test
     void 게시물_수정_비로그인() throws Exception {
         // give
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .nickname("test")
-                .password("1234")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
                 .build();
-        Long boardId = boardService.createBoardNotLogin(boardDto);
+        em.persist(board);
+
+        Long boardId = board.getId();
 
         // when
         UpdateBoardDto dto = UpdateBoardDto.builder()
@@ -309,24 +320,26 @@ class BoardServiceTest {
         em.clear();
 
         // then
-        Board board = em.find(Board.class, boardId);
+        Board result = em.find(Board.class, boardId);
 
-        assertThat(board.getTitle()).isEqualTo("updated title.");
-        assertThat(board.getContent()).isEqualTo("updated content.");
-        assertThat(board.getMember()).isNull();
+        assertThat(result.getTitle()).isEqualTo("updated title.");
+        assertThat(result.getContent()).isEqualTo("updated content.");
+        assertThat(result.getMember()).isNull();
     }
 
     @Tag("updateBoard")
     @Test
     void 게시물_수정_비로그인_비밀번호_틀림() throws Exception {
         // give
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .nickname("test")
-                .password("1234")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
                 .build();
-        Long boardId = boardService.createBoardNotLogin(boardDto);
+        em.persist(board);
+
+        Long boardId = board.getId();
 
         // when
         UpdateBoardDto dto = UpdateBoardDto.builder()
@@ -361,12 +374,14 @@ class BoardServiceTest {
         em.persist(member);
         em.persist(otherMember);
 
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .member(member)
                 .build();
-        Long boardId = boardService.createBoardLogin(boardDto);
+        em.persist(board);
+
+        Long boardId = board.getId();
 
         // when
         UpdateBoardDto dto = UpdateBoardDto.builder()
@@ -389,16 +404,18 @@ class BoardServiceTest {
     @Test
     void 게시물_조회_성공() throws Exception {
         // give
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .nickname("test")
                 .password("1234")
                 .build();
-        Long boardId = boardService.createBoardNotLogin(boardDto);
+        em.persist(board);
 
         em.flush();
         em.clear();
+
+        Long boardId = board.getId();
 
         // when
         BoardNoPw result = boardService.getBoard(boardId);
@@ -427,14 +444,12 @@ class BoardServiceTest {
     void 게시물_조회() throws Exception {
         // give
         for (int i = 0; i < 100; i++) {
-            BoardDto boardDto = BoardDto.builder()
+            Board board = Board.builder()
                     .title("title" + i)
                     .content("content" + i)
                     .nickname("nickname" + i)
                     .password("1234")
                     .build();
-
-            Board board = boardDto.toEntity();
             em.persist(board);
         }
 
@@ -454,14 +469,12 @@ class BoardServiceTest {
     void 게시물_조회_마지막_페이지_반환() throws Exception {
         // give
         for (int i = 0; i < 100; i++) {
-            BoardDto boardDto = BoardDto.builder()
+            Board board = Board.builder()
                     .title("title" + i)
                     .content("content" + i)
                     .nickname("nickname" + i)
                     .password("1234")
                     .build();
-
-            Board board = boardDto.toEntity();
             em.persist(board);
         }
 
@@ -496,21 +509,18 @@ class BoardServiceTest {
     @Test
     void 게시물_조회_with_member_id_게시물X() throws Exception {
         // give
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("title")
                 .content("content")
                 .nickname("nickname")
                 .password("1234")
                 .build();
-
-        Board board = boardDto.toEntity();
         em.persist(board);
 
-        MemberDto memberDto = MemberDto.builder()
+        Member member = Member.builder()
                 .username("test")
                 .password("12341234")
                 .build();
-        Member member = memberDto.toEntity();
         em.persist(member);
 
         // when
@@ -527,23 +537,21 @@ class BoardServiceTest {
     @Test
     void 게시물_검색_제목() throws Exception {
         // give
-        Member testMember = MemberDto.builder()
+        Member testMember = Member.builder()
                 .username("test member")
                 .password("12341234")
-                .build()
-                .toEntity();
+                .build();
         em.persist(testMember);
 
-        Member bestMember = MemberDto.builder()
+        Member bestMember = Member.builder()
                 .username("best member")
                 .password("12341234")
-                .build()
-                .toEntity();
+                .build();
         em.persist(bestMember);
 
         for (int i = 1; i <= 20; i++) {
 
-            BoardDto.BoardDtoBuilder builder = BoardDto.builder();
+            Board.BoardBuilder builder = Board.builder();
 
             if (i % 2 == 0) {
                 builder = builder
@@ -559,7 +567,7 @@ class BoardServiceTest {
                         .member(testMember);
             }
 
-            em.persist(builder.build().toEntity());
+            em.persist(builder.build());
         }
 
         em.flush();
@@ -604,7 +612,7 @@ class BoardServiceTest {
 
         for (int i = 1; i <= 20; i++) {
 
-            BoardDto.BoardDtoBuilder builder = BoardDto.builder();
+            Board.BoardBuilder builder = Board.builder();
 
             if (i % 2 == 0) {
                 builder = builder
@@ -620,7 +628,7 @@ class BoardServiceTest {
                         .member(testMember);
             }
 
-            em.persist(builder.build().toEntity());
+            em.persist(builder.build());
         }
 
         em.flush();
@@ -656,13 +664,12 @@ class BoardServiceTest {
     @Test
     void 게시물_검색_실패() throws Exception {
         // give
-        BoardDto boardDto = BoardDto.builder()
+        Board board = Board.builder()
                 .title("test title.")
                 .content("test content.")
                 .nickname("test")
                 .password("1234")
                 .build();
-        Board board = boardDto.toEntity();
         em.persist(board);
 
         em.flush();

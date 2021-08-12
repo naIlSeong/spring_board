@@ -58,20 +58,33 @@ public class BoardService {
     }
 
     @Transactional
-    @Validated({NotLogin.class, Default.class})
-    public void deleteBoardNotLogin(@Valid DeleteBoardDto dto) {
+    @Validated
+    public void deleteBoard(@Valid DeleteBoardLoginDto dto) {
 
-        Board board = isWriteableNotLogin(dto.getId(), dto.getPassword());
+        Board board = boardRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+
+        Long boardMemberId = board.getMember().getId();
+        Long requestMemberId = dto.getMember().getId();
+        if (!boardMemberId.equals(requestMemberId)) {
+            throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
+        }
 
         boardRepository.delete(board);
 
     }
 
     @Transactional
-    @Validated(Login.class)
-    public void deleteBoardLogin(@Valid DeleteBoardDto dto) {
+    @Validated
+    public void deleteBoard(@Valid DeleteBoardNotLoginDto dto) {
 
-        Board board = isWriteableLogin(dto.getId(), dto.getMember());
+        Board board = boardRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+
+        boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
+        if (!isMatch) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
+        }
 
         boardRepository.delete(board);
 
