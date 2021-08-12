@@ -13,11 +13,8 @@ import toyproject.board.domain.board.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.*;
-import toyproject.board.marker.Login;
-import toyproject.board.marker.NotLogin;
 
 import javax.validation.Valid;
-import javax.validation.groups.Default;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -61,14 +58,7 @@ public class BoardService {
     @Validated
     public void deleteBoard(@Valid DeleteBoardLoginDto dto) {
 
-        Board board = boardRepository.findById(dto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
-
-        Long boardMemberId = board.getMember().getId();
-        Long requestMemberId = dto.getMember().getId();
-        if (!boardMemberId.equals(requestMemberId)) {
-            throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
-        }
+        Board board = isWriteableLogin(dto.getId(), dto.getMember(), true);
 
         boardRepository.delete(board);
 
@@ -78,13 +68,7 @@ public class BoardService {
     @Validated
     public void deleteBoard(@Valid DeleteBoardNotLoginDto dto) {
 
-        Board board = boardRepository.findById(dto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
-
-        boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
-        if (!isMatch) {
-            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
-        }
+        Board board = isWriteableNotLogin(dto.getId(), dto.getPassword());
 
         boardRepository.delete(board);
 
@@ -94,21 +78,9 @@ public class BoardService {
     @Validated
     public void updateBoard(@Valid UpdateBoardLoginDto dto) {
 
-        Board board = boardRepository.findById(dto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+        Board board = isWriteableLogin(dto.getId(), dto.getMember(), false);
 
-        Long boardMemberId = board.getMember().getId();
-        Long requestMemberId = dto.getMember().getId();
-        if (!boardMemberId.equals(requestMemberId)) {
-            throw new IllegalArgumentException("게시물을 수정할 수 없습니다.");
-        }
-
-        if (hasText(dto.getTitle())) {
-            board.updateTitle(dto.getTitle());
-        }
-        if (hasText(dto.getContent())) {
-            board.updateContent(dto.getContent());
-        }
+        updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
 
     }
 
@@ -116,20 +88,9 @@ public class BoardService {
     @Validated
     public void updateBoard(@Valid UpdateBoardNotLoginDto dto) {
 
-        Board board = boardRepository.findById(dto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+        Board board = isWriteableNotLogin(dto.getId(), dto.getPassword());
 
-        boolean isMatch = BCrypt.checkpw(dto.getPassword(), board.getPassword());
-        if (!isMatch) {
-            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
-        }
-
-        if (hasText(dto.getTitle())) {
-            board.updateTitle(dto.getTitle());
-        }
-        if (hasText(dto.getContent())) {
-            board.updateContent(dto.getContent());
-        }
+        updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
 
     }
 
@@ -158,7 +119,7 @@ public class BoardService {
         return board;
     }
 
-    private Board isWriteableLogin(Long boardId, Member member) {
+    private Board isWriteableLogin(Long boardId, Member member, boolean isDelete) {
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
@@ -167,7 +128,9 @@ public class BoardService {
         Long requestMemberId = member.getId();
 
         if (!memberId.equals(requestMemberId)) {
-            throw new IllegalArgumentException("게시물을 삭제할 수 없습니다.");
+            String condition = isDelete ? "삭제" : "수정";
+            String message = "게시물을 " + condition + "할 수 없습니다.";
+            throw new IllegalArgumentException(message);
         }
 
         return board;

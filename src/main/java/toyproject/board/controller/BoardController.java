@@ -66,6 +66,7 @@ public class BoardController {
 
         return BoardResponseDto.builder()
                 .httpStatus(OK)
+                .boardId(dto.getId())
                 .build();
     }
 
