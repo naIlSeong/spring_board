@@ -31,12 +31,11 @@ public class BoardService {
     private final BoardQueryRepository boardQueryRepository;
 
     @Transactional
-    @Validated({NotLogin.class, Default.class})
-    public Long createBoardNotLogin(@Valid BoardDto dto) {
+    @Validated
+    public Long createBoard(@Valid CreateBoardLoginDto dto) {
 
-        dto.setPassword(
-                BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(10))
-        );
+        Member member = dto.getMember();
+        dto.setNickname(member.getUsername());
 
         Board board = dto.toEntity();
         boardRepository.save(board);
@@ -45,11 +44,12 @@ public class BoardService {
     }
 
     @Transactional
-    @Validated({Login.class, Default.class})
-    public Long createBoardLogin(@Valid BoardDto dto) {
+    @Validated
+    public Long createBoard(@Valid CreateBoardNotLoginDto dto) {
 
-        dto.setNickname(dto.getMember().getUsername());
-        dto.setPassword(null);
+        dto.setPassword(
+                BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(10))
+        );
 
         Board board = dto.toEntity();
         boardRepository.save(board);

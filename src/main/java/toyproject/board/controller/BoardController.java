@@ -23,21 +23,13 @@ public class BoardController {
 
     @ResponseStatus(CREATED)
     @PostMapping("/new")
-    public BoardResponseDto createBoard(@RequestBody BoardDto dto,
+    public BoardResponseDto createBoard(@RequestBody CreateBoardRequestDto dto,
                                         HttpSession session) {
 
-        Long boardId;
-
-        Object attribute = session.getAttribute("member");
-        if (attribute != null) {
-            Member member = (Member) attribute;
-            dto.setMember(member);
-
-            boardId = boardService.createBoardLogin(dto);
-
-        } else {
-            boardId = boardService.createBoardNotLogin(dto);
-        }
+        Member member = (Member) session.getAttribute("member");
+        Long boardId = member != null
+                ? boardService.createBoard(dto.toDto(member))
+                : boardService.createBoard(dto.toDto());
 
         return BoardResponseDto.builder()
                 .httpStatus(CREATED)
