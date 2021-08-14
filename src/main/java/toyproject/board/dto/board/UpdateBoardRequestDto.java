@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.marker.Login;
 import toyproject.board.marker.NotLogin;

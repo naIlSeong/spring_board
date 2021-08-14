@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.*;
@@ -41,18 +42,19 @@ public class BoardController {
     public BasicResponseDto deleteBoard(@RequestBody DeleteBoardRequestDto dto,
                                         HttpSession session) {
 
-        boolean isLoggedInBoard = boardService.checkCondition(dto.getId());
+        Board board = boardService.getBoardWithPassword(dto.getId());
 
-        if (isLoggedInBoard) {
+        boolean isLoggedIn = board.getPassword() == null;
+        if (isLoggedIn) {
             Member member = (Member) session.getAttribute("member");
             if (member == null) {
                 throw new IllegalArgumentException("로그인이 필요합니다.");
             }
 
-            boardService.deleteBoard(dto.toDto(member));
+            boardService.deleteBoard(dto.toDto(member)); // 로그인 메서드
 
         } else {
-            boardService.deleteBoard(dto.toDto());
+            boardService.deleteBoard(dto.toDto()); // 비로그인 메서드
         }
 
         return BasicResponseDto.builder()
@@ -64,17 +66,20 @@ public class BoardController {
     public BoardResponseDto updateBoard(@RequestBody UpdateBoardRequestDto dto,
                                         HttpSession session) {
 
-        boolean isLoggedInBoard = boardService.checkCondition(dto.getId());
+        Board board = boardService.getBoardWithPassword(dto.getId());
 
-        if (isLoggedInBoard) {
+        boolean isLoggedIn = board.getPassword() == null;
+        if (isLoggedIn) {
+
             Member member = (Member) session.getAttribute("member");
             if (member == null) {
+                throw new IllegalArgumentException("로그인이 필요합니다.");
             }
 
-            boardService.updateBoard(dto.toDto(member));
+            boardService.updateBoard(dto.toDto(member)); // 로그인 메서드
 
         } else {
-            boardService.updateBoard(dto.toDto());
+            boardService.updateBoard(dto.toDto()); // 비로그인 메서드
         }
 
         return BoardResponseDto.builder()

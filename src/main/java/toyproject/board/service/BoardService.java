@@ -55,50 +55,70 @@ public class BoardService {
     }
 
     @Transactional
-    @Validated
+    @Validated // 로그인
     public void deleteBoard(@Valid DeleteBoardLoginDto dto) {
 
-        Board board = isWriteableLogin(dto.getId(), dto.getMember(), true);
+        Board board = getBoardWithPassword(dto.getId());
+        checkMemberId(board.getMember().getId(), dto.getMember().getId(), true);
 
         boardRepository.delete(board);
 
     }
 
     @Transactional
-    @Validated
+    @Validated // 비로그인
     public void deleteBoard(@Valid DeleteBoardNotLoginDto dto) {
 
-        Board board = isWriteableNotLogin(dto.getId(), dto.getPassword());
+        Board board = getBoardWithPassword(dto.getId());
+        checkPassword(dto.getPassword(), board.getPassword());
 
         boardRepository.delete(board);
 
     }
 
     @Transactional
-    @Validated
+    @Validated // 로그인
     public void updateBoard(@Valid UpdateBoardLoginDto dto) {
 
-        Board board = isWriteableLogin(dto.getId(), dto.getMember(), false);
+        if (hasText(dto.getTitle()) || hasText(dto.getContent())) {
+            Board board = getBoardWithPassword(dto.getId());
+            checkMemberId(board.getMember().getId(), dto.getMember().getId(), false);
+            updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
+        }
 
-        updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
 
     }
 
     @Transactional
-    @Validated
+    @Validated // 비로그인
     public void updateBoard(@Valid UpdateBoardNotLoginDto dto) {
 
-        Board board = isWriteableNotLogin(dto.getId(), dto.getPassword());
-
-        updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
+        if (hasText(dto.getTitle()) || hasText(dto.getContent())) {
+            Board board = getBoardWithPassword(dto.getId());
+            checkPassword(dto.getPassword(), board.getPassword());
+            updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
+        }
 
     }
 
-    public boolean checkCondition(Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+    private void checkMemberId(Long memberId, Long requestMemberId, boolean isDelete) {
+        if (!memberId.equals(requestMemberId)) {
+            String condition = isDelete ? "삭제" : "수정";
+            String message = "게시물을 " + condition + "할 수 없습니다.";
+            throw new IllegalArgumentException(message);
+        }
+    }
 
-        return board.getPassword() == null;
+    private void checkPassword(String plainPassword, String hashed) {
+        boolean isMatch = BCrypt.checkpw(plainPassword, hashed);
+        if (!isMatch) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
+        }
+    }
+
+    public Board getBoardWithPassword(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
     }
 
     private void updateTitleAndContent(String title, String content, Board board) {
@@ -111,36 +131,6 @@ public class BoardService {
             board.updateContent(content);
         }
 
-    }
-
-    private Board isWriteableNotLogin(Long boardId, String password) {
-
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
-
-        boolean isMatch = BCrypt.checkpw(password, board.getPassword());
-        if (!isMatch) {
-            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
-        }
-
-        return board;
-    }
-
-    private Board isWriteableLogin(Long boardId, Member member, boolean isDelete) {
-
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
-
-        Long memberId = board.getMember().getId();
-        Long requestMemberId = member.getId();
-
-        if (!memberId.equals(requestMemberId)) {
-            String condition = isDelete ? "삭제" : "수정";
-            String message = "게시물을 " + condition + "할 수 없습니다.";
-            throw new IllegalArgumentException(message);
-        }
-
-        return board;
     }
 
     public BoardNoPw getBoard(Long boardId) {
