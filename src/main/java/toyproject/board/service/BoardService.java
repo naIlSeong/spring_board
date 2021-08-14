@@ -86,7 +86,6 @@ public class BoardService {
             updateTitleAndContent(dto.getTitle(), dto.getContent(), board);
         }
 
-
     }
 
     @Transactional

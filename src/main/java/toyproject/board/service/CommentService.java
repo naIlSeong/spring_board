@@ -9,10 +9,7 @@ import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.comment.CommentRepository;
-import toyproject.board.dto.comment.CreateCommentLoginDto;
-import toyproject.board.dto.comment.CreateCommentNotLoginDto;
-import toyproject.board.dto.comment.UpdateCommentLoginDto;
-import toyproject.board.dto.comment.UpdateCommentNotLoginDto;
+import toyproject.board.dto.comment.*;
 
 import javax.validation.Valid;
 
@@ -57,8 +54,7 @@ public class CommentService {
     @Validated
     public Long updateComment(@Valid UpdateCommentLoginDto dto) {
 
-        Comment comment = commentRepository.findById(dto.getCommentId())
-                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+        Comment comment = getComment(dto.getCommentId());
 
         Long memberId = comment.getMember().getId();
         Long requestMemberId = dto.getMember().getId();
@@ -75,8 +71,7 @@ public class CommentService {
     @Validated
     public Long updateComment(@Valid UpdateCommentNotLoginDto dto) {
 
-        Comment comment = commentRepository.findById(dto.getCommentId())
-                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+        Comment comment = getComment(dto.getCommentId());
 
         String hashed = comment.getPassword();
         String plainPassword = dto.getPassword();
@@ -88,6 +83,42 @@ public class CommentService {
         comment.updateContent(dto.getContent());
 
         return comment.getId();
+    }
+
+    public Comment getComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    @Validated // 로그인
+    public void deleteComment(@Valid DeleteCommentLoginDto dto) {
+
+        Comment comment = getComment(dto.getId());
+
+        Long memberId = comment.getMember().getId();
+        Long requestMemberId = dto.getMember().getId();
+        if (!memberId.equals(requestMemberId)) {
+            throw new IllegalArgumentException("댓글을 삭제할 수 없습니다.");
+        }
+
+        commentRepository.delete(comment);
+    }
+
+    @Transactional
+    @Validated // 비로그인
+    public void deleteComment(@Valid DeleteCommentNotLoginDto dto) {
+
+        Comment comment = getComment(dto.getId());
+
+        String hashed = comment.getPassword();
+        String plainPassword = dto.getPassword();
+        boolean isMatch = BCrypt.checkpw(plainPassword, hashed);
+        if (!isMatch) {
+            throw new IllegalArgumentException("비밀번호를 다시 확인해 주세요.");
+        }
+
+        commentRepository.delete(comment);
     }
 
 }
