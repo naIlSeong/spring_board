@@ -94,6 +94,13 @@ public class BoardService {
 
     }
 
+    public boolean checkCondition(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+
+        return board.getPassword() == null;
+    }
+
     private void updateTitleAndContent(String title, String content, Board board) {
 
         if (hasText(title)) {

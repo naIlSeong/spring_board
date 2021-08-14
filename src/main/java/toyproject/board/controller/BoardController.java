@@ -41,9 +41,16 @@ public class BoardController {
     public BasicResponseDto deleteBoard(@RequestBody DeleteBoardRequestDto dto,
                                         HttpSession session) {
 
-        Member member = (Member) session.getAttribute("member");
-        if (member != null) {
+        boolean isLoggedInBoard = boardService.checkCondition(dto.getId());
+
+        if (isLoggedInBoard) {
+            Member member = (Member) session.getAttribute("member");
+            if (member == null) {
+                throw new IllegalArgumentException("로그인이 필요합니다.");
+            }
+
             boardService.deleteBoard(dto.toDto(member));
+
         } else {
             boardService.deleteBoard(dto.toDto());
         }
@@ -57,9 +64,15 @@ public class BoardController {
     public BoardResponseDto updateBoard(@RequestBody UpdateBoardRequestDto dto,
                                         HttpSession session) {
 
-        Member member = (Member) session.getAttribute("member");
-        if (member != null) {
+        boolean isLoggedInBoard = boardService.checkCondition(dto.getId());
+
+        if (isLoggedInBoard) {
+            Member member = (Member) session.getAttribute("member");
+            if (member == null) {
+            }
+
             boardService.updateBoard(dto.toDto(member));
+
         } else {
             boardService.updateBoard(dto.toDto());
         }
