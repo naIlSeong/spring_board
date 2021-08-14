@@ -1,10 +1,9 @@
 package toyproject.board.dto.comment;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import toyproject.board.domain.member.Member;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class UpdateCommentRequestDto {
