@@ -244,4 +244,117 @@ class CommentServiceTest {
         assertThat(result.getContent()).isEqualTo("test comment");
     }
 
+    @Tag("deleteComment")
+    @Test
+    void 댓글_삭제_로그인() throws Exception {
+        // give
+        Member member = em.find(Member.class, memberId);
+        Board board = em.find(Board.class, boardId);
+
+        Comment comment = Comment.builder()
+                .content("test comment")
+                .member(member)
+                .board(board)
+                .build();
+        em.persist(comment);
+
+        DeleteCommentLoginDto dto = DeleteCommentLoginDto.builder()
+                .id(comment.getId())
+                .member(member)
+                .build();
+
+        // when
+        commentService.deleteComment(dto);
+
+        // then
+        Comment result = em.find(Comment.class, comment.getId());
+        assertThat(result).isNull();
+    }
+
+    @Tag("deleteComment")
+    @Test
+    void 댓글_삭제_비로그인() throws Exception {
+        // give
+        Board board = em.find(Board.class, boardId);
+
+        Comment comment = Comment.builder()
+                .content("test comment")
+                .nickname("test nickname")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                .board(board)
+                .build();
+        em.persist(comment);
+
+        DeleteCommentNotLoginDto dto = DeleteCommentNotLoginDto.builder()
+                .id(comment.getId())
+                .password("1234")
+                .build();
+
+        // when
+        commentService.deleteComment(dto);
+
+        // then
+        Comment result = em.find(Comment.class, comment.getId());
+        assertThat(result).isNull();
+    }
+
+    @Tag("deleteComment")
+    @Test
+    void 댓글_삭제_로그인_실패() throws Exception {
+        // give
+        Member member = em.find(Member.class, memberId);
+        Board board = em.find(Board.class, boardId);
+
+        Comment comment = Comment.builder()
+                .content("test comment")
+                .member(member)
+                .board(board)
+                .build();
+        em.persist(comment);
+
+        Member otherMember = Member.builder()
+                .username("other member")
+                .password("1234")
+                .build();
+
+        DeleteCommentLoginDto dto = DeleteCommentLoginDto.builder()
+                .id(comment.getId())
+                .member(otherMember)
+                .build();
+
+        // when
+        // commentService.deleteComment(dto);
+
+        // then
+        assertThatThrownBy(() -> commentService.deleteComment(dto))
+                .hasMessage("댓글을 삭제할 수 없습니다.");
+    }
+
+    @Tag("deleteComment")
+    @Test
+    void 댓글_삭제_비로그인_실패() throws Exception {
+        // give
+        Board board = em.find(Board.class, boardId);
+
+        Comment comment = Comment.builder()
+                .content("test comment")
+                .nickname("test nickname")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                .board(board)
+                .build();
+        em.persist(comment);
+
+        DeleteCommentNotLoginDto dto = DeleteCommentNotLoginDto.builder()
+                .id(comment.getId())
+                .password("5678")
+                .build();
+
+        // when
+        // commentService.deleteComment(dto);
+
+        // then
+        assertThatThrownBy(() -> commentService.deleteComment(dto))
+                .hasMessage("비밀번호를 다시 확인해 주세요.");
+    }
+
 }
