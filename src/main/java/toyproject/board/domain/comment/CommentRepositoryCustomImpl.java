@@ -21,6 +21,8 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
                         comment.id,
                         comment.content,
                         comment.nickname,
+                        comment.member.id,
+                        comment.board.id,
                         comment.createdDate,
                         comment.lastModifiedDate
                 ))
