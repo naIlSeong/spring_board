@@ -5,12 +5,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.board.Board;
+import toyproject.board.domain.comment.CommentRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.*;
+import toyproject.board.dto.comment.CommentNoPw;
 import toyproject.board.service.BoardService;
 
 import javax.servlet.http.HttpSession;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -21,6 +25,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentRepository commentRepository;
 
     @ResponseStatus(CREATED)
     @PostMapping("/new")
@@ -88,6 +93,7 @@ public class BoardController {
                 .build();
     }
 
+/*
     @GetMapping("/{id}")
     public BoardQueryResponseDto getBoard(@PathVariable("id") Long id) {
 
@@ -96,6 +102,24 @@ public class BoardController {
         return BoardQueryResponseDto.builder()
                 .httpStatus(OK)
                 .boardNoPw(board)
+                .build();
+    }
+*/
+
+    @GetMapping("/{boardId}")
+    public BoardDetailResponse getBoardDetail(@PathVariable("boardId") Long boardId) {
+
+        BoardNoPw board = boardService.getBoard(boardId);
+        List<CommentNoPw> comments = commentRepository.getCommentsByBoardId(boardId);
+
+        BoardDetail boardDetail = BoardDetail.builder()
+                .board(board)
+                .comments(comments)
+                .build();
+
+        return BoardDetailResponse.builder()
+                .httpStatus(OK)
+                .boardDetail(boardDetail)
                 .build();
     }
 
