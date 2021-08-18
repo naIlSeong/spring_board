@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.CommentRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
@@ -47,9 +46,7 @@ public class BoardController {
     public BasicResponseDto deleteBoard(@RequestBody DeleteBoardRequestDto dto,
                                         HttpSession session) {
 
-        Board board = boardService.getBoardWithPassword(dto.getId());
-
-        boolean isLoggedIn = board.getPassword() == null;
+        boolean isLoggedIn = boardService.isLoggedIn(dto.getId());
         if (isLoggedIn) {
             Member member = (Member) session.getAttribute("member");
             if (member == null) {
@@ -71,9 +68,7 @@ public class BoardController {
     public BoardResponseDto updateBoard(@RequestBody UpdateBoardRequestDto dto,
                                         HttpSession session) {
 
-        Board board = boardService.getBoardWithPassword(dto.getId());
-
-        boolean isLoggedIn = board.getPassword() == null;
+        boolean isLoggedIn = boardService.isLoggedIn(dto.getId());
         if (isLoggedIn) {
 
             Member member = (Member) session.getAttribute("member");

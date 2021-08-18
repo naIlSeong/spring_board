@@ -115,9 +115,23 @@ public class BoardService {
         }
     }
 
+    /**
+     * SELECT * FROM board WHERE baord.board_id = :boardId
+     */
     public Board getBoardWithPassword(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+    }
+
+    /**
+     * SELECT board.password FROM board WHERE board.board_id = :boardId
+     */
+    public boolean isLoggedIn(Long boardId) {
+        CheckPasswordDto result = boardQueryRepository.findPassword(boardId);
+        if (result == null) {
+            throw new NullPointerException("게시물을 찾을 수 없습니다.");
+        }
+        return result.getPassword() == null;
     }
 
     private void updateTitleAndContent(String title, String content, Board board) {

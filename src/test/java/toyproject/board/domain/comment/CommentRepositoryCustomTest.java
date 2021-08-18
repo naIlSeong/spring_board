@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
+import toyproject.board.domain.member.Member;
 import toyproject.board.dto.comment.CommentNoPw;
 
 import javax.persistence.EntityManager;

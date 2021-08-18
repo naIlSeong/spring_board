@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import toyproject.board.dto.board.BoardNoPw;
-import toyproject.board.dto.board.BoardSearchCondition;
-import toyproject.board.dto.board.QBoardNoPw;
+import toyproject.board.dto.board.*;
 
 import java.util.List;
 
@@ -88,6 +86,18 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public CheckPasswordDto findPassword(Long boardId) {
+        return queryFactory
+                .select(new QCheckPasswordDto(
+                        board.id,
+                        board.password
+                ))
+                .from(board)
+                .where(board.id.eq(boardId))
+                .fetchOne();
     }
 
     private Predicate nicknameLike(String nickname) {
