@@ -9,7 +9,7 @@ import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.comment.CommentRepository;
-import toyproject.board.dto.comment.*;
+import toyproject.board.dto.comment.command.*;
 
 import javax.validation.Valid;
 

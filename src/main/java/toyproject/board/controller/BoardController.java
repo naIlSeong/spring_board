@@ -8,6 +8,14 @@ import toyproject.board.domain.comment.CommentRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.*;
+import toyproject.board.dto.board.command.CreateBoardRequestDto;
+import toyproject.board.dto.board.command.DeleteBoardRequestDto;
+import toyproject.board.dto.board.command.UpdateBoardRequestDto;
+import toyproject.board.dto.board.query.BoardDetail;
+import toyproject.board.dto.board.query.BoardSearchCondition;
+import toyproject.board.dto.board.response.BoardDetailResponseDto;
+import toyproject.board.dto.board.response.BoardListResponseDto;
+import toyproject.board.dto.board.response.BoardResponseDto;
 import toyproject.board.dto.comment.CommentNoPw;
 import toyproject.board.service.BoardService;
 
@@ -102,7 +110,7 @@ public class BoardController {
 */
 
     @GetMapping("/{boardId}")
-    public BoardDetailResponse getBoardDetail(@PathVariable("boardId") Long boardId) {
+    public BoardDetailResponseDto getBoardDetail(@PathVariable("boardId") Long boardId) {
 
         BoardNoPw board = boardService.getBoard(boardId);
         List<CommentNoPw> comments = commentRepository.getCommentsByBoardId(boardId);
@@ -112,7 +120,7 @@ public class BoardController {
                 .comments(comments)
                 .build();
 
-        return BoardDetailResponse.builder()
+        return BoardDetailResponseDto.builder()
                 .httpStatus(OK)
                 .boardDetail(boardDetail)
                 .build();

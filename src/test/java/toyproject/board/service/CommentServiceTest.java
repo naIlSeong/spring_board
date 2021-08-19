@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
-import toyproject.board.dto.comment.*;
+import toyproject.board.dto.comment.command.*;
 
 import javax.persistence.EntityManager;
 

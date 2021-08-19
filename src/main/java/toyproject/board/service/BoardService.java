@@ -9,10 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import toyproject.board.domain.board.Board;
-import toyproject.board.domain.board.BoardQueryRepository;
+import toyproject.board.domain.board.query.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.*;
+import toyproject.board.dto.board.command.*;
+import toyproject.board.dto.board.query.BoardSearchCondition;
+import toyproject.board.dto.board.query.CheckPasswordDto;
 
 import javax.validation.Valid;
 

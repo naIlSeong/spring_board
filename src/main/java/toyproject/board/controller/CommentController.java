@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
-import toyproject.board.dto.comment.CommentResponseDto;
-import toyproject.board.dto.comment.CreateCommentRequestDto;
-import toyproject.board.dto.comment.DeleteCommentRequestDto;
-import toyproject.board.dto.comment.UpdateCommentRequestDto;
+import toyproject.board.dto.comment.response.CommentResponseDto;
+import toyproject.board.dto.comment.command.CreateCommentRequestDto;
+import toyproject.board.dto.comment.command.DeleteCommentRequestDto;
+import toyproject.board.dto.comment.command.UpdateCommentRequestDto;
 import toyproject.board.service.CommentService;
 
 import javax.servlet.http.HttpSession;

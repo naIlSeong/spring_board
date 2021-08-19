@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.member.Member;
-import toyproject.board.domain.member.MemberQueryRepository;
+import toyproject.board.domain.member.query.MemberQueryRepository;
 import toyproject.board.domain.member.MemberRepository;
 import toyproject.board.dto.member.MemberDto;
 import toyproject.board.dto.member.MemberNoPw;

@@ -6,8 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import toyproject.board.dto.BasicResponseDto;
-import toyproject.board.dto.ExceptionDto;
-import toyproject.board.dto.ExceptionResponseDto;
+import toyproject.board.dto.exception.ExceptionDto;
+import toyproject.board.dto.exception.ExceptionResponseDto;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;

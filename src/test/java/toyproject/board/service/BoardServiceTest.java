@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.*;
+import toyproject.board.dto.board.command.*;
+import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.member.MemberDto;
 
 import javax.persistence.EntityManager;
