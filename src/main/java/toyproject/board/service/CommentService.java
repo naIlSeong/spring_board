@@ -2,6 +2,9 @@ package toyproject.board.service;
 
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -10,6 +13,7 @@ import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.comment.CommentRepository;
 import toyproject.board.dto.comment.command.*;
+import toyproject.board.dto.comment.query.CommentQueryDto;
 
 import javax.validation.Valid;
 
@@ -23,7 +27,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
 
     @Transactional
-    @Validated
+    @Validated // 로그인
     public Long createComment(@Valid CreateCommentLoginDto dto) {
 
         Board board = boardRepository.findById(dto.getBoardId())
@@ -36,7 +40,7 @@ public class CommentService {
     }
 
     @Transactional
-    @Validated
+    @Validated // 비로그인
     public Long createComment(@Valid CreateCommentNotLoginDto dto) {
 
         Board board = boardRepository.findById(dto.getBoardId())
@@ -51,7 +55,7 @@ public class CommentService {
     }
 
     @Transactional
-    @Validated
+    @Validated // 로그인
     public Long updateComment(@Valid UpdateCommentLoginDto dto) {
 
         Comment comment = getComment(dto.getCommentId());
@@ -68,7 +72,7 @@ public class CommentService {
     }
 
     @Transactional
-    @Validated
+    @Validated // 비로그인
     public Long updateComment(@Valid UpdateCommentNotLoginDto dto) {
 
         Comment comment = getComment(dto.getCommentId());
@@ -119,6 +123,19 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
+    }
+
+    public Page<CommentQueryDto> getCommentsPage(Long boardId, Pageable pageable) {
+
+        Page<CommentQueryDto> result = commentRepository.getCommentsPageByBoardId(boardId, pageable);
+
+        // 마지막 페이지보다 큰 페이지번호로 요청하면 마지막 페이지를 반환
+        if (pageable.getPageNumber() >= result.getTotalPages()) {
+            PageRequest newPageable = PageRequest.of(result.getTotalPages() - 1, result.getSize());
+            return commentRepository.getCommentsPageByBoardId(boardId, newPageable);
+        }
+
+        return result;
     }
 
 }

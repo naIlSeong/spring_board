@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import toyproject.board.dto.member.query.MemberQueryDto;
 import toyproject.board.dto.member.query.MemberSearchCondition;
-import toyproject.board.dto.member.QMemberNoPw;
+import toyproject.board.dto.member.query.QMemberQueryDto;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepositoryCustom {
     @Override
     public MemberQueryDto findNoPasswordById(Long memberId) {
         return queryFactory
-                .select(new QMemberNoPw(
+                .select(new QMemberQueryDto(
                         member.id,
                         member.username,
                         member.createdDate,
@@ -39,7 +39,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepositoryCustom {
     @Override
     public List<MemberQueryDto> searchMember(MemberSearchCondition condition) {
         return queryFactory
-                .select(new QMemberNoPw(
+                .select(new QMemberQueryDto(
                         member.id,
                         member.username,
                         member.createdDate,
@@ -62,7 +62,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepositoryCustom {
     public Page<MemberQueryDto> searchPage(MemberSearchCondition condition, Pageable pageable) {
 
         QueryResults<MemberQueryDto> results = queryFactory
-                .select(new QMemberNoPw(
+                .select(new QMemberQueryDto(
                         member.id,
                         member.username,
                         member.createdDate,

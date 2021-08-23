@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import toyproject.board.dto.board.*;
-import toyproject.board.dto.board.query.BoardQueryDto;
-import toyproject.board.dto.board.query.BoardSearchCondition;
-import toyproject.board.dto.board.query.CheckPasswordDto;
+import toyproject.board.dto.board.query.*;
 
 import java.util.List;
 
@@ -25,7 +22,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     @Override
     public BoardQueryDto findNoPasswordById(Long boardId) {
         return queryFactory
-                .select(new QBoardNoPw(
+                .select(new QBoardQueryDto(
                         board.id,
                         board.title,
                         board.content,
@@ -42,7 +39,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     @Override
     public Page<BoardQueryDto> findAllNoPassword(Long memberId, Pageable pageable) {
         QueryResults<BoardQueryDto> results = queryFactory
-                .select(new QBoardNoPw(
+                .select(new QBoardQueryDto(
                         board.id,
                         board.title,
                         board.content,
@@ -67,7 +64,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     @Override
     public Page<BoardQueryDto> searchBoard(BoardSearchCondition condition, Pageable pageable) {
         QueryResults<BoardQueryDto> results = queryFactory
-                .select(new QBoardNoPw(
+                .select(new QBoardQueryDto(
                         board.id,
                         board.title,
                         board.content,
