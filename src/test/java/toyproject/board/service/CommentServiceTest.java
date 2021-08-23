@@ -6,11 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.comment.command.*;
+import toyproject.board.dto.comment.query.CommentQueryDto;
 
 import javax.persistence.EntityManager;
 
@@ -355,6 +358,68 @@ class CommentServiceTest {
         // then
         assertThatThrownBy(() -> commentService.deleteComment(dto))
                 .hasMessage("비밀번호를 다시 확인해 주세요.");
+    }
+
+    @Tag("getCommentsPage")
+    @Test
+    void 댓글_페이징_쿼리() throws Exception {
+        // give
+        Board board = em.find(Board.class, boardId);
+
+        for (int i = 1; i <= 21; i++) {
+            Comment comment = Comment.builder()
+                    .content("comment " + i)
+                    .board(board)
+                    .nickname("user " + i)
+                    .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                    .build();
+            em.persist(comment);
+        }
+
+        // when
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<CommentQueryDto> result = commentService.getCommentsPage(boardId, pageable);
+
+        // then
+        assertThat(result.getTotalPages()).isEqualTo(3);
+        assertThat(result.getNumber()).isEqualTo(0);
+        assertThat(result.isFirst()).isTrue();
+
+        assertThat(result.getTotalElements()).isEqualTo(21);
+        assertThat(result.getNumberOfElements()).isEqualTo(10);
+
+        assertThat(result.getContent().get(0).getContent()).isEqualTo("comment 1");
+    }
+
+    @Tag("getCommentsPage")
+    @Test
+    void 댓글_페이징_쿼리_마지막_페이지_반환() throws Exception {
+        // give
+        Board board = em.find(Board.class, boardId);
+
+        for (int i = 1; i <= 21; i++) {
+            Comment comment = Comment.builder()
+                    .content("comment " + i)
+                    .board(board)
+                    .nickname("user " + i)
+                    .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                    .build();
+            em.persist(comment);
+        }
+
+        // when
+        PageRequest pageable = PageRequest.of(4, 10);
+        Page<CommentQueryDto> result = commentService.getCommentsPage(boardId, pageable);
+
+        // then
+        assertThat(result.getTotalPages()).isEqualTo(3);
+        assertThat(result.getNumber()).isEqualTo(2);
+        assertThat(result.isLast()).isTrue();
+
+        assertThat(result.getTotalElements()).isEqualTo(21);
+        assertThat(result.getNumberOfElements()).isEqualTo(1);
+
+        assertThat(result.getContent().get(0).getContent()).isEqualTo("comment 21");
     }
 
 }
