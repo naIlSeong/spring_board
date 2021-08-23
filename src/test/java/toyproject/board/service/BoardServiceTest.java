@@ -651,15 +651,56 @@ class BoardServiceTest {
         long total = result.getTotalElements();
         List<BoardQueryDto> content = result.getContent();
 
-        for (BoardQueryDto boardNoPw : content) {
-            System.out.println("boardNoPw = " + boardNoPw);
-        }
-
         assertThat(total).isEqualTo(6L);
         assertThat(content.size()).isEqualTo(3);
         assertThat(content)
                 .extracting("content")
                 .containsExactly("test content - 13", "test content - 11", "test content - 1");
+    }
+
+    @Tag("searchBoard")
+    @Test
+    void 게시물_검색_마지막_페이지_반환() throws Exception {
+        // give
+        Member bestMember = Member.builder()
+                .username("best member")
+                .password("12341234")
+                .build();
+        em.persist(bestMember);
+
+        for (int i = 1; i <= 21; i++) {
+
+            Board board = Board.builder()
+                    .title("title - " + i)
+                    .content("content - " + i)
+                    .nickname(bestMember.getUsername())
+                    .member(bestMember)
+                    .build();
+
+            em.persist(board);
+        }
+
+        em.flush();
+        em.clear();
+
+        // when
+        BoardSearchCondition condition = BoardSearchCondition.builder()
+                .nickname("best member")
+                .isAsc(false)
+                .build();
+        Pageable pageable = PageRequest.of(4, 10);
+
+        Page<BoardQueryDto> result = boardService.searchBoard(condition, pageable);
+
+        // then
+        assertThat(result.getTotalPages()).isEqualTo(3);
+        assertThat(result.getNumber()).isEqualTo(2);
+        assertThat(result.isLast()).isTrue();
+
+        assertThat(result.getTotalElements()).isEqualTo(21);
+        assertThat(result.getNumberOfElements()).isEqualTo(1);
+
+        assertThat(result.getContent().get(0).getContent()).isEqualTo("content - 1");
     }
 
     @Tag("searchBoard")

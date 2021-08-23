@@ -168,7 +168,7 @@ public class BoardService {
         }
 
         if (pageable.getPageNumber() >= result.getTotalPages()) {
-            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, result.getSize());
+            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
             return boardQueryRepository.findAllNoPassword(memberId, newPageable);
         }
 
@@ -184,7 +184,7 @@ public class BoardService {
         }
 
         if (pageable.getPageNumber() >= result.getTotalPages()) {
-            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, result.getSize());
+            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
             return boardQueryRepository.searchBoard(condition, newPageable);
         }
 
