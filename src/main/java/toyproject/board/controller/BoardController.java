@@ -18,6 +18,7 @@ import toyproject.board.dto.board.response.BoardListResponseDto;
 import toyproject.board.dto.board.response.BoardResponseDto;
 import toyproject.board.dto.comment.query.CommentQueryDto;
 import toyproject.board.service.BoardService;
+import toyproject.board.service.CommentService;
 
 import javax.servlet.http.HttpSession;
 
@@ -32,6 +33,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
     private final CommentRepository commentRepository;
 
     @ResponseStatus(CREATED)
@@ -110,10 +112,11 @@ public class BoardController {
 */
 
     @GetMapping("/{boardId}")
-    public BoardDetailResponseDto getBoardDetail(@PathVariable("boardId") Long boardId) {
+    public BoardDetailResponseDto getBoardDetail(@PathVariable("boardId") Long boardId, Pageable pageable) {
 
         BoardQueryDto board = boardService.getBoard(boardId);
-        List<CommentQueryDto> comments = commentRepository.getCommentsByBoardId(boardId);
+        // List<CommentQueryDto> comments = commentRepository.getCommentsByBoardId(boardId); // TODO 댓글 페이징 쿼리로 교체
+        Page<CommentQueryDto> comments = commentService.getCommentsPage(boardId, pageable);
 
         BoardDetail boardDetail = BoardDetail.builder()
                 .board(board)

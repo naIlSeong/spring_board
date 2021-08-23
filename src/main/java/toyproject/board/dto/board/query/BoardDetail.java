@@ -3,19 +3,18 @@ package toyproject.board.dto.board.query;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 import toyproject.board.dto.comment.query.CommentQueryDto;
-
-import java.util.List;
 
 @Getter
 @Setter
 public class BoardDetail {
 
     private BoardQueryDto board;
-    private List<CommentQueryDto> comments;
+    private Page<CommentQueryDto> comments;
 
     @Builder
-    public BoardDetail(BoardQueryDto board, List<CommentQueryDto> comments) {
+    public BoardDetail(BoardQueryDto board, Page<CommentQueryDto> comments) {
         this.board = board;
         this.comments = comments;
     }
