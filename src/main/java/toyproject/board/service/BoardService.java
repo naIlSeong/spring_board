@@ -12,8 +12,8 @@ import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.query.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.member.Member;
-import toyproject.board.dto.board.*;
 import toyproject.board.dto.board.command.*;
+import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.board.query.CheckPasswordDto;
 
@@ -149,9 +149,9 @@ public class BoardService {
 
     }
 
-    public BoardNoPw getBoard(Long boardId) {
+    public BoardQueryDto getBoard(Long boardId) {
 
-        BoardNoPw board = boardQueryRepository.findNoPasswordById(boardId);
+        BoardQueryDto board = boardQueryRepository.findNoPasswordById(boardId);
         if (board == null) {
             throw new NullPointerException("게시물을 찾을 수 없습니다.");
         }
@@ -159,9 +159,9 @@ public class BoardService {
         return board;
     }
 
-    public Page<BoardNoPw> getBoardList(Pageable pageable, Long memberId) {
+    public Page<BoardQueryDto> getBoardList(Pageable pageable, Long memberId) {
 
-        Page<BoardNoPw> result = boardQueryRepository.findAllNoPassword(memberId, pageable);
+        Page<BoardQueryDto> result = boardQueryRepository.findAllNoPassword(memberId, pageable);
 
         if (result.getTotalElements() == 0) {
             throw new NullPointerException("게시물이 없습니다.");
@@ -175,9 +175,9 @@ public class BoardService {
         return result;
     }
 
-    public Page<BoardNoPw> searchBoard(BoardSearchCondition condition, Pageable pageable) {
+    public Page<BoardQueryDto> searchBoard(BoardSearchCondition condition, Pageable pageable) {
 
-        Page<BoardNoPw> result = boardQueryRepository.searchBoard(condition, pageable);
+        Page<BoardQueryDto> result = boardQueryRepository.searchBoard(condition, pageable);
 
         if (result.getTotalElements() == 0) {
             throw new NullPointerException("게시물이 없습니다.");

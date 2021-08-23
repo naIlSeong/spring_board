@@ -1,4 +1,4 @@
-package toyproject.board.dto.comment;
+package toyproject.board.dto.comment.query;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class CommentNoPw {
+public class CommentQueryDto {
 
     private Long commentId;
     private String content;
@@ -26,7 +26,7 @@ public class CommentNoPw {
 
     @Builder
     @QueryProjection
-    public CommentNoPw(Long commentId, String content, String nickname, Long memberId, Long boardId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
+    public CommentQueryDto(Long commentId, String content, String nickname, Long memberId, Long boardId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
         this.commentId = commentId;
         this.content = content;
         this.nickname = nickname;

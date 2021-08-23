@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.comment.CommentRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
-import toyproject.board.dto.board.*;
 import toyproject.board.dto.board.command.CreateBoardRequestDto;
 import toyproject.board.dto.board.command.DeleteBoardRequestDto;
 import toyproject.board.dto.board.command.UpdateBoardRequestDto;
 import toyproject.board.dto.board.query.BoardDetail;
+import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.board.response.BoardDetailResponseDto;
 import toyproject.board.dto.board.response.BoardListResponseDto;
 import toyproject.board.dto.board.response.BoardResponseDto;
-import toyproject.board.dto.comment.CommentNoPw;
+import toyproject.board.dto.comment.query.CommentQueryDto;
 import toyproject.board.service.BoardService;
 
 import javax.servlet.http.HttpSession;
@@ -112,8 +112,8 @@ public class BoardController {
     @GetMapping("/{boardId}")
     public BoardDetailResponseDto getBoardDetail(@PathVariable("boardId") Long boardId) {
 
-        BoardNoPw board = boardService.getBoard(boardId);
-        List<CommentNoPw> comments = commentRepository.getCommentsByBoardId(boardId);
+        BoardQueryDto board = boardService.getBoard(boardId);
+        List<CommentQueryDto> comments = commentRepository.getCommentsByBoardId(boardId);
 
         BoardDetail boardDetail = BoardDetail.builder()
                 .board(board)
@@ -130,7 +130,7 @@ public class BoardController {
     public BoardListResponseDto getList(Pageable pageable,
                                         @RequestParam(name = "memberId", required = false) Long memberId) {
 
-        Page<BoardNoPw> boardList = boardService.getBoardList(pageable, memberId);
+        Page<BoardQueryDto> boardList = boardService.getBoardList(pageable, memberId);
 
         return BoardListResponseDto.builder()
                 .httpStatus(OK)
@@ -142,7 +142,7 @@ public class BoardController {
     public BoardListResponseDto searchBoard(Pageable pageable,
                                             BoardSearchCondition condition) {
 
-        Page<BoardNoPw> boardList = boardService.searchBoard(condition, pageable);
+        Page<BoardQueryDto> boardList = boardService.searchBoard(condition, pageable);
 
         return BoardListResponseDto.builder()
                 .httpStatus(OK)

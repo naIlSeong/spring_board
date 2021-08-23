@@ -1,4 +1,4 @@
-package toyproject.board.dto.member;
+package toyproject.board.dto.member.query;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;

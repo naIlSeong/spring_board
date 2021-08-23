@@ -1,15 +1,19 @@
-package toyproject.board.dto.member;
+package toyproject.board.dto.member.query;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
+/**
+ * Member 에서 password 필드를 제외한 DTO
+ */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class MemberNoPw {
+public class MemberQueryDto {
 
     private Long memberId;
     private String username;
@@ -21,7 +25,7 @@ public class MemberNoPw {
     private LocalDateTime lastModifiedDate;
 
     @QueryProjection
-    public MemberNoPw(Long memberId, String username, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
+    public MemberQueryDto(Long memberId, String username, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
         this.memberId = memberId;
         this.username = username;
         this.createdDate = createdDate;

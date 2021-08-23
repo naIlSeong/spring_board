@@ -2,17 +2,17 @@ package toyproject.board.domain.member.query;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import toyproject.board.dto.member.MemberNoPw;
-import toyproject.board.dto.member.MemberSearchCondition;
+import toyproject.board.dto.member.query.MemberQueryDto;
+import toyproject.board.dto.member.query.MemberSearchCondition;
 
 import java.util.List;
 
 public interface MemberQueryRepositoryCustom {
 
-    MemberNoPw findNoPasswordById(Long memberId);
+    MemberQueryDto findNoPasswordById(Long memberId);
 
-    List<MemberNoPw> searchMember(MemberSearchCondition condition);
+    List<MemberQueryDto> searchMember(MemberSearchCondition condition);
 
-    Page<MemberNoPw> searchPage(MemberSearchCondition condition, Pageable pageable);
+    Page<MemberQueryDto> searchPage(MemberSearchCondition condition, Pageable pageable);
 
 }

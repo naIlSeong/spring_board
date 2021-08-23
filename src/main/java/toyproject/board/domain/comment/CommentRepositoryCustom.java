@@ -1,11 +1,11 @@
 package toyproject.board.domain.comment;
 
-import toyproject.board.dto.comment.CommentNoPw;
+import toyproject.board.dto.comment.query.CommentQueryDto;
 
 import java.util.List;
 
 public interface CommentRepositoryCustom {
 
-    List<CommentNoPw> getCommentsByBoardId(Long boardId);
+    List<CommentQueryDto> getCommentsByBoardId(Long boardId);
 
 }

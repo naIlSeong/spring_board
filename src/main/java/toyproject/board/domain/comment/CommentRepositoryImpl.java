@@ -2,7 +2,7 @@ package toyproject.board.domain.comment;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import toyproject.board.dto.comment.CommentNoPw;
+import toyproject.board.dto.comment.query.CommentQueryDto;
 import toyproject.board.dto.comment.QCommentNoPw;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<CommentNoPw> getCommentsByBoardId(Long boardId) {
+    public List<CommentQueryDto> getCommentsByBoardId(Long boardId) {
         return queryFactory
                 .select(new QCommentNoPw(
                         comment.id,

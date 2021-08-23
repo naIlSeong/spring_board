@@ -11,10 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
-import toyproject.board.dto.board.*;
 import toyproject.board.dto.board.command.*;
+import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
-import toyproject.board.dto.member.MemberDto;
+import toyproject.board.dto.member.command.MemberRequestDto;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -420,7 +420,7 @@ class BoardServiceTest {
         Long boardId = board.getId();
 
         // when
-        BoardNoPw result = boardService.getBoard(boardId);
+        BoardQueryDto result = boardService.getBoard(boardId);
 
         // then
         assertThat(result.getTitle()).isEqualTo("test title.");
@@ -457,7 +457,7 @@ class BoardServiceTest {
 
         // when
         Pageable pageable = PageRequest.of(0, 20);
-        Page<BoardNoPw> result = boardService.getBoardList(pageable, null);
+        Page<BoardQueryDto> result = boardService.getBoardList(pageable, null);
 
         // then
         assertThat(result.getTotalElements()).isEqualTo(100);
@@ -482,7 +482,7 @@ class BoardServiceTest {
 
         // when
         Pageable pageable = PageRequest.of(10, 20);
-        Page<BoardNoPw> result = boardService.getBoardList(pageable, null);
+        Page<BoardQueryDto> result = boardService.getBoardList(pageable, null);
 
         // then
         assertThat(result.getTotalElements()).isEqualTo(100);
@@ -581,11 +581,11 @@ class BoardServiceTest {
                 .build();
         Pageable pageable = PageRequest.of(0, 2);
 
-        Page<BoardNoPw> result = boardService.searchBoard(condition, pageable);
+        Page<BoardQueryDto> result = boardService.searchBoard(condition, pageable);
 
         // then
         long total = result.getTotalElements();
-        List<BoardNoPw> content = result.getContent();
+        List<BoardQueryDto> content = result.getContent();
 
         assertThat(total).isEqualTo(10L);
         assertThat(content.size()).isEqualTo(2);
@@ -598,14 +598,14 @@ class BoardServiceTest {
     @Test
     void 게시물_검색() throws Exception {
         // give
-        Member testMember = MemberDto.builder()
+        Member testMember = MemberRequestDto.builder()
                 .username("test member")
                 .password("12341234")
                 .build()
                 .toEntity();
         em.persist(testMember);
 
-        Member bestMember = MemberDto.builder()
+        Member bestMember = MemberRequestDto.builder()
                 .username("best member")
                 .password("12341234")
                 .build()
@@ -645,13 +645,13 @@ class BoardServiceTest {
                 .build();
         Pageable pageable = PageRequest.of(1, 3);
 
-        Page<BoardNoPw> result = boardService.searchBoard(condition, pageable);
+        Page<BoardQueryDto> result = boardService.searchBoard(condition, pageable);
 
         // then
         long total = result.getTotalElements();
-        List<BoardNoPw> content = result.getContent();
+        List<BoardQueryDto> content = result.getContent();
 
-        for (BoardNoPw boardNoPw : content) {
+        for (BoardQueryDto boardNoPw : content) {
             System.out.println("boardNoPw = " + boardNoPw);
         }
 

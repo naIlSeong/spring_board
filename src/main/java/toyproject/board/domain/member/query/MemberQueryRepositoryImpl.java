@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import toyproject.board.dto.member.MemberNoPw;
-import toyproject.board.dto.member.MemberSearchCondition;
+import toyproject.board.dto.member.query.MemberQueryDto;
+import toyproject.board.dto.member.query.MemberSearchCondition;
 import toyproject.board.dto.member.QMemberNoPw;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public MemberNoPw findNoPasswordById(Long memberId) {
+    public MemberQueryDto findNoPasswordById(Long memberId) {
         return queryFactory
                 .select(new QMemberNoPw(
                         member.id,
@@ -37,7 +37,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepositoryCustom {
     }
 
     @Override
-    public List<MemberNoPw> searchMember(MemberSearchCondition condition) {
+    public List<MemberQueryDto> searchMember(MemberSearchCondition condition) {
         return queryFactory
                 .select(new QMemberNoPw(
                         member.id,
@@ -59,9 +59,9 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepositoryCustom {
 
 
     @Override
-    public Page<MemberNoPw> searchPage(MemberSearchCondition condition, Pageable pageable) {
+    public Page<MemberQueryDto> searchPage(MemberSearchCondition condition, Pageable pageable) {
 
-        QueryResults<MemberNoPw> results = queryFactory
+        QueryResults<MemberQueryDto> results = queryFactory
                 .select(new QMemberNoPw(
                         member.id,
                         member.username,
@@ -75,7 +75,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepositoryCustom {
                 .orderBy(member.id.asc())
                 .fetchResults();
 
-        List<MemberNoPw> content = results.getResults();
+        List<MemberQueryDto> content = results.getResults();
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);

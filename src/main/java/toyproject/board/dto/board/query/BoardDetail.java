@@ -3,8 +3,7 @@ package toyproject.board.dto.board.query;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import toyproject.board.dto.board.BoardNoPw;
-import toyproject.board.dto.comment.CommentNoPw;
+import toyproject.board.dto.comment.query.CommentQueryDto;
 
 import java.util.List;
 
@@ -12,11 +11,11 @@ import java.util.List;
 @Setter
 public class BoardDetail {
 
-    private BoardNoPw board;
-    private List<CommentNoPw> comments;
+    private BoardQueryDto board;
+    private List<CommentQueryDto> comments;
 
     @Builder
-    public BoardDetail(BoardNoPw board, List<CommentNoPw> comments) {
+    public BoardDetail(BoardQueryDto board, List<CommentQueryDto> comments) {
         this.board = board;
         this.comments = comments;
     }

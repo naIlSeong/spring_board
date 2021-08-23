@@ -6,10 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
-import toyproject.board.dto.member.MemberDto;
-import toyproject.board.dto.member.MemberNoPw;
-import toyproject.board.dto.member.MemberResponseDto;
-import toyproject.board.dto.member.MemberSearchCondition;
+import toyproject.board.dto.member.command.MemberRequestDto;
+import toyproject.board.dto.member.query.MemberQueryDto;
+import toyproject.board.dto.member.response.MemberResponseDto;
+import toyproject.board.dto.member.query.MemberSearchCondition;
 import toyproject.board.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ public class MemberController {
 
     @ResponseStatus(CREATED)
     @PostMapping("/new")
-    public BasicResponseDto join(@Valid @RequestBody MemberDto dto) {
+    public BasicResponseDto join(@Valid @RequestBody MemberRequestDto dto) {
 
         memberService.join(dto);
 
@@ -38,7 +38,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public BasicResponseDto login(@Valid @RequestBody MemberDto dto,
+    public BasicResponseDto login(@Valid @RequestBody MemberRequestDto dto,
                                   HttpSession session,
                                   HttpServletRequest request) {
 
@@ -76,7 +76,7 @@ public class MemberController {
     @GetMapping("/{memberId}")
     public BasicResponseDto getMember(@PathVariable(name = "memberId") Long memberId) {
 
-        MemberNoPw member = memberService.getMember(memberId);
+        MemberQueryDto member = memberService.getMember(memberId);
 
         return MemberResponseDto.builder()
                 .httpStatus(OK)
@@ -85,7 +85,7 @@ public class MemberController {
     }
 
     @GetMapping("/search-page")
-    public Page<MemberNoPw> searchV2(MemberSearchCondition condition, Pageable pageable) {
+    public Page<MemberQueryDto> searchV2(MemberSearchCondition condition, Pageable pageable) {
         return memberService.searchMemberPage(condition, pageable);
     }
 

@@ -1,18 +1,15 @@
-package toyproject.board.dto.member;
+package toyproject.board.dto.member.command;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import toyproject.board.domain.member.Member;
 
 import javax.validation.constraints.NotBlank;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-public class MemberDto {
+public class MemberRequestDto {
 
     @NotBlank
     @Length(min = 4, max = 24)
@@ -23,7 +20,7 @@ public class MemberDto {
     private String password;
 
     @Builder
-    public MemberDto(String username, String password) {
+    public MemberRequestDto(String username, String password) {
         this.username = username;
         this.password = password;
     }

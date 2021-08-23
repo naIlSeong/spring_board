@@ -1,4 +1,4 @@
-package toyproject.board.dto.board;
+package toyproject.board.dto.board.query;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class BoardNoPw {
+public class BoardQueryDto {
 
     private Long boardId;
     private String title;
@@ -26,7 +26,7 @@ public class BoardNoPw {
     private LocalDateTime lastModifiedDate;
 
     @QueryProjection
-    public BoardNoPw(Long boardId, String title, String content, String nickname, Long memberId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
+    public BoardQueryDto(Long boardId, String title, String content, String nickname, Long memberId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
         this.boardId = boardId;
         this.title = title;
         this.content = content;

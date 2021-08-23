@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import toyproject.board.dto.board.*;
+import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.board.query.CheckPasswordDto;
 
@@ -22,7 +23,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public BoardNoPw findNoPasswordById(Long boardId) {
+    public BoardQueryDto findNoPasswordById(Long boardId) {
         return queryFactory
                 .select(new QBoardNoPw(
                         board.id,
@@ -39,8 +40,8 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     }
 
     @Override
-    public Page<BoardNoPw> findAllNoPassword(Long memberId, Pageable pageable) {
-        QueryResults<BoardNoPw> results = queryFactory
+    public Page<BoardQueryDto> findAllNoPassword(Long memberId, Pageable pageable) {
+        QueryResults<BoardQueryDto> results = queryFactory
                 .select(new QBoardNoPw(
                         board.id,
                         board.title,
@@ -57,15 +58,15 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 .orderBy(board.id.asc())
                 .fetchResults();
 
-        List<BoardNoPw> content = results.getResults();
+        List<BoardQueryDto> content = results.getResults();
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);
     }
 
     @Override
-    public Page<BoardNoPw> searchBoard(BoardSearchCondition condition, Pageable pageable) {
-        QueryResults<BoardNoPw> results = queryFactory
+    public Page<BoardQueryDto> searchBoard(BoardSearchCondition condition, Pageable pageable) {
+        QueryResults<BoardQueryDto> results = queryFactory
                 .select(new QBoardNoPw(
                         board.id,
                         board.title,
@@ -84,7 +85,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 .orderBy(createdDateAsc(condition.getIsAsc()))
                 .fetchResults();
 
-        List<BoardNoPw> content = results.getResults();
+        List<BoardQueryDto> content = results.getResults();
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);
