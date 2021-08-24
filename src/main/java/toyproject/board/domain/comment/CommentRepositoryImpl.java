@@ -51,6 +51,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .where(comment.board.id.eq(boardId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(comment.id.asc())
                 .fetchResults();
 
         List<CommentQueryDto> content = results.getResults();
