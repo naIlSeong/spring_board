@@ -28,7 +28,7 @@ public class MemberController {
 
     @ResponseStatus(CREATED)
     @PostMapping("/new")
-    public BasicResponseDto join(@Valid @RequestBody MemberRequestDto dto) {
+    public BasicResponseDto join(@RequestBody MemberRequestDto dto) {
 
         memberService.join(dto);
 
@@ -38,7 +38,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public BasicResponseDto login(@Valid @RequestBody MemberRequestDto dto,
+    public BasicResponseDto login(@RequestBody MemberRequestDto dto,
                                   HttpSession session,
                                   HttpServletRequest request) {
 

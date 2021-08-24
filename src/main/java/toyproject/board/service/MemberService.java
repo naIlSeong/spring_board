@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import toyproject.board.domain.member.Member;
 import toyproject.board.domain.member.query.MemberQueryRepository;
 import toyproject.board.domain.member.MemberRepository;
@@ -13,8 +14,11 @@ import toyproject.board.dto.member.command.MemberRequestDto;
 import toyproject.board.dto.member.query.MemberQueryDto;
 import toyproject.board.dto.member.query.MemberSearchCondition;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Validated
 @Service
 public class MemberService {
 
@@ -22,7 +26,8 @@ public class MemberService {
     private final MemberQueryRepository memberQueryRepository;
 
     @Transactional
-    public Long join(MemberRequestDto dto) {
+    @Validated
+    public Long join(@Valid MemberRequestDto dto) {
 
         // 문자열 다듬기
         dto.setUsername(dto.getUsername()
@@ -44,7 +49,8 @@ public class MemberService {
         return member.getId();
     }
 
-    public Member login(MemberRequestDto dto) {
+    @Validated
+    public Member login(@Valid MemberRequestDto dto) {
 
         Member member = memberRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("이름을 다시 확인해주세요."));

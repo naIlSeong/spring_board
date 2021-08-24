@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import toyproject.board.domain.comment.CommentRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.command.CreateBoardRequestDto;
@@ -22,8 +21,6 @@ import toyproject.board.service.CommentService;
 
 import javax.servlet.http.HttpSession;
 
-import java.util.List;
-
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -34,7 +31,6 @@ public class BoardController {
 
     private final BoardService boardService;
     private final CommentService commentService;
-    private final CommentRepository commentRepository;
 
     @ResponseStatus(CREATED)
     @PostMapping("/new")
@@ -115,7 +111,6 @@ public class BoardController {
     public BoardDetailResponseDto getBoardDetail(@PathVariable("boardId") Long boardId, Pageable pageable) {
 
         BoardQueryDto board = boardService.getBoard(boardId);
-        // List<CommentQueryDto> comments = commentRepository.getCommentsByBoardId(boardId); // TODO 댓글 페이징 쿼리로 교체
         Page<CommentQueryDto> comments = commentService.getCommentsPage(boardId, pageable);
 
         BoardDetail boardDetail = BoardDetail.builder()
