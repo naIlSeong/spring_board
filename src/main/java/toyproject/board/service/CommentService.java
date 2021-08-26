@@ -12,6 +12,7 @@ import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.comment.CommentRepository;
+import toyproject.board.dto.board.query.CheckPasswordDto;
 import toyproject.board.dto.comment.command.*;
 import toyproject.board.dto.comment.query.CommentQueryDto;
 
@@ -89,9 +90,17 @@ public class CommentService {
         return comment.getId();
     }
 
-    public Comment getComment(Long commentId) {
+    private Comment getComment(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+    }
+
+    public boolean isLoggedId(Long commentId) {
+        CheckPasswordDto result = commentRepository.getPassword(commentId);
+        if (result == null) {
+            throw new NullPointerException("댓글을 찾을 수 없습니다.");
+        }
+        return result.getPassword() == null;
     }
 
     @Transactional

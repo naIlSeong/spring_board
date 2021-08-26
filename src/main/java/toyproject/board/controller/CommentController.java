@@ -44,12 +44,9 @@ public class CommentController {
     public CommentResponseDto updateComment(@RequestBody UpdateCommentRequestDto dto,
                                             HttpSession session) {
 
-
-        Comment comment = commentService.getComment(dto.getCommentId());
-
         Long commentId;
 
-        boolean isLoggedIn = comment.getPassword() == null;
+        boolean isLoggedIn = commentService.isLoggedId(dto.getCommentId());
         if (isLoggedIn) {
 
             Member member = (Member) session.getAttribute("member");
@@ -57,10 +54,10 @@ public class CommentController {
                 throw new IllegalArgumentException("로그인이 필요합니다.");
             }
 
-            commentId = commentService.updateComment(dto.toDto(member));
+            commentId = commentService.updateComment(dto.toDto(member)); // 로그인 메서드
 
         } else {
-            commentId = commentService.updateComment(dto.toDto());
+            commentId = commentService.updateComment(dto.toDto()); // 비로그인 메서드
         }
 
         return CommentResponseDto.builder()
@@ -73,9 +70,7 @@ public class CommentController {
     public BasicResponseDto deleteComment(@RequestBody DeleteCommentRequestDto dto,
                                           HttpSession session) {
 
-        Comment comment = commentService.getComment(dto.getId());
-
-        boolean isLoggedIn = comment.getPassword() == null;
+        boolean isLoggedIn = commentService.isLoggedId(dto.getId());
         if (isLoggedIn) {
 
             Member member = (Member) session.getAttribute("member");

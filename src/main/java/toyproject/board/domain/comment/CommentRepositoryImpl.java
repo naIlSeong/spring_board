@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import toyproject.board.dto.board.query.CheckPasswordDto;
+import toyproject.board.dto.board.query.QCheckPasswordDto;
 import toyproject.board.dto.comment.query.CommentQueryDto;
 import toyproject.board.dto.comment.query.QCommentQueryDto;
 
@@ -58,6 +60,18 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public CheckPasswordDto getPassword(Long id) {
+        return queryFactory
+                .select(new QCheckPasswordDto(
+                        comment.id,
+                        comment.password
+                ))
+                .from(comment)
+                .where(comment.id.eq(id))
+                .fetchOne();
     }
 
 }
