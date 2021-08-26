@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
-import toyproject.board.dto.comment.response.CommentResponseDto;
 import toyproject.board.dto.comment.command.CreateCommentRequestDto;
 import toyproject.board.dto.comment.command.DeleteCommentRequestDto;
 import toyproject.board.dto.comment.command.UpdateCommentRequestDto;
+import toyproject.board.dto.comment.response.CommentResponseDto;
 import toyproject.board.service.CommentService;
 
 import javax.servlet.http.HttpSession;
@@ -44,11 +44,24 @@ public class CommentController {
     public CommentResponseDto updateComment(@RequestBody UpdateCommentRequestDto dto,
                                             HttpSession session) {
 
-        Member member = (Member) session.getAttribute("member");
 
-        Long commentId = member != null
-                ? commentService.updateComment(dto.toDto(member))
-                : commentService.updateComment(dto.toDto());
+        Comment comment = commentService.getComment(dto.getCommentId());
+
+        Long commentId;
+
+        boolean isLoggedIn = comment.getPassword() == null;
+        if (isLoggedIn) {
+
+            Member member = (Member) session.getAttribute("member");
+            if (member == null) {
+                throw new IllegalArgumentException("로그인이 필요합니다.");
+            }
+
+            commentId = commentService.updateComment(dto.toDto(member));
+
+        } else {
+            commentId = commentService.updateComment(dto.toDto());
+        }
 
         return CommentResponseDto.builder()
                 .httpStatus(OK)
