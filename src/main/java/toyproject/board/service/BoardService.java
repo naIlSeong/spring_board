@@ -13,6 +13,7 @@ import toyproject.board.domain.board.query.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.command.*;
+import toyproject.board.dto.board.query.BoardAndCommentCount;
 import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.board.query.CheckPasswordDto;
@@ -159,6 +160,7 @@ public class BoardService {
         return board;
     }
 
+    /*
     public Page<BoardQueryDto> getBoardList(Pageable pageable, Long memberId) {
 
         Page<BoardQueryDto> result = boardQueryRepository.findAllNoPassword(memberId, pageable);
@@ -174,7 +176,25 @@ public class BoardService {
 
         return result;
     }
+     */
 
+    public Page<BoardAndCommentCount> searchBoardList(BoardSearchCondition condition, Pageable pageable) {
+
+        Page<BoardAndCommentCount> result = boardQueryRepository.findBoardList(condition, pageable);
+
+        if (result.getTotalElements() == 0) {
+            throw new NullPointerException("게시물이 없습니다.");
+        }
+
+        if (pageable.getPageNumber() >= result.getTotalPages()) {
+            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
+            return boardQueryRepository.findBoardList(condition, newPageable);
+        }
+
+        return result;
+    }
+
+    /*
     public Page<BoardQueryDto> searchBoard(BoardSearchCondition condition, Pageable pageable) {
 
         Page<BoardQueryDto> result = boardQueryRepository.searchBoard(condition, pageable);
@@ -190,5 +210,6 @@ public class BoardService {
 
         return result;
     }
+     */
 
 }

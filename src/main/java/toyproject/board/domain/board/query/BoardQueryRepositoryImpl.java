@@ -37,6 +37,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 .fetchOne();
     }
 
+    /*
     @Override
     public Page<BoardQueryDto> findAllNoPassword(Long memberId, Pageable pageable) {
         QueryResults<BoardQueryDto> results = queryFactory
@@ -61,7 +62,9 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
+     */
 
+    /*
     @Override
     public Page<BoardQueryDto> searchBoard(BoardSearchCondition condition, Pageable pageable) {
         QueryResults<BoardQueryDto> results = queryFactory
@@ -88,6 +91,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
+     */
 
     @Override
     public CheckPasswordDto findPassword(Long boardId) {

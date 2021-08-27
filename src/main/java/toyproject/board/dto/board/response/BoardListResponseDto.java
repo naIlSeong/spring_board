@@ -5,13 +5,13 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.domain.Page;
 import toyproject.board.dto.BasicResponseDto;
-import toyproject.board.dto.board.query.BoardQueryDto;
+import toyproject.board.dto.board.query.BoardAndCommentCount;
 
 @SuperBuilder
 @Getter
 @Setter
 public class BoardListResponseDto extends BasicResponseDto {
 
-    private Page<BoardQueryDto> boardList;
+    private Page<BoardAndCommentCount> boardList;
 
 }

@@ -11,9 +11,9 @@ public interface BoardQueryRepositoryCustom {
 
     BoardQueryDto findNoPasswordById(Long boardId);
 
-    Page<BoardQueryDto> findAllNoPassword(Long memberId, Pageable pageable);
+    // Page<BoardQueryDto> findAllNoPassword(Long memberId, Pageable pageable);
 
-    Page<BoardQueryDto> searchBoard(BoardSearchCondition condition, Pageable pageable);
+    // Page<BoardQueryDto> searchBoard(BoardSearchCondition condition, Pageable pageable);
 
     CheckPasswordDto findPassword(Long boardId);
 

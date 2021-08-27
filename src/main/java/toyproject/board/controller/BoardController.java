@@ -9,11 +9,12 @@ import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.command.CreateBoardRequestDto;
 import toyproject.board.dto.board.command.DeleteBoardRequestDto;
 import toyproject.board.dto.board.command.UpdateBoardRequestDto;
+import toyproject.board.dto.board.query.BoardAndCommentCount;
 import toyproject.board.dto.board.query.BoardDetail;
 import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
-import toyproject.board.dto.board.response.BoardDetailResponseDto;
 import toyproject.board.dto.board.response.BoardListResponseDto;
+import toyproject.board.dto.board.response.BoardDetailResponseDto;
 import toyproject.board.dto.board.response.BoardResponseDto;
 import toyproject.board.dto.comment.query.CommentQueryDto;
 import toyproject.board.service.BoardService;
@@ -124,6 +125,7 @@ public class BoardController {
                 .build();
     }
 
+    /*
     @GetMapping("/list")
     public BoardListResponseDto getList(Pageable pageable,
                                         @RequestParam(name = "memberId", required = false) Long memberId) {
@@ -135,7 +137,22 @@ public class BoardController {
                 .boardList(boardList)
                 .build();
     }
+     */
 
+    @GetMapping("/list")
+    public BoardListResponseDto searchList(Pageable pageable,
+                                           BoardSearchCondition condition) {
+
+        Page<BoardAndCommentCount> boardList = boardService.searchBoardList(condition, pageable);
+
+        return BoardListResponseDto.builder()
+                .httpStatus(OK)
+                .boardList(boardList)
+                .build();
+
+    }
+
+    /*
     @GetMapping("/search")
     public BoardListResponseDto searchBoard(Pageable pageable,
                                             BoardSearchCondition condition) {
@@ -147,5 +164,6 @@ public class BoardController {
                 .boardList(boardList)
                 .build();
     }
+     */
 
 }
