@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.command.*;
+import toyproject.board.dto.board.query.BoardAndCommentCount;
 import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.member.command.MemberRequestDto;
@@ -441,6 +442,7 @@ class BoardServiceTest {
                 .hasMessage("게시물을 찾을 수 없습니다.");
     }
 
+    /*
     @Tag("getBoardList")
     @Test
     void 게시물_조회() throws Exception {
@@ -535,66 +537,10 @@ class BoardServiceTest {
 
     }
 
-    @Tag("searchBoard")
-    @Test
-    void 게시물_검색_제목() throws Exception {
-        // give
-        Member testMember = Member.builder()
-                .username("test member")
-                .password("12341234")
-                .build();
-        em.persist(testMember);
 
-        Member bestMember = Member.builder()
-                .username("best member")
-                .password("12341234")
-                .build();
-        em.persist(bestMember);
+*/
 
-        for (int i = 1; i <= 20; i++) {
-
-            Board.BoardBuilder builder = Board.builder();
-
-            if (i % 2 == 0) {
-                builder = builder
-                        .title("best title - " + i)
-                        .content("best content - " + i)
-                        .nickname(bestMember.getUsername())
-                        .member(bestMember);
-            } else {
-                builder = builder
-                        .title("test title - " + i)
-                        .content("test content - " + i)
-                        .nickname(testMember.getUsername())
-                        .member(testMember);
-            }
-
-            em.persist(builder.build());
-        }
-
-        em.flush();
-        em.clear();
-
-        // when
-        BoardSearchCondition condition = BoardSearchCondition.builder()
-                .title("test")
-                .build();
-        Pageable pageable = PageRequest.of(0, 2);
-
-        Page<BoardQueryDto> result = boardService.searchBoard(condition, pageable);
-
-        // then
-        long total = result.getTotalElements();
-        List<BoardQueryDto> content = result.getContent();
-
-        assertThat(total).isEqualTo(10L);
-        assertThat(content.size()).isEqualTo(2);
-        assertThat(content)
-                .extracting("title")
-                .containsExactly("test title - 1", "test title - 3");
-    }
-
-    @Tag("searchBoard")
+    @Tag("searchBoardList")
     @Test
     void 게시물_검색() throws Exception {
         // give
@@ -641,15 +587,14 @@ class BoardServiceTest {
                 .title("test")
                 .nickname("test member")
                 .content("1")
-                .isAsc(false)
                 .build();
         Pageable pageable = PageRequest.of(1, 3);
 
-        Page<BoardQueryDto> result = boardService.searchBoard(condition, pageable);
+        Page<BoardAndCommentCount> result = boardService.searchBoardList(condition, pageable);
 
         // then
         long total = result.getTotalElements();
-        List<BoardQueryDto> content = result.getContent();
+        List<BoardAndCommentCount> content = result.getContent();
 
         assertThat(total).isEqualTo(6L);
         assertThat(content.size()).isEqualTo(3);
@@ -658,7 +603,66 @@ class BoardServiceTest {
                 .containsExactly("test content - 13", "test content - 11", "test content - 1");
     }
 
-    @Tag("searchBoard")
+    @Tag("searchBoardList")
+    @Test
+    void 게시물_검색_제목() throws Exception {
+        // give
+        Member testMember = Member.builder()
+                .username("test member")
+                .password("12341234")
+                .build();
+        em.persist(testMember);
+
+        Member bestMember = Member.builder()
+                .username("best member")
+                .password("12341234")
+                .build();
+        em.persist(bestMember);
+
+        for (int i = 1; i <= 20; i++) {
+
+            Board.BoardBuilder builder = Board.builder();
+
+            if (i % 2 == 0) {
+                builder = builder
+                        .title("best title - " + i)
+                        .content("best content - " + i)
+                        .nickname(bestMember.getUsername())
+                        .member(bestMember);
+            } else {
+                builder = builder
+                        .title("test title - " + i)
+                        .content("test content - " + i)
+                        .nickname(testMember.getUsername())
+                        .member(testMember);
+            }
+
+            em.persist(builder.build());
+        }
+
+        em.flush();
+        em.clear();
+
+        // when
+        BoardSearchCondition condition = BoardSearchCondition.builder()
+                .title("test")
+                .build();
+        Pageable pageable = PageRequest.of(0, 2);
+
+        Page<BoardAndCommentCount> result = boardService.searchBoardList(condition, pageable);
+
+        // then
+        long total = result.getTotalElements();
+        List<BoardAndCommentCount> content = result.getContent();
+
+        assertThat(total).isEqualTo(10L);
+        assertThat(content.size()).isEqualTo(2);
+        assertThat(content)
+                .extracting("title")
+                .containsExactly("test title - 19", "test title - 17");
+    }
+
+    @Tag("searchBoardList")
     @Test
     void 게시물_검색_마지막_페이지_반환() throws Exception {
         // give
@@ -690,7 +694,7 @@ class BoardServiceTest {
                 .build();
         Pageable pageable = PageRequest.of(4, 10);
 
-        Page<BoardQueryDto> result = boardService.searchBoard(condition, pageable);
+        Page<BoardAndCommentCount> result = boardService.searchBoardList(condition, pageable);
 
         // then
         assertThat(result.getTotalPages()).isEqualTo(3);
@@ -726,7 +730,7 @@ class BoardServiceTest {
         // boardService.searchBoard(condition, pageable);
 
         // then
-        assertThatThrownBy(() -> boardService.searchBoard(condition, pageable))
+        assertThatThrownBy(() -> boardService.searchBoardList(condition, pageable))
                 .hasMessage("게시물이 없습니다.");
     }
 
