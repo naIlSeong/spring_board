@@ -13,6 +13,7 @@ import toyproject.board.dto.board.query.*;
 import java.util.List;
 
 import static toyproject.board.domain.board.QBoard.board;
+import static toyproject.board.domain.comment.QComment.comment;
 
 @RequiredArgsConstructor
 public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
@@ -100,6 +101,37 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 .fetchOne();
     }
 
+    @Override
+    public Page<BoardAndCommentCount> findBoardList(BoardSearchCondition condition, Pageable pageable) {
+        QueryResults<BoardAndCommentCount> results = queryFactory
+                .select(new QBoardAndCommentCount(
+                        board.id,
+                        board.title,
+                        board.content,
+                        board.nickname,
+                        board.member.id,
+                        comment.id.count(),
+                        board.createdDate,
+                        board.lastModifiedDate
+                ))
+                .from(board)
+                    .leftJoin(comment)
+                    .on(comment.board.id.eq(board.id))
+                .where(nicknameLike(condition.getNickname()),
+                        titleLike(condition.getTitle()),
+                        contentLike(condition.getContent()))
+                .groupBy(board.id)
+                .orderBy(board.createdDate.desc())
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .fetchResults();
+
+        List<BoardAndCommentCount> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
     private Predicate nicknameLike(String nickname) {
         return nickname != null
                 ? board.nickname.like("%" + nickname + "%")
@@ -121,8 +153,8 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     private OrderSpecifier<?> createdDateAsc(Boolean isAsc) {
         return isAsc != null
                 ? isAsc
-                    ? board.createdDate.asc()
-                    : board.createdDate.desc()
+                ? board.createdDate.asc()
+                : board.createdDate.desc()
                 : board.createdDate.asc();
     }
 
