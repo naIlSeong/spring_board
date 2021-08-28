@@ -106,7 +106,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     }
 
     @Override
-    public Page<BoardAndCommentCount> findBoardList(BoardSearchCondition condition, Pageable pageable) {
+    public Page<BoardAndCommentCount> getBoardList(Pageable pageable) {
         QueryResults<BoardAndCommentCount> results = queryFactory
                 .select(new QBoardAndCommentCount(
                         board.id,
@@ -121,11 +121,38 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 .from(board)
                     .leftJoin(comment)
                     .on(comment.board.id.eq(board.id))
+                .groupBy(board.id)
+                .orderBy(board.createdDate.desc())
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .fetchResults();
+
+        List<BoardAndCommentCount> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<BoardAndCommentCount> searchBoardList(BoardSearchCondition condition, Pageable pageable) {
+        QueryResults<BoardAndCommentCount> results = queryFactory
+                .select(new QBoardAndCommentCount(
+                        board.id,
+                        board.title,
+                        board.content,
+                        board.nickname,
+                        board.member.id,
+                        comment.id.count(),
+                        board.createdDate,
+                        board.lastModifiedDate
+                ))
+                .from(board)
+                .leftJoin(comment)
+                .on(comment.board.id.eq(board.id))
                 .where(nicknameLike(condition.getNickname()),
                         titleLike(condition.getTitle()),
                         contentLike(condition.getContent()))
                 .groupBy(board.id)
-                .orderBy(board.createdDate.desc())
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .fetchResults();

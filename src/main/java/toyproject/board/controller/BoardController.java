@@ -140,8 +140,21 @@ public class BoardController {
      */
 
     @GetMapping("/list")
-    public BoardListResponseDto searchList(Pageable pageable,
-                                           BoardSearchCondition condition) {
+    public BoardListResponseDto getBoardList(Pageable pageable) {
+
+        Page<BoardAndCommentCount> boardList = boardService.getBoardList(pageable);
+
+        return BoardListResponseDto.builder()
+                .httpStatus(OK)
+                .boardList(boardList)
+                .build();
+    }
+
+    /**
+     * TODO 검색과 리스트 쿼리 분리하기
+     */
+    @GetMapping("/search")
+    public BoardListResponseDto searchBoardList(BoardSearchCondition condition, Pageable pageable) {
 
         Page<BoardAndCommentCount> boardList = boardService.searchBoardList(condition, pageable);
 
@@ -149,8 +162,8 @@ public class BoardController {
                 .httpStatus(OK)
                 .boardList(boardList)
                 .build();
-
     }
+
 
     /*
     @GetMapping("/search")

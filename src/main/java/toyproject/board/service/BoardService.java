@@ -178,9 +178,9 @@ public class BoardService {
     }
      */
 
-    public Page<BoardAndCommentCount> searchBoardList(BoardSearchCondition condition, Pageable pageable) {
+    public Page<BoardAndCommentCount> getBoardList(Pageable pageable) {
 
-        Page<BoardAndCommentCount> result = boardQueryRepository.findBoardList(condition, pageable);
+        Page<BoardAndCommentCount> result = boardQueryRepository.getBoardList(pageable);
 
         if (result.getTotalElements() == 0) {
             throw new NullPointerException("게시물이 없습니다.");
@@ -188,7 +188,23 @@ public class BoardService {
 
         if (pageable.getPageNumber() >= result.getTotalPages()) {
             Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
-            return boardQueryRepository.findBoardList(condition, newPageable);
+            return boardQueryRepository.getBoardList(newPageable);
+        }
+
+        return result;
+    }
+
+    public Page<BoardAndCommentCount> searchBoardList(BoardSearchCondition condition, Pageable pageable) {
+
+        Page<BoardAndCommentCount> result = boardQueryRepository.searchBoardList(condition, pageable);
+
+        if (result.getTotalElements() == 0) {
+            throw new NullPointerException("게시물이 없습니다.");
+        }
+
+        if (pageable.getPageNumber() >= result.getTotalPages()) {
+            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
+            return boardQueryRepository.searchBoardList(condition, newPageable);
         }
 
         return result;

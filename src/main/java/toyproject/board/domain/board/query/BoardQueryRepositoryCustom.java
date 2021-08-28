@@ -17,6 +17,8 @@ public interface BoardQueryRepositoryCustom {
 
     CheckPasswordDto findPassword(Long boardId);
 
-    Page<BoardAndCommentCount> findBoardList(BoardSearchCondition condition, Pageable pageable);
+    Page<BoardAndCommentCount> getBoardList(Pageable pageable);
+
+    Page<BoardAndCommentCount> searchBoardList(BoardSearchCondition condition, Pageable pageable);
 
 }
