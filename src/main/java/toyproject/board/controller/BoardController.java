@@ -156,7 +156,7 @@ public class BoardController {
     @GetMapping("/search")
     public BoardListResponseDto searchBoardList(BoardSearchCondition condition, Pageable pageable) {
 
-        Page<BoardAndCommentCount> boardList = boardService.searchBoardList(condition, pageable);
+        Page<BoardAndCommentCount> boardList = boardService.searchBoard(condition, pageable);
 
         return BoardListResponseDto.builder()
                 .httpStatus(OK)

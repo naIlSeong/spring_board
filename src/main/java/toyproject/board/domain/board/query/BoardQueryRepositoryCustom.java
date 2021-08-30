@@ -19,6 +19,6 @@ public interface BoardQueryRepositoryCustom {
 
     Page<BoardAndCommentCount> getBoardList(Pageable pageable);
 
-    Page<BoardAndCommentCount> searchBoardList(BoardSearchCondition condition, Pageable pageable);
+    Page<BoardAndCommentCount> searchBoard(BoardSearchCondition condition, Pageable pageable);
 
 }

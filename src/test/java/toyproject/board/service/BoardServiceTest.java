@@ -540,6 +540,119 @@ class BoardServiceTest {
 
 */
 
+    @Tag("getBoardList()")
+    @Test
+    void 게시물_리스트() throws Exception {
+        // give
+        Member testMember = MemberRequestDto.builder()
+                .username("test member")
+                .password("12341234")
+                .build()
+                .toEntity();
+        em.persist(testMember);
+
+        Member bestMember = MemberRequestDto.builder()
+                .username("best member")
+                .password("12341234")
+                .build()
+                .toEntity();
+        em.persist(bestMember);
+
+        for (int i = 1; i <= 20; i++) {
+
+            Board.BoardBuilder builder = Board.builder();
+
+            if (i % 2 == 0) {
+                builder = builder
+                        .title("best title - " + i)
+                        .content("best content - " + i)
+                        .nickname(bestMember.getUsername())
+                        .member(bestMember);
+            } else {
+                builder = builder
+                        .title("test title - " + i)
+                        .content("test content - " + i)
+                        .nickname(testMember.getUsername())
+                        .member(testMember);
+            }
+
+            em.persist(builder.build());
+        }
+
+        em.flush();
+        em.clear();
+
+        // when
+        Pageable pageable = PageRequest.of(1, 3);
+
+        Page<BoardAndCommentCount> result = boardService.getBoardList(pageable);
+
+        // then
+        long total = result.getTotalElements();
+        List<BoardAndCommentCount> content = result.getContent();
+
+        assertThat(total).isEqualTo(20L);
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(content)
+                .extracting("content")
+                .containsExactly("test content - 17", "best content - 16", "test content - 15");
+    }
+
+    @Tag("getBoardList()")
+    @Test
+    void 게시물_리스트_마지막_페이지_반환() throws Exception {
+        // give
+        Member bestMember = Member.builder()
+                .username("best member")
+                .password("12341234")
+                .build();
+        em.persist(bestMember);
+
+        for (int i = 1; i <= 21; i++) {
+
+            Board board = Board.builder()
+                    .title("title - " + i)
+                    .content("content - " + i)
+                    .nickname(bestMember.getUsername())
+                    .member(bestMember)
+                    .build();
+
+            em.persist(board);
+        }
+
+        em.flush();
+        em.clear();
+
+        // when
+        Pageable pageable = PageRequest.of(4, 10);
+
+        Page<BoardAndCommentCount> result = boardService.getBoardList(pageable);
+
+        // then
+        assertThat(result.getTotalPages()).isEqualTo(3);
+        assertThat(result.getNumber()).isEqualTo(2);
+        assertThat(result.isLast()).isTrue();
+
+        assertThat(result.getTotalElements()).isEqualTo(21);
+        assertThat(result.getNumberOfElements()).isEqualTo(1);
+
+        assertThat(result.getContent().get(0).getContent()).isEqualTo("content - 1");
+    }
+
+    @Tag("getBoardList")
+    @Test
+    void 게시물_리스트_실패() throws Exception {
+        // give
+
+        // when
+        Pageable pageable = PageRequest.of(0, 20);
+        // boardService.getBoardList(pageable);
+
+        // then
+        assertThatThrownBy(() -> boardService.getBoardList(pageable))
+                .hasMessage("게시물이 없습니다.");
+    }
+
     @Tag("searchBoardList")
     @Test
     void 게시물_검색() throws Exception {
@@ -582,41 +695,45 @@ class BoardServiceTest {
         em.flush();
         em.clear();
 
-        // when
+        // 검색 조건
         BoardSearchCondition condition = BoardSearchCondition.builder()
-                .title("test")
-                .nickname("test member")
                 .content("1")
+                .nickname("best")
                 .build();
-        Pageable pageable = PageRequest.of(1, 3);
 
-        Page<BoardAndCommentCount> result = boardService.searchBoardList(condition, pageable);
+        // Pageable
+        PageRequest pageable = PageRequest.of(0, 3);
+
+        // when
+        Page<BoardAndCommentCount> result = boardService.searchBoard(condition, pageable);
 
         // then
-        long total = result.getTotalElements();
-        List<BoardAndCommentCount> content = result.getContent();
+        assertThat(result.getTotalPages()).isEqualTo(2);
+        assertThat(result.getNumber()).isEqualTo(0);
+        assertThat(result.isFirst()).isTrue();
 
-        assertThat(total).isEqualTo(6L);
-        assertThat(content.size()).isEqualTo(3);
-        assertThat(content)
-                .extracting("content")
-                .containsExactly("test content - 13", "test content - 11", "test content - 1");
+        assertThat(result.getTotalElements()).isEqualTo(5);
+        assertThat(result.getNumberOfElements()).isEqualTo(3);
+
+        assertThat(result.getContent().get(0).getContent()).isEqualTo("best content - 18");
     }
 
     @Tag("searchBoardList")
     @Test
-    void 게시물_검색_제목() throws Exception {
+    void 게시물_검색_마지막_페이지_반환() throws Exception {
         // give
-        Member testMember = Member.builder()
+        Member testMember = MemberRequestDto.builder()
                 .username("test member")
                 .password("12341234")
-                .build();
+                .build()
+                .toEntity();
         em.persist(testMember);
 
-        Member bestMember = Member.builder()
+        Member bestMember = MemberRequestDto.builder()
                 .username("best member")
                 .password("12341234")
-                .build();
+                .build()
+                .toEntity();
         em.persist(bestMember);
 
         for (int i = 1; i <= 20; i++) {
@@ -643,94 +760,61 @@ class BoardServiceTest {
         em.flush();
         em.clear();
 
-        // when
+        // 검색 조건
         BoardSearchCondition condition = BoardSearchCondition.builder()
-                .title("test")
+                .content("1")
+                .nickname("best")
                 .build();
-        Pageable pageable = PageRequest.of(0, 2);
 
-        Page<BoardAndCommentCount> result = boardService.searchBoardList(condition, pageable);
+        // Pageable
+        PageRequest pageable = PageRequest.of(4, 3);
+
+        // when
+        Page<BoardAndCommentCount> result = boardService.searchBoard(condition, pageable);
 
         // then
-        long total = result.getTotalElements();
-        List<BoardAndCommentCount> content = result.getContent();
+        assertThat(result.getTotalPages()).isEqualTo(2);
+        assertThat(result.getNumber()).isEqualTo(1);
+        assertThat(result.isLast()).isTrue();
 
-        assertThat(total).isEqualTo(10L);
-        assertThat(content.size()).isEqualTo(2);
-        assertThat(content)
-                .extracting("title")
-                .containsExactly("test title - 19", "test title - 17");
+        assertThat(result.getTotalElements()).isEqualTo(5);
+        assertThat(result.getNumberOfElements()).isEqualTo(2);
+
+        assertThat(result.getContent().get(0).getContent()).isEqualTo("best content - 12");
     }
 
     @Tag("searchBoardList")
     @Test
-    void 게시물_검색_마지막_페이지_반환() throws Exception {
+    void 게시물_검색_결과_없음() throws Exception {
         // give
-        Member bestMember = Member.builder()
-                .username("best member")
-                .password("12341234")
-                .build();
-        em.persist(bestMember);
-
-        for (int i = 1; i <= 21; i++) {
+        for (int i = 1; i <= 20; i++) {
 
             Board board = Board.builder()
-                    .title("title - " + i)
-                    .content("content - " + i)
-                    .nickname(bestMember.getUsername())
-                    .member(bestMember)
+                    .title("title " + i)
+                    .content("content" + i)
+                    .nickname("user " + i)
+                    .password("1234")
                     .build();
-
             em.persist(board);
+
         }
 
         em.flush();
         em.clear();
 
-        // when
-        BoardSearchCondition condition = BoardSearchCondition.builder()
-                .nickname("best member")
-                .isAsc(false)
-                .build();
-        Pageable pageable = PageRequest.of(4, 10);
-
-        Page<BoardAndCommentCount> result = boardService.searchBoardList(condition, pageable);
-
-        // then
-        assertThat(result.getTotalPages()).isEqualTo(3);
-        assertThat(result.getNumber()).isEqualTo(2);
-        assertThat(result.isLast()).isTrue();
-
-        assertThat(result.getTotalElements()).isEqualTo(21);
-        assertThat(result.getNumberOfElements()).isEqualTo(1);
-
-        assertThat(result.getContent().get(0).getContent()).isEqualTo("content - 1");
-    }
-
-    @Tag("searchBoard")
-    @Test
-    void 게시물_검색_실패() throws Exception {
-        // give
-        Board board = Board.builder()
-                .title("test title.")
-                .content("test content.")
-                .nickname("test")
-                .password("1234")
-                .build();
-        em.persist(board);
-
-        em.flush();
-        em.clear();
-
-        // when
+        // 검색 조건
         BoardSearchCondition condition = BoardSearchCondition.builder()
                 .title("best")
                 .build();
-        Pageable pageable = PageRequest.of(0, 20);
+
+        // Pageable
+        PageRequest pageable = PageRequest.of(0, 3);
+
+        // when
         // boardService.searchBoard(condition, pageable);
 
         // then
-        assertThatThrownBy(() -> boardService.searchBoardList(condition, pageable))
+        assertThatThrownBy(() -> boardService.searchBoard(condition, pageable))
                 .hasMessage("게시물이 없습니다.");
     }
 
