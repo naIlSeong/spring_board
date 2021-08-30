@@ -639,20 +639,6 @@ class BoardServiceTest {
         assertThat(result.getContent().get(0).getContent()).isEqualTo("content - 1");
     }
 
-    @Tag("getBoardList")
-    @Test
-    void 게시물_리스트_실패() throws Exception {
-        // give
-
-        // when
-        Pageable pageable = PageRequest.of(0, 20);
-        // boardService.getBoardList(pageable);
-
-        // then
-        assertThatThrownBy(() -> boardService.getBoardList(pageable))
-                .hasMessage("게시물이 없습니다.");
-    }
-
     @Tag("searchBoardList")
     @Test
     void 게시물_검색() throws Exception {
@@ -781,41 +767,6 @@ class BoardServiceTest {
         assertThat(result.getNumberOfElements()).isEqualTo(2);
 
         assertThat(result.getContent().get(0).getContent()).isEqualTo("best content - 12");
-    }
-
-    @Tag("searchBoardList")
-    @Test
-    void 게시물_검색_결과_없음() throws Exception {
-        // give
-        for (int i = 1; i <= 20; i++) {
-
-            Board board = Board.builder()
-                    .title("title " + i)
-                    .content("content" + i)
-                    .nickname("user " + i)
-                    .password("1234")
-                    .build();
-            em.persist(board);
-
-        }
-
-        em.flush();
-        em.clear();
-
-        // 검색 조건
-        BoardSearchCondition condition = BoardSearchCondition.builder()
-                .title("best")
-                .build();
-
-        // Pageable
-        PageRequest pageable = PageRequest.of(0, 3);
-
-        // when
-        // boardService.searchBoard(condition, pageable);
-
-        // then
-        assertThatThrownBy(() -> boardService.searchBoard(condition, pageable))
-                .hasMessage("게시물이 없습니다.");
     }
 
 }
