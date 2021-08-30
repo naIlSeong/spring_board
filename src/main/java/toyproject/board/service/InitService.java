@@ -40,7 +40,7 @@ public class InitService {
             // 멤버 30명 초기화
             for (int i = 0; i < 30; i++) {
                 Member member = Member.builder()
-                        .username("member" + (i + 1))
+                        .username("user" + (i + 1))
                         .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
                         .build();
                 em.persist(member);

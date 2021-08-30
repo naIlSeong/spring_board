@@ -14,12 +14,14 @@ public class BoardSearchCondition {
     private String title;
     private String content;
     private Boolean isAsc;
+    private Long memberId;
 
     @Builder
-    public BoardSearchCondition(String nickname, String title, String content, Boolean isAsc) {
+    public BoardSearchCondition(String nickname, String title, String content, Boolean isAsc, Long memberId) {
         this.nickname = nickname;
         this.title = title;
         this.content = content;
         this.isAsc = isAsc;
+        this.memberId = memberId;
     }
 }

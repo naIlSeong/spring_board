@@ -42,6 +42,6 @@ created on 2021. 7. 18
   
 
 - Query
-- [ ] ID로 상세 조회
-  - Member 정보, 작성한 게시물, 작성한 댓글
+- [x] ID로 상세 조회
+  - Member 정보, 작성한 게시물
 - [x] Username으로 검색 (페이지)

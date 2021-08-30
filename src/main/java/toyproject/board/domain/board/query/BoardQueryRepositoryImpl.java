@@ -151,7 +151,8 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 .on(comment.board.id.eq(board.id))
                 .where(nicknameLike(condition.getNickname()),
                         titleLike(condition.getTitle()),
-                        contentLike(condition.getContent()))
+                        contentLike(condition.getContent()),
+                        memberIdEq(condition.getMemberId()))
                 .groupBy(board.id)
                 .orderBy(orderByCreatedDate(condition.getIsAsc()))
                 .limit(pageable.getPageSize())

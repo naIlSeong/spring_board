@@ -6,15 +6,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
+import toyproject.board.dto.board.query.BoardAndCommentCount;
+import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.member.command.MemberRequestDto;
 import toyproject.board.dto.member.query.MemberQueryDto;
-import toyproject.board.dto.member.response.MemberResponseDto;
 import toyproject.board.dto.member.query.MemberSearchCondition;
+import toyproject.board.dto.member.response.MemberDetailResponseDto;
+import toyproject.board.service.BoardService;
 import toyproject.board.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -25,6 +27,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class MemberController {
 
     private final MemberService memberService;
+    private final BoardService boardService;
 
     @ResponseStatus(CREATED)
     @PostMapping("/new")
@@ -73,20 +76,27 @@ public class MemberController {
                 .build();
     }
 
-    @GetMapping("/{memberId}")
-    public BasicResponseDto getMember(@PathVariable(name = "memberId") Long memberId) {
+    @GetMapping("/{id}")
+    public MemberDetailResponseDto getMemberDetail(@PathVariable(name = "id") Long memberId,
+                                                   Pageable pageable) {
 
         MemberQueryDto member = memberService.getMember(memberId);
 
-        return MemberResponseDto.builder()
+        BoardSearchCondition condition = BoardSearchCondition.builder()
+                .memberId(memberId)
+                .build();
+        Page<BoardAndCommentCount> boardList = boardService.searchBoard(condition, pageable);
+
+        return MemberDetailResponseDto.builder()
                 .httpStatus(OK)
                 .member(member)
+                .boardList(boardList)
                 .build();
     }
 
-    @GetMapping("/search-page")
-    public Page<MemberQueryDto> searchV2(MemberSearchCondition condition, Pageable pageable) {
-        return memberService.searchMemberPage(condition, pageable);
+    @GetMapping("/search")
+    public Page<MemberQueryDto> searchMember(MemberSearchCondition condition, Pageable pageable) {
+        return memberService.searchMember(condition, pageable);
     }
 
 }

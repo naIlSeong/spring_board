@@ -84,7 +84,7 @@ public class MemberService {
         return member;
     }
 
-    public Page<MemberQueryDto> searchMemberPage(MemberSearchCondition condition, Pageable pageable) {
+    public Page<MemberQueryDto> searchMember(MemberSearchCondition condition, Pageable pageable) {
         return memberQueryRepository.searchPage(condition, pageable);
     }
 
