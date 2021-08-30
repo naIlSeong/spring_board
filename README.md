@@ -4,67 +4,44 @@ created on 2021. 7. 18
 
 ---
 
-## Todo
+## 기능
 
-### Domain
+### Board 게시물
 
-- **Entity**
-    - [x] Member
-    - [x] Board
-    - [x] Comment
-
-
-- **Repository**
-    - [x] Member
-    - [x] Board
-    - [x] Comment
-
-### Service
-
-- **Member**
-    - [x] join
-    - [x] withdrawal
-    - [x] login
-    - [x] getMember
-    - [ ] searchMember (세모)
+- Command
+- [x] 생성 (로그인 / 비로그인)
+- [x] 삭제 (로그인 / 비로그인)
+- [x] 수정 (로그인 / 비로그인)
 
 
-- **Board**
-    - [x] createBoard
-    - [x] deleteBoard
-    - [x] updateBoard
-    - [x] getBoard
-    - [x] searchBoard
-    - [x] getBoardList
+- Query
+- [x] ID로 상세 조회
+  - 게시물 정보, 댓글 조회
+- [x] 리스트 조회 (페이지)
+  - 게시물 제목, 작성자, 생성 일, 댓글 수
+- [x] 검색 (페이지)
+  - 게시물 제목, 작성자, 생성 일, 댓글 수
+
+### Comment 댓글
+
+- Command
+- [x] 생성 (로그인 / 비로그인)
+- [x] 삭제 (로그인 / 비로그인)
+- [x] 수정 (로그인 / 비로그인)
 
 
-- **Comment**
-    - [x] createComment
-    - [x] deleteComment
-    - [x] updateComment
+- Query
+- [x] 게시물 ID로 조회 (페이지)
 
-### Controller
+### Member 유저
 
-- **Member**
-    - [x] 회원가입
-    - [x] 회원탈퇴
-    - [x] 로그인
-    - [x] 회원 상세 조회
-    - [ ] 회원 검색 (게시물과 함께) (세모)
+- Command
+- [x] 생성 (로그인 / 비로그인)
+- [x] 삭제 (로그인 / 비로그인)
+- [x] 수정 (로그인 / 비로그인)
+  
 
-
-- **Board**
-    - [x] 글 쓰기
-    - [x] 글 삭제
-    - [x] 글 수정
-    - [x] 글 조회
-    - [x] 글 검색
-    - [x] 글 목록
-
-
-- **Comment**
-    - [x] 댓글 작성
-    - [x] 댓글 수정
-    - [x] 댓글 삭제
-
-### DTO
+- Query
+- [ ] ID로 상세 조회
+  - Member 정보, 작성한 게시물, 작성한 댓글
+- [x] Username으로 검색 (페이지)
