@@ -95,19 +95,6 @@ public class BoardController {
                 .build();
     }
 
-/*
-    @GetMapping("/{id}")
-    public BoardQueryResponseDto getBoard(@PathVariable("id") Long id) {
-
-        BoardNoPw board = boardService.getBoard(id);
-
-        return BoardQueryResponseDto.builder()
-                .httpStatus(OK)
-                .boardNoPw(board)
-                .build();
-    }
-*/
-
     @GetMapping("/{boardId}")
     public BoardDetailResponseDto getBoardDetail(@PathVariable("boardId") Long boardId, Pageable pageable) {
 
@@ -125,20 +112,6 @@ public class BoardController {
                 .build();
     }
 
-    /*
-    @GetMapping("/list")
-    public BoardListResponseDto getList(Pageable pageable,
-                                        @RequestParam(name = "memberId", required = false) Long memberId) {
-
-        Page<BoardQueryDto> boardList = boardService.getBoardList(pageable, memberId);
-
-        return BoardListResponseDto.builder()
-                .httpStatus(OK)
-                .boardList(boardList)
-                .build();
-    }
-     */
-
     @GetMapping("/list")
     public BoardListResponseDto getBoardList(Pageable pageable) {
 
@@ -150,9 +123,6 @@ public class BoardController {
                 .build();
     }
 
-    /**
-     * TODO 검색과 리스트 쿼리 분리하기
-     */
     @GetMapping("/search")
     public BoardListResponseDto searchBoardList(BoardSearchCondition condition, Pageable pageable) {
 
@@ -163,20 +133,5 @@ public class BoardController {
                 .boardList(boardList)
                 .build();
     }
-
-
-    /*
-    @GetMapping("/search")
-    public BoardListResponseDto searchBoard(Pageable pageable,
-                                            BoardSearchCondition condition) {
-
-        Page<BoardQueryDto> boardList = boardService.searchBoard(condition, pageable);
-
-        return BoardListResponseDto.builder()
-                .httpStatus(OK)
-                .boardList(boardList)
-                .build();
-    }
-     */
 
 }

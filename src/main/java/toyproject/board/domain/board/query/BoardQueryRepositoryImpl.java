@@ -134,7 +134,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
     }
 
     @Override
-    public Page<BoardAndCommentCount> searchBoardList(BoardSearchCondition condition, Pageable pageable) {
+    public Page<BoardAndCommentCount> searchBoard(BoardSearchCondition condition, Pageable pageable) {
         QueryResults<BoardAndCommentCount> results = queryFactory
                 .select(new QBoardAndCommentCount(
                         board.id,
@@ -153,6 +153,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                         titleLike(condition.getTitle()),
                         contentLike(condition.getContent()))
                 .groupBy(board.id)
+                .orderBy(orderByCreatedDate(condition.getIsAsc()))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .fetchResults();
@@ -181,11 +182,9 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 : null;
     }
 
-    private OrderSpecifier<?> createdDateAsc(Boolean isAsc) {
-        return isAsc != null
-                ? isAsc
-                ? board.createdDate.asc()
-                : board.createdDate.desc()
+    private OrderSpecifier<?> orderByCreatedDate(Boolean isAsc) {
+        return isAsc == null || !isAsc
+                ? board.createdDate.desc()
                 : board.createdDate.asc();
     }
 

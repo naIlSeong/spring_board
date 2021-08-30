@@ -160,24 +160,9 @@ public class BoardService {
         return board;
     }
 
-    /*
-    public Page<BoardQueryDto> getBoardList(Pageable pageable, Long memberId) {
-
-        Page<BoardQueryDto> result = boardQueryRepository.findAllNoPassword(memberId, pageable);
-
-        if (result.getTotalElements() == 0) {
-            throw new NullPointerException("게시물이 없습니다.");
-        }
-
-        if (pageable.getPageNumber() >= result.getTotalPages()) {
-            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
-            return boardQueryRepository.findAllNoPassword(memberId, newPageable);
-        }
-
-        return result;
-    }
+    /**
+     * 게시물 리스트 쿼리 (검색 X)
      */
-
     public Page<BoardAndCommentCount> getBoardList(Pageable pageable) {
 
         Page<BoardAndCommentCount> result = boardQueryRepository.getBoardList(pageable);
@@ -194,6 +179,10 @@ public class BoardService {
         return result;
     }
 
+    /**
+     * 게시물 검색 쿼리
+     * 닉네임, 제목, 내용, 생성 날짜 정렬
+     */
     public Page<BoardAndCommentCount> searchBoard(BoardSearchCondition condition, Pageable pageable) {
 
         Page<BoardAndCommentCount> result = boardQueryRepository.searchBoard(condition, pageable);
@@ -209,23 +198,5 @@ public class BoardService {
 
         return result;
     }
-
-    /*
-    public Page<BoardQueryDto> searchBoard(BoardSearchCondition condition, Pageable pageable) {
-
-        Page<BoardQueryDto> result = boardQueryRepository.searchBoard(condition, pageable);
-
-        if (result.getTotalElements() == 0) {
-            throw new NullPointerException("게시물이 없습니다.");
-        }
-
-        if (pageable.getPageNumber() >= result.getTotalPages()) {
-            Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
-            return boardQueryRepository.searchBoard(condition, newPageable);
-        }
-
-        return result;
-    }
-     */
 
 }
