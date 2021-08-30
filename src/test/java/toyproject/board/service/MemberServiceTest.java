@@ -2,6 +2,7 @@ package toyproject.board.service;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
@@ -47,8 +48,7 @@ class MemberServiceTest {
         Long memberId = memberService.join(dto);
 
         // then
-        Optional<Member> joinedMember = memberRepository.findById(memberId);
-        Member result = joinedMember.get();
+        Member result = em.find(Member.class, memberId);
 
         assertThat(result.getUsername()).isEqualTo("test");
     }
@@ -135,8 +135,7 @@ class MemberServiceTest {
         Long memberId = memberService.join(dto);
 
         // then
-        Optional<Member> findMember = memberRepository.findById(memberId);
-        Member result = findMember.get();
+        Member result = em.find(Member.class, memberId);
 
         assertThat(result.getPassword()).isNotEqualTo("12345678");
     }
@@ -149,11 +148,11 @@ class MemberServiceTest {
     @Test
     void 로그인_성공() throws Exception {
         // give
-        MemberRequestDto dto = MemberRequestDto.builder()
+        Member member = Member.builder()
                 .username("test")
-                .password("12341234")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
                 .build();
-        memberService.join(dto);
+        em.persist(member);
 
         // when
         MemberRequestDto loginDto = MemberRequestDto.builder()
@@ -161,14 +160,10 @@ class MemberServiceTest {
                 .password("12341234")
                 .build();
 
-
-        memberService.login(loginDto);
+        Member result = memberService.login(loginDto);
 
         // then
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
-        System.out.println("authentication = " + authentication);
-
+        assertThat(result.getUsername()).isEqualTo("test");
     }
 
     @Tag("login")
@@ -194,12 +189,11 @@ class MemberServiceTest {
     @Test
     void 로그인_실패_비밀번호() throws Exception {
         // give
-        MemberRequestDto memberDto = MemberRequestDto.builder()
+        Member member = Member.builder()
                 .username("test")
-                .password("12341234")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
                 .build();
-
-        memberService.join(memberDto);
+        em.persist(member);
 
         // when
         MemberRequestDto loginDto = MemberRequestDto.builder()
@@ -223,17 +217,14 @@ class MemberServiceTest {
     @Test
     void 탈퇴_성공() throws Exception {
         // give
-        MemberRequestDto dto = MemberRequestDto.builder()
+        Member member = Member.builder()
                 .username("test")
-                .password("12341234")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
                 .build();
-        Long memberId = memberService.join(dto);
-
-        em.flush();
-        em.clear();
+        em.persist(member);
 
         // when
-        boolean result = memberService.withdrawal(memberId);
+        boolean result = memberService.withdrawal(member.getId());
 
         // then
         assertThat(result).isTrue();
@@ -243,14 +234,11 @@ class MemberServiceTest {
     @Test
     void 탈퇴_예외() throws Exception {
         // give
-        MemberRequestDto dto = MemberRequestDto.builder()
+        Member member = Member.builder()
                 .username("test")
-                .password("12341234")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
                 .build();
-        memberService.join(dto);
-
-        em.flush();
-        em.clear();
+        em.persist(member);
 
         // when
         // memberService.withdrawal(12121L);
@@ -268,19 +256,18 @@ class MemberServiceTest {
     @Test
     void 상세_조회_성공() throws Exception {
         // give
-        MemberRequestDto dto = MemberRequestDto.builder()
+        Member member = Member.builder()
                 .username("test")
-                .password("12341234")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
                 .build();
-
-        Long memberId = memberService.join(dto);
+        em.persist(member);
 
         // when
-        MemberQueryDto result = memberService.getMember(memberId);
+        MemberQueryDto result = memberService.getMember(member.getId());
 
         // then
         assertThat(result.getUsername()).isEqualTo("test");
-        assertThat(result.getMemberId()).isEqualTo(memberId);
+        assertThat(result.getMemberId()).isEqualTo(member.getId());
 
     }
 
@@ -288,24 +275,24 @@ class MemberServiceTest {
     @Test
     void 상세_조회_성공2() throws Exception {
         // give
-        MemberRequestDto dto1 = MemberRequestDto.builder()
-                .username("test")
-                .password("12341234")
+        Member member1 = Member.builder()
+                .username("test1")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
                 .build();
-        MemberRequestDto dto2 = MemberRequestDto.builder()
-                .username("test2")
-                .password("12341234")
-                .build();
+        em.persist(member1);
 
-        Long id1 = memberService.join(dto1);
-        Long id2 = memberService.join(dto2);
+        Member member2 = Member.builder()
+                .username("test2")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(member2);
 
         // when
-        MemberQueryDto result1 = memberService.getMember(id1);
-        MemberQueryDto result2 = memberService.getMember(id2);
+        MemberQueryDto result1 = memberService.getMember(member1.getId());
+        MemberQueryDto result2 = memberService.getMember(member2.getId());
 
         // then
-        assertThat(result1.getUsername()).isEqualTo("test");
+        assertThat(result1.getUsername()).isEqualTo("test1");
         assertThat(result2.getUsername()).isEqualTo("test2");
 
 
@@ -324,4 +311,5 @@ class MemberServiceTest {
                 .hasMessage("유저를 찾을 수 없습니다.");
 
     }
+
 }

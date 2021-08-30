@@ -15,6 +15,7 @@ import toyproject.board.dto.member.query.MemberQueryDto;
 import toyproject.board.dto.member.query.MemberSearchCondition;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,8 +37,10 @@ public class MemberService {
                 .replaceAll(" ", "_"));
 
         // 동일한 username 존재하는지 체크
-        memberRepository.findByUsername(dto.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("이미 존재하는 이름입니다."));
+        Optional<Member> existMember = memberRepository.findByUsername(dto.getUsername());
+        if (existMember.isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 이름입니다.");
+        }
 
         // 비밀번호 암호화
         dto.setPassword(
