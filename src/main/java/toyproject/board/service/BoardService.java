@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import toyproject.board.domain.board.Board;
-import toyproject.board.domain.board.query.BoardQueryRepository;
 import toyproject.board.domain.board.BoardRepository;
+import toyproject.board.domain.board.query.BoardQueryRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.command.*;
 import toyproject.board.dto.board.query.BoardAndCommentCount;
@@ -65,7 +65,7 @@ public class BoardService {
         Board board = getBoardWithPassword(dto.getId());
         checkMemberId(board.getMember().getId(), dto.getMember().getId(), true);
 
-        boardRepository.delete(board);
+        boardRepository.deleteWithComments(board.getId());
 
     }
 
@@ -76,7 +76,7 @@ public class BoardService {
         Board board = getBoardWithPassword(dto.getId());
         checkPassword(dto.getPassword(), board.getPassword());
 
-        boardRepository.delete(board);
+        boardRepository.deleteWithComments(board.getId());
 
     }
 
