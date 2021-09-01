@@ -8,8 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
+import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.command.*;
 import toyproject.board.dto.board.query.BoardAndCommentCount;
@@ -129,9 +131,73 @@ class BoardServiceTest {
                 .build();
         boardService.deleteBoard(dto);
 
+        em.flush();
+        em.clear();
+
         // then
         Board result = em.find(Board.class, boardId);
         assertThat(result).isNull();
+    }
+
+    @Tag("deleteBoard")
+    @Test
+    void 게시물_댓글_모두_삭제_로그인() throws Exception {
+        // give
+        Member member = Member.builder()
+                .username("test")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(member);
+
+        Board board = Board.builder()
+                .title("test title.")
+                .content("test content.")
+                .member(member)
+                .build();
+        em.persist(board);
+
+        Comment comment1 = Comment.builder()
+                .board(board)
+                .content("test comment - 1")
+                .nickname("user - 1")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(comment1);
+
+        Comment comment2 = Comment.builder()
+                .board(board)
+                .content("test comment - 2")
+                .member(member)
+                .nickname(member.getUsername())
+                .build();
+        em.persist(comment2);
+
+        em.flush();
+        em.clear();
+
+        Long boardId = board.getId();
+        Long comment1Id = comment1.getId();
+        Long comment2Id = comment2.getId();
+
+        // when
+        DeleteBoardLoginDto dto = DeleteBoardLoginDto.builder()
+                .id(boardId)
+                .member(member)
+                .build();
+        boardService.deleteBoard(dto);
+
+        em.flush();
+        em.clear();
+
+        // then
+        Board result = em.find(Board.class, boardId);
+        assertThat(result).isNull();
+
+        Comment commentResult1 = em.find(Comment.class, comment1Id);
+        assertThat(commentResult1).isNull();
+
+        Comment commentResult2 = em.find(Comment.class, comment2Id);
+        assertThat(commentResult2).isNull();
     }
 
     @Tag("deleteBoard")
@@ -155,9 +221,65 @@ class BoardServiceTest {
                 .build();
         boardService.deleteBoard(dto);
 
+        em.flush();
+        em.clear();
+
         // then
         Board result = em.find(Board.class, boardId);
         assertThat(result).isNull();
+    }
+
+    @Tag("deleteBoard")
+    @Test
+    void 게시물_댓글_모두_삭제_비로그인() throws Exception {
+        // give
+        Board board = Board.builder()
+                .title("test title.")
+                .content("test content.")
+                .nickname("test")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(board);
+
+        Comment comment1 = Comment.builder()
+                .board(board)
+                .content("test comment - 1")
+                .nickname("user - 1")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(comment1);
+
+        Comment comment2 = Comment.builder()
+                .board(board)
+                .content("test comment - 2")
+                .nickname("user - 2")
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(comment2);
+
+        Long boardId = board.getId();
+        Long comment1Id = comment1.getId();
+        Long comment2Id = comment2.getId();
+
+        // when
+        DeleteBoardNotLoginDto dto = DeleteBoardNotLoginDto.builder()
+                .id(boardId)
+                .password("1234")
+                .build();
+        boardService.deleteBoard(dto);
+
+        em.flush();
+        em.clear();
+
+        // then
+        Board result = em.find(Board.class, boardId);
+        assertThat(result).isNull();
+
+        Comment commentResult1 = em.find(Comment.class, comment1Id);
+        assertThat(commentResult1).isNull();
+        
+        Comment commentResult2 = em.find(Comment.class, comment2Id);
+        assertThat(commentResult2).isNull();
     }
 
     @Tag("deleteBoard")
@@ -441,104 +563,6 @@ class BoardServiceTest {
         assertThatThrownBy(() -> boardService.getBoard(1212L))
                 .hasMessage("게시물을 찾을 수 없습니다.");
     }
-
-    /*
-    @Tag("getBoardList")
-    @Test
-    void 게시물_조회() throws Exception {
-        // give
-        for (int i = 0; i < 100; i++) {
-            Board board = Board.builder()
-                    .title("title" + i)
-                    .content("content" + i)
-                    .nickname("nickname" + i)
-                    .password("1234")
-                    .build();
-            em.persist(board);
-        }
-
-        // when
-        Pageable pageable = PageRequest.of(0, 20);
-        Page<BoardQueryDto> result = boardService.getBoardList(pageable, null);
-
-        // then
-        assertThat(result.getTotalElements()).isEqualTo(100);
-        assertThat(result.getTotalPages()).isEqualTo(5);
-        assertThat(result.isFirst()).isTrue();
-        assertThat(result.getContent().get(0).getTitle()).isEqualTo("title0");
-    }
-
-    @Tag("getBoardList")
-    @Test
-    void 게시물_조회_마지막_페이지_반환() throws Exception {
-        // give
-        for (int i = 0; i < 100; i++) {
-            Board board = Board.builder()
-                    .title("title" + i)
-                    .content("content" + i)
-                    .nickname("nickname" + i)
-                    .password("1234")
-                    .build();
-            em.persist(board);
-        }
-
-        // when
-        Pageable pageable = PageRequest.of(10, 20);
-        Page<BoardQueryDto> result = boardService.getBoardList(pageable, null);
-
-        // then
-        assertThat(result.getTotalElements()).isEqualTo(100);
-        assertThat(result.getTotalPages()).isEqualTo(5);
-        assertThat(result.getNumber()).isEqualTo(4);
-        assertThat(result.isLast()).isTrue();
-        assertThat(result.getContent().size()).isEqualTo(20);
-        assertThat(result.getContent().get(19).getTitle()).isEqualTo("title99");
-    }
-
-    @Tag("getBoardList")
-    @Test
-    void 게시물_조회_게시물X() throws Exception {
-        // give
-
-        // when
-        Pageable pageable = PageRequest.of(10, 20);
-        // boardService.getBoardList(pageable, null);
-
-        // then
-        assertThatThrownBy(() -> boardService.getBoardList(pageable, null))
-                .hasMessage("게시물이 없습니다.");
-    }
-
-    @Tag("getBoardList")
-    @Test
-    void 게시물_조회_with_member_id_게시물X() throws Exception {
-        // give
-        Board board = Board.builder()
-                .title("title")
-                .content("content")
-                .nickname("nickname")
-                .password("1234")
-                .build();
-        em.persist(board);
-
-        Member member = Member.builder()
-                .username("test")
-                .password("12341234")
-                .build();
-        em.persist(member);
-
-        // when
-        Pageable pageable = PageRequest.of(10, 20);
-        // boardService.getBoardList(pageable, null);
-
-        // then
-        assertThatThrownBy(() -> boardService.getBoardList(pageable, member.getId()))
-                .hasMessage("게시물이 없습니다.");
-
-    }
-
-
-*/
 
     @Tag("getBoardList()")
     @Test
