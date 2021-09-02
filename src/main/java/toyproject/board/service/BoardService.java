@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.board.BoardRepository;
 import toyproject.board.domain.board.query.BoardQueryRepository;
+import toyproject.board.domain.comment.CommentRepository;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.board.command.*;
 import toyproject.board.dto.board.query.BoardAndCommentCount;
@@ -30,6 +31,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardQueryRepository boardQueryRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     @Validated
@@ -65,7 +67,8 @@ public class BoardService {
         Board board = getBoardWithPassword(dto.getId());
         checkMemberId(board.getMember().getId(), dto.getMember().getId(), true);
 
-        boardRepository.deleteWithComments(board.getId());
+        commentRepository.deleteByBoardId(board.getId());
+        boardRepository.delete(board);
 
     }
 
@@ -76,7 +79,8 @@ public class BoardService {
         Board board = getBoardWithPassword(dto.getId());
         checkPassword(dto.getPassword(), board.getPassword());
 
-        boardRepository.deleteWithComments(board.getId());
+        commentRepository.deleteByBoardId(board.getId());
+        boardRepository.delete(board);
 
     }
 
@@ -167,10 +171,6 @@ public class BoardService {
 
         Page<BoardAndCommentCount> result = boardQueryRepository.getBoardList(pageable);
 
-//        if (result.getTotalElements() == 0) {
-//            throw new NullPointerException("게시물이 없습니다.");
-//        }
-
         if (result.getTotalElements() != 0 && pageable.getPageNumber() >= result.getTotalPages()) {
             Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
             return boardQueryRepository.getBoardList(newPageable);
@@ -186,10 +186,6 @@ public class BoardService {
     public Page<BoardAndCommentCount> searchBoard(BoardSearchCondition condition, Pageable pageable) {
 
         Page<BoardAndCommentCount> result = boardQueryRepository.searchBoard(condition, pageable);
-
-//        if (result.getTotalElements() == 0) {
-//            throw new NullPointerException("게시물이 없습니다.");
-//        }
 
         if (result.getTotalElements() != 0 && pageable.getPageNumber() >= result.getTotalPages()) {
             Pageable newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
