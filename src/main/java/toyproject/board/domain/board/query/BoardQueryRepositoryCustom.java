@@ -7,6 +7,8 @@ import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.board.query.CheckPasswordDto;
 
+import java.util.List;
+
 public interface BoardQueryRepositoryCustom {
 
     BoardQueryDto findNoPasswordById(Long boardId);
@@ -20,5 +22,7 @@ public interface BoardQueryRepositoryCustom {
     Page<BoardAndCommentCount> getBoardList(Pageable pageable);
 
     Page<BoardAndCommentCount> searchBoard(BoardSearchCondition condition, Pageable pageable);
+
+    List<Long> findAllBoardIdByMemberId(Long memberId);
 
 }

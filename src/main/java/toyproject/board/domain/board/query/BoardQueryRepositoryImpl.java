@@ -165,6 +165,15 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public List<Long> findAllBoardIdByMemberId(Long memberId) {
+        return queryFactory
+                .select(board.id)
+                .from(board)
+                .where(board.member.id.eq(memberId))
+                .fetch();
+    }
+
     private Predicate nicknameLike(String nickname) {
         return nickname != null
                 ? board.nickname.like("%" + nickname + "%")

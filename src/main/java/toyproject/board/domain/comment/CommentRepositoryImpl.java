@@ -90,4 +90,11 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .execute();
     }
 
+    @Override
+    public void deleteByBoardIdList(List<Long> boardIdList) {
+        queryFactory
+                .delete(comment)
+                .where(comment.board.id.in(boardIdList))
+                .execute();
+    }
 }

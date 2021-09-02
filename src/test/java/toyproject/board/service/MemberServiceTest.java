@@ -5,10 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.Comment;
@@ -18,7 +14,6 @@ import toyproject.board.dto.member.command.MemberRequestDto;
 import toyproject.board.dto.member.query.MemberQueryDto;
 
 import javax.persistence.EntityManager;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -260,7 +255,7 @@ class MemberServiceTest {
                 .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
                 .build();
         em.persist(comment1);
-        
+
         // 다른 유저의 게시물
         Board board2 = Board.builder()
                 .nickname("yy")
@@ -283,7 +278,6 @@ class MemberServiceTest {
         em.clear();
 
         // when
-        System.out.println("==============================Start Transaction==============================");
         memberService.withdrawal(member.getId());
 
         // then

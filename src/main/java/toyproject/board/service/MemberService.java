@@ -8,15 +8,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import toyproject.board.domain.board.BoardRepository;
+import toyproject.board.domain.board.query.BoardQueryRepository;
 import toyproject.board.domain.comment.CommentRepository;
 import toyproject.board.domain.member.Member;
-import toyproject.board.domain.member.query.MemberQueryRepository;
 import toyproject.board.domain.member.MemberRepository;
+import toyproject.board.domain.member.query.MemberQueryRepository;
 import toyproject.board.dto.member.command.MemberRequestDto;
 import toyproject.board.dto.member.query.MemberQueryDto;
 import toyproject.board.dto.member.query.MemberSearchCondition;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberQueryRepository memberQueryRepository;
     private final BoardRepository boardRepository;
+    private final BoardQueryRepository boardQueryRepository;
     private final CommentRepository commentRepository;
 
     @Transactional
@@ -76,9 +79,18 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NullPointerException("유저를 찾을 수 없습니다."));
 
-        commentRepository.deleteByMemberId(memberId); // 유저가 작성한 댓글
-        boardRepository.deleteByMemberId(memberId); // 유저가 작성한 게시물 ( +게시물에 포함된 댓글 )
-        memberRepository.delete(member); // 유저 삭제
+        // 유저가 작성한 댓글 삭제
+        commentRepository.deleteByMemberId(memberId);
+
+        // 유저가 작성한 게시물에 달린 댓글 삭제
+        List<Long> boardIdList = boardQueryRepository.findAllBoardIdByMemberId(memberId);
+        commentRepository.deleteByBoardIdList(boardIdList);
+
+        // 유저가 작성한 게시물 삭제
+        boardRepository.deleteByMemberId(memberId);
+
+        // 유저 삭제
+        memberRepository.delete(member);
 
         return true;
     }

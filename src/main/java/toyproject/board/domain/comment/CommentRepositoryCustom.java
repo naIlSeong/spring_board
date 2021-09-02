@@ -19,4 +19,6 @@ public interface CommentRepositoryCustom {
 
     void deleteByMemberId(Long memberId);
 
+    void deleteByBoardIdList(List<Long> boardIdList);
+
 }
