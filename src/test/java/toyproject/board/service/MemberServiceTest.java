@@ -8,7 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import toyproject.board.domain.board.Board;
+import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
 import toyproject.board.domain.member.MemberRepository;
 import toyproject.board.dto.member.command.MemberRequestDto;
@@ -228,6 +231,77 @@ class MemberServiceTest {
 
         // then
         assertThat(result).isTrue();
+    }
+
+    @Tag("withdrawal")
+    @Test
+    void 탈퇴_성공2() throws Exception {
+        // give
+        Member member = Member.builder()
+                .username("test")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(member);
+
+        // 유저가 생성한 게시물
+        Board board1 = Board.builder()
+                .member(member)
+                .nickname(member.getUsername())
+                .title("board 1")
+                .content("board 1")
+                .build();
+        em.persist(board1);
+
+        // 유저가 생성한 게시물의 댓글
+        Comment comment1 = Comment.builder()
+                .content("comment 1")
+                .nickname("tt")
+                .board(board1)
+                .password(BCrypt.hashpw("1234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(comment1);
+        
+        // 다른 유저의 게시물
+        Board board2 = Board.builder()
+                .nickname("yy")
+                .title("board 2")
+                .content("board 2")
+                .password(BCrypt.hashpw("12341234", BCrypt.gensalt(10)))
+                .build();
+        em.persist(board2);
+
+        // 다른 유저의 게시물에 작성한 유저의 댓글
+        Comment comment2 = Comment.builder()
+                .content("comment 2")
+                .member(member)
+                .nickname(member.getUsername())
+                .board(board2)
+                .build();
+        em.persist(comment2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        System.out.println("==============================Start Transaction==============================");
+        memberService.withdrawal(member.getId());
+
+        // then
+        Member deletedMember = em.find(Member.class, member.getId()); // 유저
+        assertThat(deletedMember).isNull();
+
+        Board deletedBoard = em.find(Board.class, board1.getId()); // 유저가 생성한 게시물
+        assertThat(deletedBoard).isNull();
+
+        Board findBoard = em.find(Board.class, board2.getId()); // 다른 유저의 게시물
+        assertThat(findBoard).isNotNull();
+
+        Comment deletedComment1 = em.find(Comment.class, comment1.getId()); // 유저가 생성한 게시물의 댓글
+        assertThat(deletedComment1).isNull();
+
+        Comment deletedComment2 = em.find(Comment.class, comment2.getId()); // 다른 유저의 게시물에 작성한 유저의 댓글
+        assertThat(deletedComment2).isNull();
+
     }
 
     @Tag("withdrawal")

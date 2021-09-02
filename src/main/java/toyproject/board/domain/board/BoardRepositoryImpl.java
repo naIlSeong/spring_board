@@ -3,6 +3,8 @@ package toyproject.board.domain.board;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import static toyproject.board.domain.board.QBoard.board;
 import static toyproject.board.domain.comment.QComment.comment;
 
@@ -31,6 +33,30 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     @Override
     public void deleteByMemberId(Long memberId) {
+
+        List<Long> boardIdList = queryFactory
+                .select(board.id)
+                .from(board)
+                .where(board.member.id.eq(memberId))
+                .fetch();
+
+        queryFactory
+                .delete(comment)
+                .where(comment.board.id.in(boardIdList))
+                .execute();
+
+        /*
+        queryFactory
+                .delete(comment)
+                .where(comment.board.id.in(
+                        queryFactory
+                                .select(board.id)
+                                .where(board.member.id.eq(memberId))
+                                .fetch()
+                ))
+                .execute();
+         */
+
         queryFactory
                 .delete(board)
                 .where(board.member.id.eq(memberId))
