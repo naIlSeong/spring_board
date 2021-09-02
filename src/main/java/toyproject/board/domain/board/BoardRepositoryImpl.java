@@ -29,4 +29,12 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     }
 
+    @Override
+    public void deleteByMemberId(Long memberId) {
+        queryFactory
+                .delete(board)
+                .where(board.member.id.eq(memberId))
+                .execute();
+    }
+
 }
