@@ -74,4 +74,20 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .fetchOne();
     }
 
+    @Override
+    public void deleteByBoardId(Long boardId) {
+        queryFactory
+                .delete(comment)
+                .where(comment.board.id.eq(boardId))
+                .execute();
+    }
+
+    @Override
+    public void deleteByMemberId(Long memberId) {
+        queryFactory
+                .delete(comment)
+                .where(comment.member.id.eq(memberId))
+                .execute();
+    }
+
 }

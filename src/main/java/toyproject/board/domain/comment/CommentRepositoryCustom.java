@@ -15,4 +15,8 @@ public interface CommentRepositoryCustom {
 
     CheckPasswordDto getPassword(Long id);
 
+    void deleteByBoardId(Long boardId);
+
+    void deleteByMemberId(Long memberId);
+
 }
