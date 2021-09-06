@@ -139,7 +139,7 @@ public class CommentService {
         Page<CommentQueryDto> result = commentRepository.getCommentsPageByBoardId(boardId, pageable);
 
         // 마지막 페이지보다 큰 페이지번호로 요청하면 마지막 페이지를 반환
-        if (pageable.getPageNumber() >= result.getTotalPages()) {
+        if (result.getTotalElements() != 0 && pageable.getPageNumber() >= result.getTotalPages()) {
             PageRequest newPageable = PageRequest.of(result.getTotalPages() - 1, pageable.getPageSize());
             return commentRepository.getCommentsPageByBoardId(boardId, newPageable);
         }
