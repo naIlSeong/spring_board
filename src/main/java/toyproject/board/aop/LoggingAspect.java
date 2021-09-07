@@ -24,9 +24,9 @@ public class LoggingAspect {
 
     private String paramMapToString(Map<String, String[]> paramMap) {
         return paramMap.entrySet().stream()
-                .map(entry -> String.format("%s -> (%s)",
+                .map(entry -> String.format("%s=%s",
                         entry.getKey(), Joiner.on(",").join(entry.getValue())))
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining("&"));
     }
 
     @Pointcut("within(toyproject.board.controller..*)")
@@ -41,7 +41,7 @@ public class LoggingAspect {
         Map<String, String[]> paramMap = request.getParameterMap();
         String params = "";
         if (!paramMap.isEmpty()) {
-            params = " [" + paramMapToString(paramMap) + "]";
+            params = "?" + paramMapToString(paramMap);
         }
 
         StopWatch stopWatch = new StopWatch();
@@ -50,7 +50,7 @@ public class LoggingAspect {
             return pjp.proceed(pjp.getArgs());
         } finally {
             stopWatch.stop();
-            logger.info("Request: {} {}{} < {} ({}ms)", request.getMethod(), request.getRequestURI(),
+            logger.info("Request: {} {}{} | {} | {}ms", request.getMethod(), request.getRequestURI(),
                     params, request.getRemoteHost(), stopWatch.getTotalTimeMillis());
         }
     }
