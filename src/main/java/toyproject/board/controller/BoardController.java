@@ -36,9 +36,8 @@ public class BoardController {
     @ResponseStatus(CREATED)
     @PostMapping("/new")
     public BoardResponseDto createBoard(@RequestBody CreateBoardRequestDto dto,
-                                        HttpSession session) {
+                                        @SessionAttribute(value = "member", required = false) Member member) {
 
-        Member member = (Member) session.getAttribute("member");
         Long boardId = member != null
                 ? boardService.createBoard(dto.toDto(member))
                 : boardService.createBoard(dto.toDto());
@@ -51,11 +50,10 @@ public class BoardController {
 
     @PostMapping("/delete")
     public BasicResponseDto deleteBoard(@RequestBody DeleteBoardRequestDto dto,
-                                        HttpSession session) {
+                                        @SessionAttribute(value = "member", required = false) Member member) {
 
         boolean isLoggedIn = boardService.isLoggedIn(dto.getId());
         if (isLoggedIn) {
-            Member member = (Member) session.getAttribute("member");
             if (member == null) {
                 throw new IllegalArgumentException("로그인이 필요합니다.");
             }
@@ -73,12 +71,10 @@ public class BoardController {
 
     @PostMapping("/update")
     public BoardResponseDto updateBoard(@RequestBody UpdateBoardRequestDto dto,
-                                        HttpSession session) {
+                                        @SessionAttribute(value = "member", required = false) Member member) {
 
         boolean isLoggedIn = boardService.isLoggedIn(dto.getId());
         if (isLoggedIn) {
-
-            Member member = (Member) session.getAttribute("member");
             if (member == null) {
                 throw new IllegalArgumentException("로그인이 필요합니다.");
             }

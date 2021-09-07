@@ -26,9 +26,7 @@ public class CommentController {
     @ResponseStatus(CREATED)
     @PostMapping("/new")
     public CommentResponseDto createComment(@RequestBody CreateCommentRequestDto dto,
-                                            HttpSession session) {
-
-        Member member = (Member) session.getAttribute("member");
+                                            @SessionAttribute(value = "member", required = false) Member member) {
 
         Long commentId = member != null
                 ? commentService.createComment(dto.toDto(member))
@@ -42,14 +40,12 @@ public class CommentController {
 
     @PostMapping("/update")
     public CommentResponseDto updateComment(@RequestBody UpdateCommentRequestDto dto,
-                                            HttpSession session) {
+                                            @SessionAttribute(value = "member", required = false) Member member) {
 
         Long commentId;
 
         boolean isLoggedIn = commentService.isLoggedId(dto.getCommentId());
         if (isLoggedIn) {
-
-            Member member = (Member) session.getAttribute("member");
             if (member == null) {
                 throw new IllegalArgumentException("로그인이 필요합니다.");
             }
@@ -68,12 +64,10 @@ public class CommentController {
 
     @PostMapping("/delete")
     public BasicResponseDto deleteComment(@RequestBody DeleteCommentRequestDto dto,
-                                          HttpSession session) {
+                                          @SessionAttribute(value = "member", required = false) Member member) {
 
         boolean isLoggedIn = commentService.isLoggedId(dto.getId());
         if (isLoggedIn) {
-
-            Member member = (Member) session.getAttribute("member");
             if (member == null) {
                 throw new IllegalArgumentException("로그인이 필요합니다.");
             }

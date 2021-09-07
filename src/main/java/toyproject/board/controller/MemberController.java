@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.query.BoardAndCommentCount;
@@ -63,13 +64,11 @@ public class MemberController {
     }
 
     @PostMapping("/withdrawal")
-    public BasicResponseDto withdrawal(HttpSession session) {
-
-        Object attribute = session.getAttribute("member");
-        Member member = (Member) attribute;
+    public BasicResponseDto withdrawal(@SessionAttribute("member") Member member,
+                                       SessionStatus sessionStatus) {
 
         memberService.withdrawal(member.getId());
-        session.invalidate();
+        sessionStatus.setComplete();
 
         return BasicResponseDto.builder()
                 .httpStatus(OK)
