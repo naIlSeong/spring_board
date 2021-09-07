@@ -1,4 +1,4 @@
-package toyproject.board.controller;
+package toyproject.board.advice;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
