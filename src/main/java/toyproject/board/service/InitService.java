@@ -104,10 +104,11 @@ public class InitService {
 
             }
 
+            // 댓글 155개 초기화
             for (int i = 0; i < 31; i++) {
                 for (int j = 3; j < 8; j++) {
 
-                    Board board = em.find(Board.class, j * 11L);
+                    Board board = em.find(Board.class, j * 11L); // 게시물 ID: 33, 44, 55, 66, 77
                     Comment comment = Comment.builder()
                             .board(board)
                             .content("comment" + (i + 1))
