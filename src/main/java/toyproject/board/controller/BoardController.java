@@ -13,14 +13,12 @@ import toyproject.board.dto.board.query.BoardAndCommentCount;
 import toyproject.board.dto.board.query.BoardDetail;
 import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
-import toyproject.board.dto.board.response.BoardListResponseDto;
 import toyproject.board.dto.board.response.BoardDetailResponseDto;
+import toyproject.board.dto.board.response.BoardListResponseDto;
 import toyproject.board.dto.board.response.BoardResponseDto;
 import toyproject.board.dto.comment.query.CommentQueryDto;
 import toyproject.board.service.BoardService;
 import toyproject.board.service.CommentService;
-
-import javax.servlet.http.HttpSession;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;

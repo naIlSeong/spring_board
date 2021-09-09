@@ -5,6 +5,10 @@ spring:
     username: root
     password: 12341234
 
+  mvc:
+    servlet:
+      load-on-startup: 1
+
 --- # test - 로그 비활성화 / ddl-auto: none
 spring:
   config:
