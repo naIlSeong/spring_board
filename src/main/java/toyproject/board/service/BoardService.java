@@ -157,15 +157,7 @@ public class BoardService {
     @Transactional
     public BoardQueryDto getBoard(Long boardId) {
 
-        /*
-        BoardQueryDto board = boardQueryRepository.findNoPasswordById(boardId);
-        if (board == null) {
-            throw new NullPointerException("게시물을 찾을 수 없습니다.");
-        }
-         */
-
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NullPointerException("게시물을 찾을 수 없습니다."));
+        Board board = getBoardWithPassword(boardId);
 
         board.updateViews();
 
