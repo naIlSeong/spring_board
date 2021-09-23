@@ -11,24 +11,6 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    /**
-     * Cascade
-     */
-    @Override
-    public void deleteWithComments(Long boardId) {
-
-        queryFactory
-                .delete(comment)
-                .where(comment.board.id.eq(boardId))
-                .execute();
-
-        queryFactory
-                .delete(board)
-                .where(board.id.eq(boardId))
-                .execute();
-
-    }
-
     @Override
     public void deleteByMemberId(Long memberId) {
         queryFactory

@@ -36,21 +36,6 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepositoryCustom {
 
     }
 
-    @Override
-    public List<MemberQueryDto> searchMember(MemberSearchCondition condition) {
-        return queryFactory
-                .select(new QMemberQueryDto(
-                        member.id,
-                        member.username,
-                        member.createdDate,
-                        member.lastModifiedDate
-                ))
-                .from(member)
-                .where(usernameLike(condition))
-                .orderBy(member.id.asc())
-                .fetch();
-    }
-
     private Predicate usernameLike(MemberSearchCondition condition) {
         return condition.getUsername() != null
                 ? member.username.like("%" + condition.getUsername() + "%")
