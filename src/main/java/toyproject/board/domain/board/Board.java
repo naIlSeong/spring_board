@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import toyproject.board.domain.BaseEntity;
 import toyproject.board.domain.member.Member;
+import toyproject.board.dto.board.query.BoardQueryDto;
 
 import javax.persistence.*;
 
@@ -56,6 +57,35 @@ public class Board extends BaseEntity {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void updateViews() {
+        this.views += 1;
+    }
+
+    //=====DTO 생성 메서드=====//
+    public BoardQueryDto toQueryDto() {
+
+        BoardQueryDto dto;
+
+        BoardQueryDto.BoardQueryDtoBuilder builder = BoardQueryDto.builder()
+                .boardId(id)
+                .title(title)
+                .content(content)
+                .createdDate(this.getCreatedDate())
+                .lastModifiedDate(this.getLastModifiedDate());
+
+        if (this.nickname != null) {
+            dto = builder
+                    .nickname(nickname)
+                    .build();
+        } else {
+             dto = builder
+                    .memberId(member.getId())
+                    .build();
+        }
+
+        return dto;
     }
 
 }

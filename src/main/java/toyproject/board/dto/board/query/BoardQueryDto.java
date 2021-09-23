@@ -2,6 +2,7 @@ package toyproject.board.dto.board.query;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +26,7 @@ public class BoardQueryDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastModifiedDate;
 
+    @Builder
     @QueryProjection
     public BoardQueryDto(Long boardId, String title, String content, String nickname, Long memberId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
         this.boardId = boardId;
