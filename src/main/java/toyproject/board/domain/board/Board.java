@@ -22,6 +22,9 @@ public class Board extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    private int views;
+
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT", nullable = false)
