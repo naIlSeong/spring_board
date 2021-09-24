@@ -16,6 +16,7 @@ public class BoardQueryDto {
     private Long boardId;
     private String title;
     private String content;
+    private Integer views;
     private String nickname;
     private Long memberId;
 
@@ -26,14 +27,14 @@ public class BoardQueryDto {
     private LocalDateTime lastModifiedDate;
 
     @Builder
-    public BoardQueryDto(Long boardId, String title, String content, String nickname, Long memberId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
+    public BoardQueryDto(Long boardId, String title, String content, Integer views, String nickname, Long memberId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
         this.boardId = boardId;
         this.title = title;
         this.content = content;
+        this.views = views;
         this.nickname = nickname;
         this.memberId = memberId;
         this.createdDate = createdDate;
         this.lastModifiedDate = lastModifiedDate;
     }
-
 }

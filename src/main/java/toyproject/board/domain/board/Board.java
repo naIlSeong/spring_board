@@ -23,7 +23,7 @@ public class Board extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private int views;
+    private Integer views;
 
     @Column(nullable = false)
     private String title;
@@ -66,26 +66,20 @@ public class Board extends BaseEntity {
     //=====DTO 생성 메서드=====//
     public BoardQueryDto toQueryDto() {
 
-        BoardQueryDto dto;
-
         BoardQueryDto.BoardQueryDtoBuilder builder = BoardQueryDto.builder()
                 .boardId(id)
                 .title(title)
                 .content(content)
+                .nickname(nickname)
+                .views(views)
                 .createdDate(this.getCreatedDate())
                 .lastModifiedDate(this.getLastModifiedDate());
 
-        if (this.nickname != null) {
-            dto = builder
-                    .nickname(nickname)
-                    .build();
-        } else {
-             dto = builder
-                    .memberId(member.getId())
-                    .build();
+        if (this.member != null) {
+            builder.memberId(member.getId());
         }
 
-        return dto;
+        return builder.build();
     }
 
 }
