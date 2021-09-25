@@ -17,7 +17,7 @@ import toyproject.board.dto.board.command.*;
 import toyproject.board.dto.board.query.BoardAndCommentCount;
 import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
-import toyproject.board.dto.board.query.CheckPasswordDto;
+import toyproject.board.dto.CheckPasswordDto;
 
 import javax.validation.Valid;
 

@@ -6,6 +6,7 @@ import toyproject.board.domain.member.Member;
 
 import javax.validation.constraints.NotBlank;
 
+// 회원 가입, 로그인 요청 DTO
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter

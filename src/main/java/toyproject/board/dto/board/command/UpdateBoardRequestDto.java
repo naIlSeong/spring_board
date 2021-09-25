@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import toyproject.board.domain.member.Member;
 
+// 게시물 수정 요청 DTO
 @NoArgsConstructor
 @Getter
 @Setter

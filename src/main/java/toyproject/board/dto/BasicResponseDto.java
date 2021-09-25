@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.HttpStatus;
 
+// 기본 응답 DTO
 @Getter
 @Setter
 @SuperBuilder

@@ -8,6 +8,7 @@ import toyproject.board.domain.board.Board;
 
 import javax.validation.constraints.NotBlank;
 
+// 비로그인 게시물 생성 DTO
 @Getter
 @Setter
 public class CreateBoardNotLoginDto {

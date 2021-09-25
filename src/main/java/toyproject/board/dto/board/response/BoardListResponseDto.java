@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.query.BoardAndCommentCount;
 
+// 게시물 리스트 페이징 응답 DTO
 @SuperBuilder
 @Getter
 @Setter

@@ -7,6 +7,7 @@ import toyproject.board.domain.member.Member;
 
 import javax.validation.constraints.NotNull;
 
+// 로그인 댓글 삭제 DTO
 @Getter
 @Setter
 public class DeleteCommentLoginDto {

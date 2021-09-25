@@ -10,7 +10,6 @@ import toyproject.board.dto.board.command.CreateBoardRequestDto;
 import toyproject.board.dto.board.command.DeleteBoardRequestDto;
 import toyproject.board.dto.board.command.UpdateBoardRequestDto;
 import toyproject.board.dto.board.query.BoardAndCommentCount;
-import toyproject.board.dto.board.query.BoardDetail;
 import toyproject.board.dto.board.query.BoardQueryDto;
 import toyproject.board.dto.board.query.BoardSearchCondition;
 import toyproject.board.dto.board.response.BoardDetailResponseDto;
@@ -95,14 +94,10 @@ public class BoardController {
         BoardQueryDto board = boardService.getBoard(boardId);
         Page<CommentQueryDto> comments = commentService.getCommentsPage(boardId, pageable);
 
-        BoardDetail boardDetail = BoardDetail.builder()
-                .board(board)
-                .comments(comments)
-                .build();
-
         return BoardDetailResponseDto.builder()
                 .httpStatus(OK)
-                .boardDetail(boardDetail)
+                .board(board)
+                .comments(comments)
                 .build();
     }
 

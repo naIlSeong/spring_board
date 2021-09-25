@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import toyproject.board.dto.CheckPasswordDto;
+import toyproject.board.dto.QCheckPasswordDto;
 import toyproject.board.dto.board.query.*;
 
 import java.util.List;

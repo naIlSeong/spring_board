@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import toyproject.board.domain.member.Member;
 
+// 댓글 삭제 요청 DTO
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter

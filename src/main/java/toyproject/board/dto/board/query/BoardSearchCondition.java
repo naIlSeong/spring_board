@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// 게시물 검색 조건 DTO
 @NoArgsConstructor
 @Getter
 @Setter

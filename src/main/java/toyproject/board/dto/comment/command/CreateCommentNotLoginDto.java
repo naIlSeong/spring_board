@@ -8,6 +8,7 @@ import toyproject.board.domain.comment.Comment;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+// 비로그인 댓글 생성 DTO
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter

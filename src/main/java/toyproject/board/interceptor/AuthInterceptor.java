@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+// 인증 인터셉터
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Override

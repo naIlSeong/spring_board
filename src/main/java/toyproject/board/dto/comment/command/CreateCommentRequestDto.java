@@ -5,6 +5,7 @@ import toyproject.board.domain.board.Board;
 import toyproject.board.domain.comment.Comment;
 import toyproject.board.domain.member.Member;
 
+// 댓글 생성 요청 DTO
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter

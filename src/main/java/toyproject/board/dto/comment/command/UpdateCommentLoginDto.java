@@ -8,6 +8,7 @@ import toyproject.board.domain.member.Member;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+// 로그인 댓글 수정 DTO
 @Getter
 @Setter
 public class UpdateCommentLoginDto {

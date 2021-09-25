@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import java.util.ArrayList;
 import java.util.List;
 
+// 예외 응답 DTO
 @Getter
 @Setter
 public class ExceptionResponseDto {

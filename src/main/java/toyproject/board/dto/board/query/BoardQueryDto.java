@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+// 게시물 상세 조회 DTO (댓글 X, 비밀번호 X)
 @NoArgsConstructor
 @Getter
 @Setter

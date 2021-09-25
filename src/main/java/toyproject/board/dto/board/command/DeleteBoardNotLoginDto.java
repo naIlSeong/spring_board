@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+// 비로그인 게시물 삭제 DTO
 @Getter
 @Setter
 public class DeleteBoardNotLoginDto {

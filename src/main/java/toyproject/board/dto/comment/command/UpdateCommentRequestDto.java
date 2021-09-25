@@ -3,6 +3,7 @@ package toyproject.board.dto.comment.command;
 import lombok.*;
 import toyproject.board.domain.member.Member;
 
+// 댓글 수정 요청 DTO
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter

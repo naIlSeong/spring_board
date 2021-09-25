@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+// 로그인 비댓글 수정 DTO
 @Getter
 @Setter
 public class UpdateCommentNotLoginDto {

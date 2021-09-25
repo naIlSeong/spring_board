@@ -19,6 +19,7 @@ import java.util.Set;
 
 import static org.springframework.http.HttpStatus.*;
 
+// 예외 공통 처리 클래스
 @ControllerAdvice
 public class ExceptionController {
 

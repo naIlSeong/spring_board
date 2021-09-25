@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// 로그 클래스
 @Aspect
 @Component
 public class LoggingAspect {

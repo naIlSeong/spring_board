@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * Member 에서 password 필드를 제외한 DTO
- */
+// 멤버 조회 DTO (비밀번호 X)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class MemberQueryDto {

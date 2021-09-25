@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import toyproject.board.dto.board.query.BoardAndCommentCount;
 import toyproject.board.dto.board.query.BoardSearchCondition;
-import toyproject.board.dto.board.query.CheckPasswordDto;
+import toyproject.board.dto.CheckPasswordDto;
 
 import java.util.List;
 

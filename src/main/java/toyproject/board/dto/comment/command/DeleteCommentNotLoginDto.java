@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+// 비로그인 댓글 삭제 DTO
 @Getter
 @Setter
 public class DeleteCommentNotLoginDto {

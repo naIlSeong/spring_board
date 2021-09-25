@@ -12,12 +12,14 @@ import java.util.List;
 @Configuration
 public class MvcConfig extends WebMvcConfigurationSupport {
 
+    // 인터셉터 등록 메서드
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthInterceptor())
                 .addPathPatterns("/member/withdrawal");
     }
 
+    // Pageable 기본 생성자 관련 메서드
     @Override
     protected void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new PageableHandlerMethodArgumentResolver());

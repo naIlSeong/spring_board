@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+// 댓글 쿼리 DTO
 @Getter
 @Setter
 public class CommentQueryDto {
