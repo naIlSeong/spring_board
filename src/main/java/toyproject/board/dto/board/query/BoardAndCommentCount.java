@@ -8,13 +8,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+// 게시물 리시트 조회 DTO
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class BoardAndCommentCount {
 
     private Long boardId;
+    private Integer views;
     private String title;
-    private String content;
     private String nickname;
     private Long memberId;
     private Long commentCount;
@@ -26,10 +27,10 @@ public class BoardAndCommentCount {
     private LocalDateTime lastModifiedDate;
 
     @QueryProjection
-    public BoardAndCommentCount(Long boardId, String title, String content, String nickname, Long memberId, Long commentCount, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
+    public BoardAndCommentCount(Long boardId, Integer views, String title, String nickname, Long memberId, Long commentCount, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
         this.boardId = boardId;
+        this.views = views;
         this.title = title;
-        this.content = content;
         this.nickname = nickname;
         this.memberId = memberId;
         this.commentCount = commentCount;

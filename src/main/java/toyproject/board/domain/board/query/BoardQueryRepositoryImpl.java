@@ -37,7 +37,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
         QueryResults<BoardAndCommentCount> results = queryFactory
                 .select(new QBoardAndCommentCount(
                         board.id,
-                        board.title,
+                        board.views,
                         board.content,
                         board.nickname,
                         board.member.id,
@@ -65,7 +65,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
         QueryResults<BoardAndCommentCount> results = queryFactory
                 .select(new QBoardAndCommentCount(
                         board.id,
-                        board.title,
+                        board.views,
                         board.content,
                         board.nickname,
                         board.member.id,
