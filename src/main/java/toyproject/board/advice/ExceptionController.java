@@ -17,8 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice
 public class ExceptionController {
@@ -29,10 +28,19 @@ public class ExceptionController {
     @ExceptionHandler({NullPointerException.class})
     public ResponseEntity<BasicResponseDto> notFoundException(NullPointerException e) {
 
-        BasicResponseDto dto = BasicResponseDto.builder()
-                .httpStatus(NOT_FOUND)
-                .message(e.getMessage())
-                .build();
+        BasicResponseDto dto;
+
+        if (e.getMessage() == null) {
+            dto = BasicResponseDto.builder()
+                    .httpStatus(INTERNAL_SERVER_ERROR)
+                    .message("예기치 않은 예외가 발생했습니다.")
+                    .build();
+        } else {
+            dto = BasicResponseDto.builder()
+                    .httpStatus(NOT_FOUND)
+                    .message(e.getMessage())
+                    .build();
+        }
 
         return ResponseEntity
                 .status(NOT_FOUND)
@@ -45,10 +53,19 @@ public class ExceptionController {
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<BasicResponseDto> badRequestException(IllegalArgumentException e) {
 
-        BasicResponseDto dto = BasicResponseDto.builder()
-                .httpStatus(BAD_REQUEST)
-                .message(e.getMessage())
-                .build();
+        BasicResponseDto dto;
+
+        if (e.getMessage() == null) {
+            dto = BasicResponseDto.builder()
+                    .httpStatus(INTERNAL_SERVER_ERROR)
+                    .message("예기치 않은 예외가 발생했습니다.")
+                    .build();
+        } else {
+            dto = BasicResponseDto.builder()
+                    .httpStatus(BAD_REQUEST)
+                    .message(e.getMessage())
+                    .build();
+        }
 
         return ResponseEntity
                 .badRequest()
