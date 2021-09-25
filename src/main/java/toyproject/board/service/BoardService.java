@@ -33,6 +33,7 @@ public class BoardService {
     private final BoardQueryRepository boardQueryRepository;
     private final CommentRepository commentRepository;
 
+    // 게시물 생성 (로그인)
     @Transactional
     @Validated
     public Long createBoard(@Valid CreateBoardLoginDto dto) {
@@ -46,6 +47,7 @@ public class BoardService {
         return board.getId();
     }
 
+    // 게시물 생성 (비로그인)
     @Transactional
     @Validated
     public Long createBoard(@Valid CreateBoardNotLoginDto dto) {
@@ -60,8 +62,9 @@ public class BoardService {
         return board.getId();
     }
 
+    // 게시물 삭제 (로그인)
     @Transactional
-    @Validated // 로그인
+    @Validated
     public void deleteBoard(@Valid DeleteBoardLoginDto dto) {
 
         Board board = getBoardWithPassword(dto.getId());
@@ -72,8 +75,9 @@ public class BoardService {
 
     }
 
+    // 게시물 삭제 (비로그인)
     @Transactional
-    @Validated // 비로그인
+    @Validated
     public void deleteBoard(@Valid DeleteBoardNotLoginDto dto) {
 
         Board board = getBoardWithPassword(dto.getId());
@@ -84,8 +88,9 @@ public class BoardService {
 
     }
 
+    // 게시물 수정 (로그인)
     @Transactional
-    @Validated // 로그인
+    @Validated
     public void updateBoard(@Valid UpdateBoardLoginDto dto) {
 
         if (hasText(dto.getTitle()) || hasText(dto.getContent())) {
@@ -96,8 +101,9 @@ public class BoardService {
 
     }
 
+    // 게시물 수정 (비로그인)
     @Transactional
-    @Validated // 비로그인
+    @Validated
     public void updateBoard(@Valid UpdateBoardNotLoginDto dto) {
 
         if (hasText(dto.getTitle()) || hasText(dto.getContent())) {
@@ -108,6 +114,7 @@ public class BoardService {
 
     }
 
+    // 게시물 생성자와 요청한 멤버가 동일한지 판단
     private void checkMemberId(Long memberId, Long requestMemberId, boolean isDelete) {
         if (!memberId.equals(requestMemberId)) {
             String condition = isDelete ? "삭제" : "수정";
@@ -116,6 +123,7 @@ public class BoardService {
         }
     }
 
+    // 해시된 비밀번호와 순수한 비밀번호와 동일한지 판단
     private void checkPassword(String plainPassword, String hashed) {
         boolean isMatch = BCrypt.checkpw(plainPassword, hashed);
         if (!isMatch) {
@@ -124,7 +132,8 @@ public class BoardService {
     }
 
     /**
-     * SELECT * FROM board WHERE baord.board_id = :boardId
+     * PK로 게시물 조회
+     * - SELECT * FROM board WHERE baord.board_id = :boardId
      */
     public Board getBoardWithPassword(Long boardId) {
         return boardRepository.findById(boardId)
@@ -132,7 +141,9 @@ public class BoardService {
     }
 
     /**
-     * SELECT board.password FROM board WHERE board.board_id = :boardId
+     * PK로 비밀번호 컬럼만 조회
+     * - 비밀번호가 Null이 아니면 로그인한 멤버가 생성한 게시물
+     * - SELECT board.password FROM board WHERE board.board_id = :boardId
      */
     public boolean isLoggedIn(Long boardId) {
         CheckPasswordDto result = boardQueryRepository.findPassword(boardId);
@@ -142,6 +153,7 @@ public class BoardService {
         return result.getPassword() == null;
     }
 
+    // 제목, 내용이 존재하면 게시물을 수정
     private void updateTitleAndContent(String title, String content, Board board) {
 
         if (hasText(title)) {
@@ -154,6 +166,8 @@ public class BoardService {
 
     }
 
+    // 게시물 상세 조회
+    // 조회 수 + 1
     @Transactional
     public BoardQueryDto getBoard(Long boardId) {
 
@@ -164,9 +178,7 @@ public class BoardService {
         return board.toQueryDto();
     }
 
-    /**
-     * 게시물 리스트 쿼리 (검색 X)
-     */
+    // 게시물 리스트 쿼리 (검색 X)
     public Page<BoardAndCommentCount> getBoardList(Pageable pageable) {
 
         Page<BoardAndCommentCount> result = boardQueryRepository.getBoardList(pageable);
@@ -179,10 +191,8 @@ public class BoardService {
         return result;
     }
 
-    /**
-     * 게시물 검색 쿼리
-     * 닉네임, 제목, 내용, 생성 날짜 정렬
-     */
+    // 게시물 검색 쿼리
+    // 닉네임, 제목, 내용, 생성 날짜 정렬
     public Page<BoardAndCommentCount> searchBoard(BoardSearchCondition condition, Pageable pageable) {
 
         Page<BoardAndCommentCount> result = boardQueryRepository.searchBoard(condition, pageable);

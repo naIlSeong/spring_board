@@ -33,6 +33,7 @@ public class MemberService {
     private final BoardQueryRepository boardQueryRepository;
     private final CommentRepository commentRepository;
 
+    // 회원가입
     @Transactional
     @Validated
     public Long join(@Valid MemberRequestDto dto) {
@@ -59,6 +60,7 @@ public class MemberService {
         return member.getId();
     }
 
+    // 로그인
     @Validated
     public Member login(@Valid MemberRequestDto dto) {
 
@@ -73,6 +75,7 @@ public class MemberService {
         return member;
     }
 
+    // 회원 탈퇴
     @Transactional
     public boolean withdrawal(Long memberId) {
 
@@ -95,6 +98,7 @@ public class MemberService {
         return true;
     }
 
+    // 멤버 상세 조회
     public MemberQueryDto getMember(Long memberId) {
 
         MemberQueryDto member = memberQueryRepository.findNoPasswordById(memberId);

@@ -27,8 +27,9 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
 
+    // 댓글 생성 (로그인)
     @Transactional
-    @Validated // 로그인
+    @Validated
     public Long createComment(@Valid CreateCommentLoginDto dto) {
 
         Board board = boardRepository.findById(dto.getBoardId())
@@ -40,8 +41,9 @@ public class CommentService {
         return comment.getId();
     }
 
+    // 댓글 생성 (비로그인)
     @Transactional
-    @Validated // 비로그인
+    @Validated
     public Long createComment(@Valid CreateCommentNotLoginDto dto) {
 
         Board board = boardRepository.findById(dto.getBoardId())
@@ -55,8 +57,9 @@ public class CommentService {
         return comment.getId();
     }
 
+    // 댓글 수정 (로그인)
     @Transactional
-    @Validated // 로그인
+    @Validated
     public Long updateComment(@Valid UpdateCommentLoginDto dto) {
 
         Comment comment = getComment(dto.getCommentId());
@@ -72,8 +75,9 @@ public class CommentService {
         return comment.getId();
     }
 
+    // 댓글 수정 (비로그인)
     @Transactional
-    @Validated // 비로그인
+    @Validated
     public Long updateComment(@Valid UpdateCommentNotLoginDto dto) {
 
         Comment comment = getComment(dto.getCommentId());
@@ -90,11 +94,13 @@ public class CommentService {
         return comment.getId();
     }
 
+    // PK로 댓글 조회
     private Comment getComment(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
     }
 
+    // PK로 비밀번호 컬럼 조회
     public boolean isLoggedId(Long commentId) {
         CheckPasswordDto result = commentRepository.getPassword(commentId);
         if (result == null) {
@@ -103,8 +109,9 @@ public class CommentService {
         return result.getPassword() == null;
     }
 
+    // 댓글 삭제 (로그인)
     @Transactional
-    @Validated // 로그인
+    @Validated
     public void deleteComment(@Valid DeleteCommentLoginDto dto) {
 
         Comment comment = getComment(dto.getId());
@@ -118,8 +125,9 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    // 댓글 삭제 (비로그인)
     @Transactional
-    @Validated // 비로그인
+    @Validated
     public void deleteComment(@Valid DeleteCommentNotLoginDto dto) {
 
         Comment comment = getComment(dto.getId());
@@ -134,6 +142,7 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    // 게시물에 달린 댓글 조회 페이징
     public Page<CommentQueryDto> getCommentsPage(Long boardId, Pageable pageable) {
 
         Page<CommentQueryDto> result = commentRepository.getCommentsPageByBoardId(boardId, pageable);
