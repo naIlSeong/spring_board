@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import toyproject.board.domain.board.Board;
 import toyproject.board.domain.member.Member;
 import toyproject.board.dto.BasicResponseDto;
 import toyproject.board.dto.board.command.CreateBoardRequestDto;
@@ -18,6 +19,8 @@ import toyproject.board.dto.board.response.BoardResponseDto;
 import toyproject.board.dto.comment.query.CommentQueryDto;
 import toyproject.board.service.BoardService;
 import toyproject.board.service.CommentService;
+
+import javax.servlet.ServletRequest;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -89,9 +92,11 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public BoardDetailResponseDto getBoardDetail(@PathVariable("boardId") Long boardId, Pageable pageable) {
+    public BoardDetailResponseDto getBoardDetail(@SessionAttribute(name = "member", required = false) Member member,
+                                                 @PathVariable("boardId") Long boardId,
+                                                 Pageable pageable) {
 
-        BoardQueryDto board = boardService.getBoard(boardId);
+        BoardQueryDto board = boardService.getBoard(boardId, member);
         Page<CommentQueryDto> comments = commentService.getCommentsPage(boardId, pageable);
 
         return BoardDetailResponseDto.builder()

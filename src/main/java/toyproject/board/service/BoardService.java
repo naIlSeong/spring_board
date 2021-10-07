@@ -169,11 +169,20 @@ public class BoardService {
     // 게시물 상세 조회
     // 조회 수 + 1
     @Transactional
-    public BoardQueryDto getBoard(Long boardId) {
+    public BoardQueryDto getBoard(Long boardId, Member member) {
 
         Board board = getBoardWithPassword(boardId);
 
-        board.updateViews();
+        if (member == null) {
+            board.updateViews();
+        }
+
+        if (member != null) {
+            if (board.getMember().getId() != member.getId()) {
+                board.updateViews();
+            }
+            // TODO : 작성자 IP와 요청 IP 비교
+        }
 
         return board.toQueryDto();
     }
