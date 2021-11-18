@@ -48,6 +48,7 @@ public class Board extends BaseEntity {
         this.member = member;
         this.nickname = nickname;
         this.password = password;
+        this.views = 0;
     }
 
     //=====수정 메서드=====//

@@ -618,7 +618,7 @@ class BoardServiceTest {
         assertThat(total).isEqualTo(20L);
         assertThat(content.size()).isEqualTo(3);
         assertThat(content)
-                .extracting("content")
+                .extracting("title")
                 .containsExactly("test content - 17", "best content - 16", "test content - 15");
     }
 
