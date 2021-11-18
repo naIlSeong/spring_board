@@ -257,6 +257,7 @@ class CommentServiceTest {
         Comment comment = Comment.builder()
                 .content("test comment")
                 .member(member)
+                .nickname(member.getUsername())
                 .board(board)
                 .build();
         em.persist(comment);
@@ -311,6 +312,7 @@ class CommentServiceTest {
         Comment comment = Comment.builder()
                 .content("test comment")
                 .member(member)
+                .nickname(member.getUsername())
                 .board(board)
                 .build();
         em.persist(comment);
