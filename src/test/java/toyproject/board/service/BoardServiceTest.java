@@ -619,7 +619,7 @@ class BoardServiceTest {
         assertThat(content.size()).isEqualTo(3);
         assertThat(content)
                 .extracting("title")
-                .containsExactly("test content - 17", "best content - 16", "test content - 15");
+                .containsExactly("test title - 17", "best title - 16", "test title - 15");
     }
 
     @Tag("getBoardList()")

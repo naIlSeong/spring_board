@@ -40,7 +40,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepositoryCustom {
                 .select(new QBoardAndCommentCount(
                         board.id,
                         board.views,
-                        board.content,
+                        board.title,
                         board.nickname,
                         board.member.id,
                         comment.id.count(),
