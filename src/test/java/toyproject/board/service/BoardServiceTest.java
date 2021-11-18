@@ -543,7 +543,7 @@ class BoardServiceTest {
         Long boardId = board.getId();
 
         // when
-        BoardQueryDto result = boardService.getBoard(boardId);
+        BoardQueryDto result = boardService.getBoard(boardId, null);
 
         // then
         assertThat(result.getTitle()).isEqualTo("test title.");
@@ -560,7 +560,7 @@ class BoardServiceTest {
         // boardService.getBoard(1212L);
 
         // then
-        assertThatThrownBy(() -> boardService.getBoard(1212L))
+        assertThatThrownBy(() -> boardService.getBoard(1212L, null))
                 .hasMessage("게시물을 찾을 수 없습니다.");
     }
 
@@ -659,8 +659,6 @@ class BoardServiceTest {
 
         assertThat(result.getTotalElements()).isEqualTo(21);
         assertThat(result.getNumberOfElements()).isEqualTo(1);
-
-        assertThat(result.getContent().get(0).getContent()).isEqualTo("content - 1");
     }
 
     @Tag("searchBoardList")
@@ -724,8 +722,6 @@ class BoardServiceTest {
 
         assertThat(result.getTotalElements()).isEqualTo(5);
         assertThat(result.getNumberOfElements()).isEqualTo(3);
-
-        assertThat(result.getContent().get(0).getContent()).isEqualTo("best content - 18");
     }
 
     @Tag("searchBoardList")
@@ -789,8 +785,6 @@ class BoardServiceTest {
 
         assertThat(result.getTotalElements()).isEqualTo(5);
         assertThat(result.getNumberOfElements()).isEqualTo(2);
-
-        assertThat(result.getContent().get(0).getContent()).isEqualTo("best content - 12");
     }
 
 }

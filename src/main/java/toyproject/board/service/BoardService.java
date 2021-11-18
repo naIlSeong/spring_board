@@ -171,6 +171,8 @@ public class BoardService {
     @Transactional
     public BoardQueryDto getBoard(Long boardId, Member member) {
 
+        // TODO : 조회수 업데이트 로직 메서드로 분리
+
         Board board = getBoardWithPassword(boardId);
 
         if (member == null) {
